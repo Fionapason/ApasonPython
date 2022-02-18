@@ -18,7 +18,7 @@ def handshake(ser):
     # flush port before starting
     ser.flush()
 
-    # send an a, make sure we received an a
+    # send an a and make sure we received an a
     assert (readSerial(ser) == 'a')
     ser.write(b'a')
     ser.flush()

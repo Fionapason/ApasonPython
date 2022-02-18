@@ -12,47 +12,44 @@ def readSerial(ser):
 
     return buffer
 
-#def testSerial(ser):
-#check that a comes in response to c, 0 in response to b, use assertions
 
-
-def handshake():
-
-    ser = serial.Serial()
-    ser.port = '/dev/tty.usbmodem1401'
-    ser.baudrate = 115200
-    ser.parity = serial.PARITY_NONE
-    ser.bytesize = serial.EIGHTBITS
-    ser.stopbits = serial.STOPBITS_ONE
-    ser.timeout = 1
-    ser.xonxoff = False
-    ser.rtscts = False
-    ser.dsrdtr = False
-
-    ser.open()
+def handshake(ser):
+    # Handshake
+    # flush port before starting
     ser.flush()
 
-    text = ser.read().decode('utf-8')
-    print(text)
-
+    # send an a, make sure we received an a
+    assert (readSerial(ser) == 'a')
     ser.write(b'a')
     ser.flush()
 
-    print(readSerial(ser))
+    # arduino sends a d when it has left the while loop in the handshake
+    assert (readSerial(ser) == 'd')
 
+    # Testing
+
+    # Test 1
     ser.write(b'c')
-    print(readSerial(ser))
+    assert (readSerial(ser) == 'a')
     ser.flush()
-
+    # Test 2
     ser.write(b'b')
-    print(readSerial(ser))
+    assert (readSerial(ser) == '0')
+    ser.flush()
+    # Test 3
+    ser.write(b'9')
+    assert (readSerial(ser) == '0')
     ser.flush()
 
-    ser.write(b'v')
-    print(readSerial(ser))
-    ser.flush()
+    # Testing complete.
+    print('Handshake Successful!')
 
 
 if __name__ == '__main__':
-    handshake()
-    print('Done')
+    # initialize serial port usbmodem1401
+    first_port = serial.Serial(port='/dev/tty.usbmodem1401', baudrate=115200, parity=serial.PARITY_NONE,
+                               bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, timeout=1, xonxoff=False,
+                               rtscts=False,
+                               dsrdtr=False)
+
+    handshake(first_port)

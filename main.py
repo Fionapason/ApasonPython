@@ -49,7 +49,7 @@ def handshake(ser):
 
 #Takes a serial port, an analog voltage reference, the maximum pressure of the pressure sensor and the maximum voltage it can return
 #Returns the current pressure
-def readPressure(ser, analogVoltageReference=1.1, maxPressure=30, maxVoltage=10):
+def readPressure(ser, analogVoltageReference=1.1, maxPressure=10, maxVoltage=10):
 
     ser.flush()
     ser.write(b'v')

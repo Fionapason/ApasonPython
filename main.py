@@ -1,7 +1,7 @@
 import serial
 import time
 
-
+#returns serial port input but ignores garbage
 def readSerial(ser):
     buffer = ser.read().decode('utf-8')
 
@@ -78,7 +78,7 @@ if __name__ == '__main__':
                                    dsrdtr=False)
         handshake(first_port)
 
-
+    #process will need more sophistication later
     while system_running:
         choice = int(input("Do you want to check the pressure? 1/0" + '\n'))
 

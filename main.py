@@ -1,19 +1,21 @@
 import serial
 import time
 
-#returns serial port input but ignores garbage
+
+# returns serial port input but ignores garbage
 def readSerial(ser):
-    buffer = ser.read().decode('utf-8')
+    buffer = ''
 
     while (buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t'):
+        buffer = ser.read().decode('utf-8')
         time.sleep(0.05)
         ser.flush()
-        buffer = ser.read().decode('utf-8')
 
     return buffer
 
-#Function that makes sure that the serial port is properly communicating with the Arduino
-#Prints 'Handshake Successful!' once the connection is secure
+
+# Function that makes sure that the serial port is properly communicating with the Arduino
+# Prints 'Handshake Successful!' once the connection is secure
 def handshake(ser):
     # Handshake
     # flush port before starting
@@ -47,22 +49,37 @@ def handshake(ser):
     print('Handshake Successful!')
     return
 
-#Takes a serial port, an analog voltage reference, the maximum pressure of the pressure sensor and the maximum voltage it can return
-#Returns the current pressure
-def readPressure(ser, analogVoltageReference=1.1, maxPressure=10, maxVoltage=10):
 
+# Takes a serial port, an analog voltage reference, the maximum pressure of the pressure sensor and the maximum
+# voltage it can return Returns the current pressure
+def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10):
     ser.flush()
     ser.write(b'v')
-    #read string from serial port
-    pressure = readSerial(ser)
-    #convert string to float
-    pressure = float(pressure)
-    #convert float to the pressure
-    pressure = pressure * analogVoltageReference * maxPressure / (1023*maxVoltage)
+    # read from serial port
+    pressure = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
+    # convert float to the pressure
+    pressure = pressure * analogVoltageReference * maxPressure / (1023 * maxVoltage)
 
     ser.flush()
 
     return pressure
+
+def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4):
+    ser.flush()
+    ser.write(b'i')
+
+    massflow = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
+
+    massflow = massflow * analogVoltageReference * (maxMassflow - minMassflow) / (1023 * (maxVoltage - minVoltage))
+
+    ser.flush()
+
+    return maxMassflow
+
+
+
+
+
 
 
 
@@ -78,17 +95,20 @@ if __name__ == '__main__':
                                    dsrdtr=False)
         handshake(first_port)
 
-    #process will need more sophistication later
+    # process will need more sophistication later
     while system_running:
-        choice = int(input("Do you want to check the pressure? 1/0" + '\n'))
+        choice = int(input("Do you want to turn off the device, check the pressure, or the massflow? 0/1/2" + '\n'))
 
         if choice == 1:
-            print(readPressure(first_port))
-
-        else:
-            choice = int(input("Do you want to turn off the device? 1/0" + '\n'))
+            print(str(readPressure(first_port)) + " bar")
+        elif choice == 2:
+            print(str(readMassflow(first_port)) + " l/min")
+        elif choice == 0:
+            choice = int(input("Are you sure you want to turn off the device? 1/0" + '\n'))
             if choice == 1:
                 system_running = False
                 print("Shutting down...")
+        else:
+            print("ERROR. INVALID INPUT")
 
     print("Power Off.")

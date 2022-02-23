@@ -1,16 +1,17 @@
 import serial
 import time
 
-
 # returns serial port input but ignores garbage
+COMMAND_PRESSURE = b'v'
+COMMAND_MASS_FLOW = b'i'
+
+
 def readSerial(ser):
     buffer = ''
-    timer = 0
 
     while (buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t'):
         buffer = ser.read().decode('utf-8')
         time.sleep(0.05)
-        print(buffer)
         ser.flush()
 
     return buffer
@@ -56,13 +57,15 @@ def handshake(ser):
 # voltage it can return Returns the current pressure
 def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10):
     ser.flush()
-    ser.write(b'v')
+    ser.write(COMMAND_PRESSURE)
     # read from serial port
     msb = readSerial(ser)
+    if float(msb) == 0:
+        return 0
     middle = readSerial(ser)
     lsb = readSerial(ser)
 
-    pressure = float(msb) * 100 + float(middle) * 10 + float(lsb)
+    pressure = float(msb + middle + lsb + '')
     # convert float to the pressure
     pressure = pressure * analogVoltageReference * maxPressure / (1023 * maxVoltage)
 
@@ -70,23 +73,27 @@ def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10
 
     return pressure
 
-def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4, graphConstant= -3.75):
+
+def readMassflow(ser, analogVoltageReference=4.91, minMassflow=1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4,
+                 graphConstant=-3.75):
     ser.flush()
-    ser.write(b'i')
+    ser.write(COMMAND_MASS_FLOW)
 
-    massflow = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
+    msb = readSerial(ser)
+    if float(msb) == 0:
+        return 0
 
-    massflow = massflow * (analogVoltageReference / 1023) * ((maxMassflow - minMassflow) /  (maxVoltage - minVoltage)) + graphConstant
+    middle = readSerial(ser)
+    lsb = readSerial(ser)
+
+    massflow = float(msb + middle + lsb + '')
+
+    massflow = massflow * (analogVoltageReference / 1023) * (
+            (maxMassflow - minMassflow) / (maxVoltage - minVoltage)) + graphConstant
 
     ser.flush()
 
     return massflow
-
-
-
-
-
-
 
 
 if __name__ == '__main__':
@@ -102,7 +109,7 @@ if __name__ == '__main__':
         handshake(first_port)
 
     # process will need more sophistication later
-    while system_running:
+    while system_running == 1:
         choice = int(input("Do you want to turn off the device, check the pressure, or the massflow? 0/1/2" + '\n'))
 
         if choice == 1:

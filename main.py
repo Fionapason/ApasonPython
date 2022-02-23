@@ -69,13 +69,13 @@ def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10
 
     return pressure
 
-def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4, graphConstant=-3.72):
+def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4, graphConstant= -3.75):
     ser.flush()
     ser.write(b'i')
 
     massflow = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
 
-    massflow = massflow * (analogVoltageReference / 1023) * ((maxMassflow - minMassflow) /  (maxVoltage - minVoltage)) - graphConstant
+    massflow = massflow * (analogVoltageReference / 1023) * ((maxMassflow - minMassflow) /  (maxVoltage - minVoltage)) + graphConstant
 
     ser.flush()
 

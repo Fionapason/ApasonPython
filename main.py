@@ -10,11 +10,8 @@ def readSerial(ser):
     while (buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t'):
         buffer = ser.read().decode('utf-8')
         time.sleep(0.05)
+        print(buffer)
         ser.flush()
-        timer += 1
-        if timer > 40:
-            print ("NO SIGNAL")
-            return
 
     return buffer
 
@@ -61,7 +58,11 @@ def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10
     ser.flush()
     ser.write(b'v')
     # read from serial port
-    pressure = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
+    msb = readSerial(ser)
+    middle = readSerial(ser)
+    lsb = readSerial(ser)
+
+    pressure = float(msb) * 100 + float(middle) * 10 + float(lsb)
     # convert float to the pressure
     pressure = pressure * analogVoltageReference * maxPressure / (1023 * maxVoltage)
 

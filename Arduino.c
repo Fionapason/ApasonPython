@@ -1,13 +1,16 @@
 
 // PRESSURE SENSOR
 #define PRESSURE_SENSOR A0
+#define MASSFLOW_SENSOR A1
+
 
 /* SETUP FUNCTION */
 void setup() {
   // Start the serial connection with the controller
   Serial.begin(115200);
   handshake();
-  analogReference(INTERNAL1V1);
+  analogReference(DEFAULT);
+  delay(5);
   // INTERNAL2V56
 }
 
@@ -15,11 +18,12 @@ void setup() {
 void loop(){
   //Wait for Input from ComMgr
   handleInput();
+  delay(5);
 }
 
 void handshake(){
   // initialize the handshake with MATLAB
-  Serial.println('a');
+  Serial.print('a');
   char a = 'b';
 
   // handshake has to come back from the serial port
@@ -29,7 +33,7 @@ void handshake(){
     //delay(5);
   }
   Serial.flush();
-  Serial.println('d');
+  Serial.print('d');
 }
 
 void handleInput(){
@@ -50,6 +54,9 @@ void handleInput(){
       }
       else if (input == 'c') {
         Serial.print('a');
+      }
+      else if (input == 'i') {
+        Serial.print(analogRead(MASSFLOW_SENSOR));
       }
       else{
       Serial.print('0');

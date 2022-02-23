@@ -5,11 +5,16 @@ import time
 # returns serial port input but ignores garbage
 def readSerial(ser):
     buffer = ''
+    timer = 0
 
     while (buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t'):
         buffer = ser.read().decode('utf-8')
         time.sleep(0.05)
         ser.flush()
+        timer += 1
+        if timer > 40:
+            print ("NO SIGNAL")
+            return
 
     return buffer
 
@@ -64,17 +69,17 @@ def readPressure(ser, analogVoltageReference=4.91, maxPressure=10, maxVoltage=10
 
     return pressure
 
-def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4):
+def readMassflow(ser, analogVoltageReference=4.91, minMassflow= 1, maxMassflow=20, minVoltage=0.88, maxVoltage=4.4, graphConstant=-3.72):
     ser.flush()
     ser.write(b'i')
 
     massflow = float(readSerial(ser)) * 100 + float(readSerial(ser)) * 10 + float(readSerial(ser))
 
-    massflow = massflow * analogVoltageReference * (maxMassflow - minMassflow) / (1023 * (maxVoltage - minVoltage))
+    massflow = massflow * (analogVoltageReference / 1023) * ((maxMassflow - minMassflow) /  (maxVoltage - minVoltage)) - graphConstant
 
     ser.flush()
 
-    return maxMassflow
+    return massflow
 
 
 

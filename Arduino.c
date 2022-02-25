@@ -20,8 +20,8 @@ void setup() {
       delay(10);
     }
   }
-  Serial.println("MCP4728 Found!");
-  
+  // Serial.println("MCP4728 Found!");
+
   delay(5);
   // INTERNAL2V56
 }
@@ -50,14 +50,16 @@ void handshake(){
 
 void handleInput(){
   // Check for Input
-  
+
   if (Serial.available()>0){
 
     // Read the Input, store in a string
     char input =  Serial.read();
-    
+
     delay(2);
+
     int nextBytes = Serial.available();
+    serialFlush(nextBytes);
 
       if (input == 'v'){
         Serial.print(analogRead(PRESSURE_SENSOR));
@@ -69,33 +71,51 @@ void handleInput(){
         Serial.print(analogRead(MASSFLOW_SENSOR));
       }
       else if (input == 'm') {
-        
-        Serial.print("enter a number from 0 to 4096");
-        
-        int voltage = Serial.parseInt();
 
-        
-        
-        delay(5);
-
-        char ready = Serial.read();
-        
-        
-        
-        if(ready == 'r') {
-          if(mcp.setChannelValue(MCP4728_CHANNEL_A, voltage)){
-            Serial.print("SUCCESS!");
-          } 
+        while (Serial.available() <= 0){
+          delay(5);
         }
-        
+
+        int bits = Serial.read();
+        int voltage;
+        int power = 1;
+
+        while (Serial.available() <= 0){
+          delay(5);
+        }
+
+        for (int i = 0; i < bits; i++){
+
+          while(Serial.available() <= 0){
+            delay(5);
+          }
+
+          voltage += power * Serial.read();
+          power *= 10;
+          delay(10);
+
+        }
+
+        delay(10);
+
+        Serial.print(voltage);
+
+        delay(10);
+
+        mcp.setChannelValue(MCP4728_CHANNEL_A, voltage);
+
+
+        Serial.print('!');
+
       }
       else{
       Serial.print('0');
       }
 
-      
-    Serial.print('\n');
+    nextBytes = Serial.available();
     serialFlush(nextBytes);
+
+    Serial.print('E');
   }
 }
 

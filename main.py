@@ -118,23 +118,25 @@ def writeVoltage(ser, volt, analogVoltageReference=5):
 #    print(input_to_port.to_bytes(2, "big"))
     digits = [int(x) for x in str(input_to_port)]
 
-    print(digits)
-
     digit_amount = len(digits)
-
+    digits = bytearray(digits)
     count = 0
 
-    while (digit_amount > count):
-        current = digits[digit_amount - 1 - count]
-        current = current.to_bytes(1,"big")
-        ser.write(current)
-        count += 1
+    ser.write(digit_amount)
+    time.sleep(0.01)
+    ser.write(input_to_port)
 
-    check = readSerial(ser)
-    print(check)
+    # while (digit_amount > count):
+    #     current = digits[digit_amount - 1 - count]
+    #     current = current.to_bytes(1,"big")
+    #     ser.write(current)
+    #     time.sleep(0.05)
+    #     count += 1
 
-    check = readSerial(ser) == '!'
-    assert (check)
+    print(readSerial(ser))
+    print(readSerial(ser))
+    print(readSerial(ser))
+    print(readSerial(ser))
 
     return
 

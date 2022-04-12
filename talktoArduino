@@ -3,31 +3,47 @@ import time
 
 timeout_time = 1
 
-def readSerial(ser):
 
-    maxLoops = timeout_time*1000
+def readSerial(ser):
+    max_loops = timeout_time * 1000
     count = 0
 
-    while (ser.inWaiting() < 1) & (count < maxLoops) :
+    while (ser.inWaiting() < 1) & (count < max_loops):
         time.sleep(0.001)
-        count = count+1
+        count = count + 1
+
     buffer = ser.read().decode('utf-8')
+
+    while ser.inWaiting() > 0:
+        buffer = buffer + ser.read().decode('utf-8')
+
     ser.flush()
     return buffer
 
+
+def writeVoltage(ser, volt, analogVoltageReference=5):
+    ser.flush()
+    ser.write(b'!')
+
+    input_to_port = str( int( float(volt) / analogVoltageReference * 4096) )
+
+    input_to_port = bytes(input_to_port, 'utf-8')
+
+    ser.write(input_to_port)
+
+    return
+
+
 if __name__ == '__main__':
     first_port = serial.Serial(port='/dev/tty.usbmodem1401', baudrate=115200, parity=serial.PARITY_NONE,
-                                   bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, timeout=timeout_time, xonxoff=False,
-                                   rtscts=False,
-                                   dsrdtr=False)
-    first_port.flush()
+                               bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE, timeout=timeout_time,
+                               xonxoff=False,
+                               rtscts=False,
+                               dsrdtr=False)
+
     first_port.write(b'a')
     print(readSerial(first_port))
-    first_port.write(b'a')
+
+    writeVoltage(first_port, 5, 5)
     print(readSerial(first_port))
-    first_port.write(b'{')
-    print(readSerial(first_port))
-    first_port.write(b'=')
-    print(readSerial(first_port))
-    first_port.write(b'X')
-    print(readSerial(first_port))
+

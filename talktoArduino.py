@@ -14,33 +14,36 @@ def readSerial(ser):
         count = count+1
         buffer = ser.read().decode('utf-8')
 
-
     while ser.inWaiting() > 0 :
         buffer = buffer + ser.read().decode('utf-8')
 
-    ser.flush()
-
     return buffer
 
-def handshake(ser):
-
-    ser.flush()
-    read = readSerial(ser)
-
-    ser.write(b'a')
-
+def findInSerial(ser, find):
     count = 0
-    maxLoops = timeout_time*1000
+    maxLoops = timeout_time * 1000
     read = readSerial(ser)
 
-    while ("I AM DONE!" not in read) & (count < maxLoops):
+    while (find not in read) & (count < maxLoops):
         count += 1
         read = readSerial(ser)
 
     if count == maxLoops:
-        print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
+        return False
     else:
+        return True
+
+def handshake(ser):
+
+    ser.flush()
+
+    findInSerial(ser, 'a')
+    ser.write(b'a')
+
+    if findInSerial(ser, "I AM DONE!"):
         print("PORT " + ser.port + " CONNECTED! \n")
+    else:
+        print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
 
     return
 
@@ -85,14 +88,7 @@ class talktoArduino:
         time.sleep(0.05)
         self.ports[id].write(bytes(input_to_port, 'utf-8'))
 
-        count = 0
-        maxLoops = timeout_time * 1000
-
-        read = readSerial(self.ports[id])
-
-        while ('+' not in read) & (count < maxLoops):
-            count += 1
-            read = readSerial(self.ports[id])
+        findInSerial(self.ports[id], '+')
 
         return
 

@@ -9,6 +9,7 @@ class Sensors:
             # add sensor to check_sensors
             # instantiate sensor
 
+
     def read(self, sensor):
         return sensor.value
 

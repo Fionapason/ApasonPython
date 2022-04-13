@@ -35,6 +35,7 @@ def handshake(ser):
 
     while ("I AM DONE!" not in read) & (count < maxLoops):
         count += 1
+        read = readSerial(ser)
 
     if count == maxLoops:
         print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
@@ -46,7 +47,7 @@ def handshake(ser):
 
 class talktoArduino:
     ports = dict()
-    portnames = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem11301'
+    portnames = ['/dev/cu.usbmodem1401', '/dev/cu.usbmodem11301'] #, '/dev/cu.usbmodem11301'
     baud = 115200
     analogReference = 5
 
@@ -66,22 +67,48 @@ class talktoArduino:
         return
 
 
-def sendVoltage(ser, volt, port):
+    def sendVoltage(self, id, volt, DAC_OUTPUT):
 
-    if(port == 'A'):
-        ser.write(b'!')
-    elif(port == 'B'):
-        ser.write(b'@')
-    elif (port == 'C'):
-        ser.write(b'#')
-    elif (port == 'D'):
-        ser.write(b'$')
+        if(DAC_OUTPUT == 'A'):
+            self.ports[id].write(b'!')
+        elif(DAC_OUTPUT == 'B'):
+            self.ports[id].write(b'@')
+        elif (DAC_OUTPUT == 'C'):
+            self.ports[id].write(b'#')
+        elif (DAC_OUTPUT == 'D'):
+            self.ports[id].write(b'$')
+        else:
+            print("ERROR! DAC OUTPUT ARGUMENT MUST BE 'A', 'B', 'C', OR 'D'!")
+            return
 
-    input_to_port = str(int( float(volt) / 5 * 4095))
-    time.sleep(0.05)
-    ser.write(bytes(input_to_port, 'utf-8'))
-    return
+        input_to_port = str(int( float(volt) / 5 * 4095))
+        time.sleep(0.05)
+        self.ports[id].write(bytes(input_to_port, 'utf-8'))
+
+        count = 0
+        maxLoops = timeout_time * 1000
+
+        read = readSerial(self.ports[id])
+
+        while ('+' not in read) & (count < maxLoops):
+            count += 1
+            read = readSerial(self.ports[id])
+
+        return
+
+    def retrieveVoltage(self, id, COMMAND):
+
+        self.ports[id].write(COMMAND)
+        time.sleep(0.05)
+        return readSerial(self.ports[id])
 
 
 if __name__ == '__main__':
+
     arduinos = talktoArduino()
+
+
+    arduinos.sendVoltage(1, 5, 'A')
+    arduinos.sendVoltage(2, 2, 'A')
+    print(arduinos.retrieveVoltage(1, b'b'))
+    print(arduinos.retrieveVoltage(2, b'c'))

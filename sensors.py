@@ -1,12 +1,14 @@
 class Sensors:
 
-    def __init__(self, configurations, types, sensors, ):
+    def __init__(self, check_configurations, set_configurations):
 
-        self.configurations = configurations
-        self.types = types
-        self.sensors = []
+        self.check_sensors = []
+        self.set_sensors = []
 
-        for type in types:
-            self.sensors.append(type)
-            type.
+        for sensors in check_configurations:
+            # add sensor to check_sensors
+            # instantiate sensor
+
+    def read(self, sensor):
+        return sensor.value
 

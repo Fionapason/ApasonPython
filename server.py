@@ -1,6 +1,8 @@
 import talktoArduino as talk
 import configurations as conf
 import sensors as sens
+import kivy as UI
+
 
 if __name__ == '__main__':
 

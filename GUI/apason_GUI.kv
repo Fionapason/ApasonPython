@@ -1,0 +1,21 @@
+#:kivy 1.0.9
+
+<GUI_GridLayout>:
+    cols: 2
+
+    Label:
+        id: voltage
+        font_size: 50
+        center_x: root.width / 2
+        top: root.height / 2
+        text: str(root.voltage_label)
+    TextInput:
+        font_size: 50
+        center_x: root.width / 2
+        top: root.height / 2
+
+<GUI_Window>:
+    GUI_Gridlayout:
+
+        center_x: root.x
+        center_y: root.y

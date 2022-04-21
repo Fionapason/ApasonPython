@@ -6,10 +6,12 @@ class Sensors:
         self.set_sensors = []
 
         for sensors in check_configurations:
+            pass
             # add sensor to check_sensors
             # instantiate sensor
 
 
     def read(self, sensor):
+
         return sensor.value
 

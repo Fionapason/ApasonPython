@@ -3,6 +3,7 @@ import GUI.GUI as gui
 from threading import Thread
 import time
 import sensors
+import Sensor_Update_List as ulist
 
 class Command_Center:
 
@@ -51,6 +52,13 @@ if __name__ == '__main__':
 
     sensors = sensors.Arduino_Sensors()
 
-    for sensor in sensors.pressure_sensors:
-        print (arduino.retrieveMeasurement(1, sensor))
+    update_list = ulist.Sensor_Update_List()
 
+    index = 0
+
+    for sensor in update_list.lst:
+        sensor.updateValue(arduino.retrieveMeasurement(1, sensors.pressure_sensors[index]))
+        index += 1
+
+    for sensor in update_list.lst:
+        print(sensor.current_value)

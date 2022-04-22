@@ -1,10 +1,8 @@
 import ArduinoCommunication as ard_com
-import configurations as conf
-import sensors as sens
 import GUI.GUI as gui
 from threading import Thread
 import time
-
+import sensors
 
 class Command_Center:
 
@@ -48,16 +46,11 @@ class Command_Center:
 
 
 if __name__ == '__main__':
-    #
-    # arduino = ard_com.talktoArduino()
 
-    sensors = conf.sensor_configurations["massflow"]
-    sensor = sensors[0]
+    arduino = ard_com.talktoArduino()
 
-    print(sensor["name"])
+    sensors = sensors.Arduino_Sensors()
 
+    for sensor in sensors.pressure_sensors:
+        print (arduino.retrieveMeasurement(1, sensor))
 
-    # view: gui.apason_GUIApp = gui.apason_GUIApp()
-    # voltage = Command_Center(arduino, view)
-    # view.setServer(voltage)
-    # view.run()

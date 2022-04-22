@@ -1,6 +1,7 @@
 import serial
 import time
 import serialUtilities as ser
+import configurations as conf
 
 #TODO add lock
 #TODO sensors belong here
@@ -31,12 +32,16 @@ class talktoArduino:
 
         if(DAC_OUTPUT == 'A'):
             self.ports[id].write(b'!')
+
         elif(DAC_OUTPUT == 'B'):
             self.ports[id].write(b'@')
+
         elif (DAC_OUTPUT == 'C'):
             self.ports[id].write(b'#')
+
         elif (DAC_OUTPUT == 'D'):
             self.ports[id].write(b'$')
+
         else:
             print("ERROR! DAC OUTPUT ARGUMENT MUST BE 'A', 'B', 'C', OR 'D'!")
             return
@@ -49,11 +54,12 @@ class talktoArduino:
 
         return
 
-    def retrieveVoltage(self, id, COMMAND):
+    def retrieveMeasurement(self, id, sensor):
 
-        self.ports[id].write(COMMAND)
+        self.ports[id].write(sensor.command)
         time.sleep(0.05)
-        return ser.readSerial(self.ports[id])
+        raw_measurement = ser.readSerial(self.ports[id])
+        return sensor.currentValue(raw_measurement)
 
 
 if __name__ == '__main__':
@@ -63,5 +69,5 @@ if __name__ == '__main__':
 
     arduinos.sendVoltage(1, 5, 'A')
     # arduinos.sendVoltage(2, 2, 'A')
-    print(arduinos.retrieveVoltage(1, b'b'))
+    print(arduinos.retrieveMeasurement(1, b'b'))
     # print(arduinos.retrieveVoltage(2, b'c'))

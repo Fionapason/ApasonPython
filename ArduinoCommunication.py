@@ -2,6 +2,8 @@ import serial
 import time
 import serialUtilities as ser
 
+#TODO add lock
+#TODO sensors belong here
 
 class talktoArduino:
     ports = dict()

@@ -1,7 +1,5 @@
 import configurations as conf
 
-#TODO function to add all in_use sensors to the list
-
 class Update_List_Pressure:
 
     name : str
@@ -38,6 +36,41 @@ class Update_List_Massflow:
         self.current_value = newMassflow
         return newMassflow
 
+#TODO
+
+class Update_List_Pressure_Gems:
+    def __init__(self, sensor, arduino_sensor):
+        pass
+
+    def updateValue (self, newPressure):
+        self.current_value = newPressure
+        return newPressure
+
+class Update_List_Conductivity:
+    def __init__(self, sensor, arduino_sensor):
+        pass
+
+    def updateValue (self, newConductivity):
+        self.current_value = newConductivity
+        return newConductivity
+
+class Update_List_Temperature:
+    def __init__(self, sensor, arduino_sensor):
+        pass
+
+    def updateValue(self, newTemperature):
+        self.current_value = newTemperature
+        return newTemperature
+
+class Update_List_LevelSwitch:
+    def __init__(self, sensor, arduino_sensor):
+        pass
+
+    def updateValue(self, newState):
+        self.current_value = newState
+        return newState
+
+
 class Sensor_Update_List:
 
     pressure = []
@@ -61,3 +94,14 @@ class Sensor_Update_List:
                 new_massflow_sensor = Update_List_Massflow(sensor, arduino_sensors.massflow_sensors[index])
                 self.massflow.append(new_massflow_sensor)
                 index += 1
+
+        # TODO
+
+        for sensor in conf.sensor_configurations["conductivity"]:
+            pass
+
+        for sensor in conf.sensor_configurations["temperature"]:
+            pass
+
+        for switch in conf.sensor_configurations["level"]:
+            pass

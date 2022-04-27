@@ -5,6 +5,7 @@ import time
 import Arduino_Sensors
 import Sensor_Update_List as ulist
 
+#TODO make better for control
 class Command_Center:
 
     command_sender_thread: Thread

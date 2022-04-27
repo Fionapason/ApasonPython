@@ -11,6 +11,12 @@ class GUI_GridLayout(GridLayout):
     voltage_label_1 = StringProperty("Voltage 1?")
     voltage_label_2 = StringProperty("Voltage 2?")
 
+    pressure_label_1 = StringProperty("Pressure 1:")
+    # pressure_label_2 = StringProperty("Pressure 2:")
+
+    pressure_display_1 = StringProperty('TEST')
+    # pressure_display_2 = StringProperty('')
+
     voltage_input_1 = TextInput()
     voltage_input_2 = TextInput()
 
@@ -43,27 +49,40 @@ class GUI_GridLayout(GridLayout):
         self.submit_button_2.bind(on_press=self.press_2)
         self.add_widget(self.submit_button_2)
 
+        self.add_widget(Label(text=self.pressure_label_1))
+        self.add_widget(Label(text=self.pressure_display_1))
+
+
+
 
 class apason_GUIApp(App):
-    server = None
+    command_centre = None
 
     voltage_output_1 : float = 0
     voltage_output_2 : float = 0
+
+    pressure_display_1 = StringProperty()
 
     def update_outputs(self, dt):
         self.voltage_output_1 = self.layout.voltage_output_1
         self.voltage_output_2= self.layout.voltage_output_2
 
-    def setServer(self, server):
-        self.server = server
+    def update_inputs(self, dt):
+        self.layout.pressure_display_1 = self.pressure_display_1
+
+    def setServer(self, cc_server, sl_server):
+        self.command_centre = cc_server
+        self.sensor_list = sl_server
 
     def build(self):
         self.layout = GUI_GridLayout()
         Clock.schedule_interval(self.update_outputs, 1.0 / 20.0)
+        Clock.schedule_interval(self.update_inputs, 1.0 / 20.0)
         return self.layout
 
     def on_stop(self):
-        self.server.stop_server()
+        self.command_centre.stop_server()
+        self.sensor_list.stop_server()
 
 
 if __name__ == '__main__':

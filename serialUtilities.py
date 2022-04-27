@@ -1,6 +1,6 @@
 import time
 
-timeout_time = 1
+timeout_time = 5
 
 def readSerial(ser):
 

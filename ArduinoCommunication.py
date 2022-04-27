@@ -6,7 +6,7 @@ import configurations as conf
 #TODO add lock
 #TODO sensors belong here
 
-class talktoArduino:
+class ArduinoCommunication:
     ports = dict()
     portnames = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem11301'
     baud = 115200
@@ -64,7 +64,7 @@ class talktoArduino:
 
 if __name__ == '__main__':
 
-    arduinos = talktoArduino()
+    arduinos = ArduinoCommunication()
 
 
     arduinos.sendVoltage(1, 5, 'A')

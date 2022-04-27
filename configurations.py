@@ -9,10 +9,10 @@ sensor_configurations = {
     "pressure": [  {"name": "UF Feed Pressure", "unit": "bar", "in_use": True,
                     "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A1
 
-                  {"name": "UF Retentate Pressure", "unit": "bar","in_use": False,
+                  {"name": "UF Retentate Pressure", "unit": "bar","in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A2
 
-                  {"name": "UF Permeate Pressure", "unit": "bar",  "in_use": False,
+                  {"name": "UF Permeate Pressure", "unit": "bar",  "in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A3
 
                   {"name": "idle", "unit": "bar",  "in_use": False,

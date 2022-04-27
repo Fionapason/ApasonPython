@@ -12,10 +12,21 @@ class GUI_GridLayout(GridLayout):
     voltage_label_2 = StringProperty("Voltage 2?")
 
     pressure_label_1 = StringProperty("Pressure 1:")
-    # pressure_label_2 = StringProperty("Pressure 2:")
+    pressure_label_2 = StringProperty("Pressure 2:")
+    pressure_label_3 = StringProperty("Pressure 3:")
 
-    pressure_display_1 = StringProperty('TEST')
-    # pressure_display_2 = StringProperty('')
+    pressure_display_1 = StringProperty()
+    pressure_display_2 = StringProperty()
+    pressure_display_3 = StringProperty()
+
+    massflow_label_1 = StringProperty('Massflow 1:')
+    massflow_label_2 = StringProperty('Massflow 2:')
+    massflow_label_3 = StringProperty('Massflow 3:')
+
+    massflow_display_1 = StringProperty()
+    massflow_display_2 = StringProperty()
+    massflow_display_3 = StringProperty()
+
 
     voltage_input_1 = TextInput()
     voltage_input_2 = TextInput()
@@ -35,24 +46,37 @@ class GUI_GridLayout(GridLayout):
         self.voltage_output_2 = float(voltage_2)
 
     def build(self):
-        self.add_widget(Label(text=self.voltage_label_1))
-        self.add_widget(self.voltage_input_1)
+        # self.add_widget(Label(text=self.voltage_label_1))
+        # self.add_widget(self.voltage_input_1)
+        #
+        # self.add_widget(Label(text=self.voltage_label_2))
+        # self.add_widget(self.voltage_input_2)
 
-        self.add_widget(Label(text=self.voltage_label_2))
-        self.add_widget(self.voltage_input_2)
+        # self.submit_button_1 = Button(text=self.submit_button_label_1)
+        # self.submit_button_1.bind(on_press=self.press_1)
+        # self.add_widget(self.submit_button_1)
 
-        self.submit_button_1 = Button(text=self.submit_button_label_1)
-        self.submit_button_1.bind(on_press=self.press_1)
-        self.add_widget(self.submit_button_1)
-
-        self.submit_button_2 = Button(text=self.submit_button_label_2)
-        self.submit_button_2.bind(on_press=self.press_2)
-        self.add_widget(self.submit_button_2)
+        # self.submit_button_2 = Button(text=self.submit_button_label_2)
+        # self.submit_button_2.bind(on_press=self.press_2)
+        # self.add_widget(self.submit_button_2)
 
         self.add_widget(Label(text=self.pressure_label_1))
         self.add_widget(Label(text=self.pressure_display_1))
 
+        self.add_widget(Label(text=self.pressure_label_2))
+        self.add_widget(Label(text=self.pressure_display_2))
 
+        self.add_widget(Label(text=self.pressure_label_3))
+        self.add_widget(Label(text=self.pressure_display_3))
+
+        self.add_widget(Label(text=self.massflow_label_1))
+        self.add_widget(Label(text=self.massflow_display_1))
+
+        self.add_widget(Label(text=self.massflow_label_2))
+        self.add_widget(Label(text=self.massflow_display_2))
+
+        self.add_widget(Label(text=self.massflow_label_3))
+        self.add_widget(Label(text=self.massflow_display_3))
 
 
 class apason_GUIApp(App):
@@ -62,6 +86,12 @@ class apason_GUIApp(App):
     voltage_output_2 : float = 0
 
     pressure_display_1 = StringProperty()
+    pressure_display_2 = StringProperty()
+    pressure_display_3 = StringProperty()
+
+    massflow_display_1 = StringProperty()
+    massflow_display_2 = StringProperty()
+    massflow_display_3 = StringProperty()
 
     def update_outputs(self, dt):
         self.voltage_output_1 = self.layout.voltage_output_1
@@ -69,6 +99,12 @@ class apason_GUIApp(App):
 
     def update_inputs(self, dt):
         self.layout.pressure_display_1 = self.pressure_display_1
+        self.layout.pressure_display_2 = self.pressure_display_2
+        self.layout.pressure_display_3 = self.pressure_display_3
+
+        self.layout.massflow_display_1 = self.massflow_display_1
+        self.layout.massflow_display_2 = self.massflow_display_2
+        self.layout.massflow_display_3 = self.massflow_display_3
 
     def setServer(self, cc_server, sl_server):
         self.command_centre = cc_server

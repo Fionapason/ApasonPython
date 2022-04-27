@@ -1,10 +1,8 @@
 import serial
 import time
 import serialUtilities as ser
-import configurations as conf
 
-#TODO add lock
-#TODO sensors belong here
+# TODO how does arduino know which arduino has the sensor? -> probably in sensor class
 
 class ArduinoCommunication:
     ports = dict()
@@ -28,7 +26,9 @@ class ArduinoCommunication:
         return
 
 
-    def sendVoltage(self, id, volt, DAC_OUTPUT):
+    def sendVoltage(self, id, volt, DAC_OUTPUT, lock):
+
+        lock.acquire()
 
         if(DAC_OUTPUT == 'A'):
             self.ports[id].write(b'!')
@@ -52,13 +52,20 @@ class ArduinoCommunication:
 
         ser.findInSerial(self.ports[id], '+')
 
+        lock.release()
+
         return
 
-    def retrieveMeasurement(self, id, sensor):
+    def retrieveMeasurement(self, id, sensor, lock):
+
+        lock.acquire()
 
         self.ports[id].write(sensor.command)
         time.sleep(0.05)
         raw_measurement = ser.readSerial(self.ports[id])
+
+        lock.release()
+
         return sensor.currentValue(raw_measurement)
 
 

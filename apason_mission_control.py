@@ -2,7 +2,7 @@ import ArduinoCommunication as ard_com
 import GUI.GUI as gui
 from threading import Thread, Lock
 import time
-import sensors
+import Arduino_Sensors
 import Sensor_Update_List as ulist
 
 class Command_Center:
@@ -51,22 +51,39 @@ class Update_List:
     update_list_thread: Thread
     run_ul = True
 
-    def __init__(self, interface, lock):
+    def __init__(self, interface, list, arduino, lock):
         self.interface: gui.apason_GUIApp = interface
-        self.list = ulist.Sensor_Update_List()
+        self.list = list
+        self.arduino = arduino
 
         self.update_list_thread = Thread(target=self.run, args=(lock,))
         self.update_list_thread.start()
 
     def set_from_list(self):
+
         self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
+        self.interface.pressure_display_2 = str(self.list.pressure[1].current_value)
+        self.interface.pressure_display_3 = str(self.list.pressure[2].current_value)
+
+        self.interface.massflow_display_1 = str(self.list.massflow[0].current_value)
+        self.interface.massflow_display_2 = str(self.list.massflow[1].current_value)
+        self.interface.massflow_display_3 = str(self.list.massflow[2].current_value)
+
 
 
     def run(self, lock):
         while (self.run_ul):
-            self.list.pressure[0].updateValue(arduino.retrieveMeasurement(1, sensors.pressure_sensors[0], lock))
+            index = 0
+            for sensor in self.list.pressure:
+                sensor.updateValue(self.arduino.retrieveMeasurement(1, sensors.pressure_sensors[index], lock))
+                index += 1
 
-            #if not len(self.list.pressure) == 0:
+            index = 0
+
+            for sensor in self.list.massflow:
+                sensor.updateValue(self.arduino.retrieveMeasurement(1, sensors.massflow_sensors[index], lock))
+                index += 1
+
             self.set_from_list()
             time.sleep(1)
 
@@ -81,14 +98,16 @@ if __name__ == '__main__':
 
     arduino_lock = Lock()
 
-    arduino = ard_com.ArduinoCommunication()
+    arduinos = ard_com.ArduinoCommunication()
 
-    sensors = sensors.Arduino_Sensors()
+    sensors = Arduino_Sensors.Arduino_Sensors()
 
-    update_list = ulist.Sensor_Update_List()
+    update_list = ulist.Sensor_Update_List(sensors)
 
     view: gui.apason_GUIApp = gui.apason_GUIApp()
-    voltage = Command_Center(arduino, view, arduino_lock)
-    pressure = Update_List(view, arduino_lock)
+
+    voltage = Command_Center(arduino=arduinos, interface=view, lock=arduino_lock)
+    pressure = Update_List(interface=view, list=update_list, arduino=arduinos, lock=arduino_lock)
+
     view.setServer(voltage, pressure)
     view.run()

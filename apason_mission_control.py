@@ -5,12 +5,10 @@ import time
 import sensors
 import Sensor_Update_List as ulist
 
-# TODO differentiate both run function names!
-
 class Command_Center:
 
     command_sender_thread: Thread
-    run = True
+    run_cc = True
 
     def __init__(self, arduino, interface, lock):
         self.voltage_1 = 0.0
@@ -24,23 +22,24 @@ class Command_Center:
 
     def fetchVoltage(self):
         if ( (self.voltage_1 != self.interface.voltage_output_1)
-                | (self.voltage_2 != self.interface.voltage_output_2) ):
+             | (self.voltage_2 != self.interface.voltage_output_2) ):
+
             self.voltage_1 = self.interface.voltage_output_1
             self.voltage_2 = self.interface.voltage_output_2
+
             return True
 
         return False
 
     def stop_server(self):
-        self.run = False
+        self.run_cc = False
 
     def run(self, lock):
-        while (self.run):
-            lock.acquire()
+        while (self.run_cc):
+
             if(self.fetchVoltage()):
-                self.arduino.sendVoltage(1, self.voltage_1, 'A')
-                self.arduino.sendVoltage(1, self.voltage_2, 'B')
-            lock.release()
+                self.arduino.sendVoltage(1, self.voltage_1, 'A', lock)
+                self.arduino.sendVoltage(1, self.voltage_2, 'B', lock)
             time.sleep(1)
 
 
@@ -50,7 +49,7 @@ class Command_Center:
 class Update_List:
 
     update_list_thread: Thread
-    run = True
+    run_ul = True
 
     def __init__(self, interface, lock):
         self.interface: gui.apason_GUIApp = interface
@@ -64,17 +63,15 @@ class Update_List:
 
 
     def run(self, lock):
-        while (self.run):
-            lock.acquire()
-            self.list.pressure[0].updateValue(arduino.retrieveMeasurement(1, sensors.pressure_sensors[0]))
+        while (self.run_ul):
+            self.list.pressure[0].updateValue(arduino.retrieveMeasurement(1, sensors.pressure_sensors[0], lock))
 
             #if not len(self.list.pressure) == 0:
             self.set_from_list()
-            lock.release()
             time.sleep(1)
 
     def stop_server(self):
-        self.run = False
+        self.run_ul = False
 
     def stop(self):
         self.update_list_thread.join()

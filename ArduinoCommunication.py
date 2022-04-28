@@ -2,8 +2,6 @@ import serial
 import time
 import serialUtilities as ser
 
-# TODO how does arduino know which arduino has the sensor? -> probably in sensor class
-
 class ArduinoCommunication:
     ports = dict()
     portnames = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem11301'
@@ -25,6 +23,7 @@ class ArduinoCommunication:
 
         return
 
+    # TODO get ID from control instrument
 
     def sendVoltage(self, id, volt, DAC_OUTPUT, lock):
 
@@ -56,11 +55,11 @@ class ArduinoCommunication:
 
         return
 
-    def retrieveMeasurement(self, id, sensor, lock):
+    def retrieveMeasurement(self, sensor, lock):
 
         lock.acquire()
 
-        self.ports[id].write(sensor.command)
+        self.ports[sensor.id].write(sensor.command)
         time.sleep(0.05)
         raw_measurement = ser.readSerial(self.ports[id])
 

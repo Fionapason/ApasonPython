@@ -71,6 +71,7 @@ sensor_configurations = {
                     #   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}  #A15
                      ],
 
+
     "level": [ {"id": 0, "arduino_id": 1,
                 "name": "idle", "in_use": True}, #D22
                {"id": 1, "arduino_id": 1,

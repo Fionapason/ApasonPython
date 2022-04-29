@@ -7,14 +7,15 @@ class Update_List_Pressure:
     critical_pressure : float
     warning_pressure : float
     current_value : float
+    id : int
 
-    def __init__(self, sensor, arduino_sensor):
+    def __init__(self, sensor):
 
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.critical_pressure = sensor["critical_pressure"]
         self.warning_pressure = sensor["warning_pressure"]
-        self.arduino_pointer = arduino_sensor
+        self.id = sensor["id"]
 
     def updateValue (self, newPressure):
         self.current_value = newPressure
@@ -25,46 +26,65 @@ class Update_List_Massflow:
     name : str
     unit : str
     current_value : float
+    id : float
 
-    def __init__(self, sensor, arduino_sensor):
+    def __init__(self, sensor):
 
         self.name = sensor["name"]
         self.unit = sensor["unit"]
-        self.arduino_pointer = arduino_sensor
+        self.id = sensor["id"]
 
     def updateValue (self, newMassflow):
         self.current_value = newMassflow
         return newMassflow
 
-#TODO
-
-class Update_List_Pressure_Gems:
-    def __init__(self, sensor, arduino_sensor):
-        pass
-
-    def updateValue (self, newPressure):
-        self.current_value = newPressure
-        return newPressure
 
 class Update_List_Conductivity:
-    def __init__(self, sensor, arduino_sensor):
-        pass
+
+    name : str
+    unit : str
+    current_value : float
+    id : float
+
+    def __init__(self, sensor):
+
+        self.name = sensor["name"]
+        self.unit = sensor["unit"]
+        self.id = sensor["id"]
 
     def updateValue (self, newConductivity):
         self.current_value = newConductivity
         return newConductivity
 
 class Update_List_Temperature:
-    def __init__(self, sensor, arduino_sensor):
-        pass
+
+    name : str
+    unit : str
+    current_value : float
+    id : float
+
+    def __init__(self, sensor):
+
+        self.name = sensor["name"]
+        self.unit = sensor["unit"]
+        self.id = sensor["id"]
 
     def updateValue(self, newTemperature):
         self.current_value = newTemperature
         return newTemperature
 
 class Update_List_LevelSwitch:
-    def __init__(self, sensor, arduino_sensor):
-        pass
+
+    name : str
+    unit : str
+    current_value : str
+    id : float
+
+    def __init__(self, sensor):
+
+        self.name = sensor["name"]
+        self.unit = sensor["unit"]
+        self.id = sensor["id"]
 
     def updateValue(self, newState):
         self.current_value = newState

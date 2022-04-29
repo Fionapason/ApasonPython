@@ -1,4 +1,4 @@
-import configurations as conf
+import configurations_control as conf
 from threading import Thread
 
 class UF:

@@ -1,9 +1,36 @@
-import configurations as conf
-import ArduinoCommunication
+#TODO TEST ALL OF THESE
+
+import configurations_1 as conf_1
+import configurations_2 as conf_2
+
+"""
+These classes define all the Arduino control instruments
+They take their parameters from the configurations file
+They are then all initialized in the Arduino_Control_Instruments class
+
+Each instance of a type of control instrument has a unique ID, taken from the configurations file,
+such that its corresponding instrument can be easily identified from the Command Center.
+
+Also, each class instance has the id of the arduino it's plugged into as a class member,
+also taken from the configurations file.
+
+The digitally set classes (CV3, OCV, and Polarity) simply have the necessary commands as class members.
+
+The classes, which can set analog voltages (PCV and Pump) have the function find_Voltage(wanted_value),
+which returns the int from 0-4095 that needs to be set using sendV to attain the wanted_value.
+These classes also have their respective DAC output as a member, also set in the configurations file.
+
+THE ARDUINO_CONTROL_INSTRUMENTS OBJECTS ARE NOT *SUPPOSED* TO INTERACT DIRECTLY WITH THE ARDUINO
+THE ARDUINOCOMMUNICATION CLASS IS RESPONSIBLE FOR THIS,
+AND SIMPLY USES CLASS MEMBERS FROM HERE TO GET THE NECESSARY INFO
+"""
+
+# Parameters: max_RPM, DAC_output, arduino_id, id
+# Function: find_Voltage(rpm)
 
 class Pump:
 
-    command_on : str
+#    command_on : str
 
     max_RPM : float
 
@@ -14,15 +41,19 @@ class Pump:
     id : int
 
 
-    def __init__(self, max, command_on, DAC, arduino_id, id):
+    def __init__(self, max, DAC, arduino_id, id):
         self.max_RPM = max
-        self.command_on = command_on
         self.DAC_output = DAC
         self.arduino_id = arduino_id
         self.id = id
+        # self.command_on = command_on
 
+    #returns the int from 0-4095 which corresponds to the wanted rpm
     def find_Voltage(self, rpm):
         return int((rpm / self.max_RPM) * 4095)
+
+# Parameters: DAC_output, arduino_id, id
+# Function: find_Voltage(percent)
 
 class PCV:
 
@@ -33,14 +64,15 @@ class PCV:
     id : int
 
 
-    def __init__(self, command, DAC, arduino_id, id):
-        self.command = command
+    def __init__(self, DAC, arduino_id, id):
         self.DAC_output = DAC
         self.arduino_id = arduino_id
         self.id = id
 
     def find_Voltage(self, percent):
         return int((percent / 100) * 4095)
+
+# Parameters: command_open, command_close, arduino_id, id
 
 class OCV_normallyOpen:
 
@@ -58,6 +90,8 @@ class OCV_normallyOpen:
         self.arduino_id = arduino_id
         self.id = id
 
+# Parameters: command_open, command_close, arduino_id, id
+
 class OCV_normallyClosed:
 
     command_open: str
@@ -74,6 +108,8 @@ class OCV_normallyClosed:
         self.arduino_id = arduino_id
         self.id = id
 
+# Parameters: command_low, command_high, arduino_id, id
+
 class CV3:
 
     command_high: str
@@ -84,11 +120,13 @@ class CV3:
 
     id: int
 
-    def __init__(self, command_open, command_close, arduino_id, id):
-        self.command_high = command_open
-        self.command_low = command_close
+    def __init__(self, command_high, command_low, arduino_id, id):
+        self.command_high = command_high
+        self.command_low = command_low
         self.arduino_id = arduino_id
         self.id = id
+
+# Parameters: command_pos, command_neg, arduino_id, id
 
 class Polarity:
 
@@ -104,28 +142,180 @@ class Polarity:
         self.arduino_id = arduino_id
         self.id = id
 
+# The class contains all the control instruments that are currently in use
+# It keeps each instrument in a list called [type]_instruments
+# Except polarity, which is unique
+# Using the configurations file and its internally saved command lists, it builds the class instances iteratively
+
 class Arduino_Control_Instruments:
 
+    # The control instruments are kept in an ordered list, which in turn is a class member
+
     pump_instruments = []
-
     pcv_instruments = []
+    ocv_normally_open_instruments = []
+    ocv_normally_closed_instruments = []
+    cv3_instruments = []
 
-    polarity_instrument = []
+    # CAREFUL! The index within this list is NOT necessarily equivalent to the id, taken from the configurations
+    # However, if configurations are "filled" from the bottom up, they should be identical
 
+    # The commands to be sent to the arduino,
+    # all single characters to make serial communication as simple as possible
+    ocv_normally_open_open_commands = ['R', 'S', 'T']
+    ocv_normally_open_close_commands = ['V', 'W', 'X']
 
-    OCV_normallyOpen_Open_commands = ['R', 'S', 'T']
-    OCV_normallyOpen_Close_commands = ['V', 'W', 'X']
-    OCV_normallyOpen_instruments = []
+    ocv_normally_closed_open_commands = ['U']
+    ocv_normally_closed_close_commands = ['Y']
 
-    OCV_normallyClosed_Open_commands = ['U']
-    OCV_normallyClosed_Close_commands = ['Y']
-    OCV_normallyClosed_instruments = []
+    cv3_high_commands = ['F', 'G', 'H', 'I', 'J', 'K']
+    cv3_low_commands = ['L', 'M', 'N', 'O', 'P', 'Q']
 
-    CV3_high_commands = ['F', 'G', 'H', 'I', 'J', 'K']
-    CV3_low_commands = ['L', 'M', 'N', 'O', 'P', 'Q']
-    CV3_instruments = []
+    # These are hard-coded and should not be changed without also changing the arduino code!
 
     def __init__(self):
 
-        for instrument in conf.control_instrument_configurations["CV3"]:
-            pass
+        # Iterate through every instrument of a specific type in the configurations files,
+        for instrument in conf_1.control_instrument_configurations_1["pump"]:
+            # Check if the current instrument is marked as "in use"
+            if instrument["in_use"]:
+                # Use the configurations file to build the new instrument object, using the parameters from the configurations file
+                new_pump = Pump(max=instrument["max_RPM"],
+                                DAC=instrument["DAC_output"],
+                                arduino_id=instrument["arduino_id"],
+                                id=instrument["id"])
+                # Append the instrument object to its respective list
+                self.pump_instruments.append(new_pump)
+        # Repeat with all classes
+        for instrument in conf_1.control_instrument_configurations_1["pcv"]:
+            if instrument["in_use"]:
+                new_pcv = PCV(DAC=instrument["DAC_output"],
+                              arduino_id=instrument["arduino_id"],
+                              id=instrument["id"])
+                self.pcv_instruments.append(new_pcv)
+
+        for instrument in conf_1.control_instrument_configurations_1["cv3"]:
+            if instrument["in_use"]:
+
+                index = instrument["id"]
+
+                current_command_high = bytes(self.cv3_high_commands[index], 'utf-8')
+                current_command_low = bytes(self.cv3_low_commands[index], 'utf-8')
+
+                new_cv3 = CV3(command_high=current_command_high,
+                              command_low=current_command_low,
+                              arduino_id=instrument['arduino_id'],
+                              id=instrument["id"])
+                self.cv3_instruments.append(new_cv3)
+
+        for instrument in conf_1.control_instrument_configurations_1["ocv_normally_open"]:
+            if instrument["in_use"]:
+
+                index = instrument["id"]
+
+                current_open_command = bytes(self.ocv_normally_open_open_commands[index], 'utf-8')
+                current_close_command = bytes(self.ocv_normally_open_close_commands[index], 'utf-8')
+
+                new_ocv_no = OCV_normallyOpen(command_open=current_open_command,
+                                              command_close=current_close_command,
+                                              arduino_id=instrument["arduino_id"],
+                                              id=index)
+                self.ocv_normally_open_instruments.append(new_ocv_no)
+
+        for instrument in conf_1.control_instrument_configurations_1["ocv_normally_closed"]:
+            if instrument["in_use"]:
+
+                index = instrument["id"]
+
+                current_open_command = bytes(self.ocv_normally_closed_open_commands[index], 'utf-8')
+                current_close_command = bytes(self.ocv_normally_closed_close_commands[index], 'utf-8')
+
+                new_ocv_nc = OCV_normallyClosed(command_open=current_open_command,
+                                              command_close=current_close_command,
+                                              arduino_id=instrument["arduino_id"],
+                                              id=index)
+
+                self.ocv_normally_closed_instruments.append(new_ocv_nc)
+
+        for instrument in conf_1.control_instrument_configurations_1["polarity"]:
+            if instrument["in_use"]:
+                # Since there is only one ED module, polarity is simply a class member and is not appended to a list
+                self.polarity = Polarity(arduino_id=instrument["arduino_id"],
+                                         id=instrument["id"])
+
+        # Repeat for the instruments on the second arduino
+
+        for instrument in conf_2.control_instrument_configurations_2["pump"]:
+            # Check if the current instrument is marked as "in use"
+            if instrument["in_use"]:
+                # Use the configurations file to build the new instrument object, using the parameters from the configurations file
+                new_pump = Pump(max=instrument["max_RPM"],
+                                DAC=instrument["DAC_output"],
+                                arduino_id=instrument["arduino_id"],
+                                id=instrument["id"])
+                # Append the instrument object to its respective list
+                self.pump_instruments.append(new_pump)
+
+        for instrument in conf_2.control_instrument_configurations_2["pcv"]:
+            if instrument["in_use"]:
+                new_pcv = PCV(DAC=instrument["DAC_output"],
+                              arduino_id=instrument["arduino_id"],
+                              id=instrument["id"])
+                self.pcv_instruments.append(new_pcv)
+
+        for instrument in conf_2.control_instrument_configurations_2["cv3"]:
+            if instrument["in_use"]:
+
+                # Start over in the command list vector
+                index = len(self.cv3_high_commands) - instrument["id"]
+
+                current_command_high = bytes(self.cv3_high_commands[index], 'utf-8')
+                current_command_low = bytes(self.cv3_low_commands[index], 'utf-8')
+
+                new_cv3 = CV3(command_high=current_command_high,
+                              command_low=current_command_low,
+                              arduino_id=instrument['arduino_id'],
+                              id=instrument["id"])
+                self.cv3_instruments.append(new_cv3)
+
+        for instrument in conf_2.control_instrument_configurations_2["ocv_normally_open"]:
+            if instrument["in_use"]:
+
+
+                index = len(self.ocv_normally_open_instruments) - instrument["id"]
+
+                current_open_command = bytes(self.ocv_normally_open_open_commands[index], 'utf-8')
+                current_close_command = bytes(self.ocv_normally_open_close_commands[index], 'utf-8')
+
+                new_ocv_no = OCV_normallyOpen(command_open=current_open_command,
+                                              command_close=current_close_command,
+                                              arduino_id=instrument["arduino_id"],
+                                              id=index)
+                self.ocv_normally_open_instruments.append(new_ocv_no)
+
+        for instrument in conf_2.control_instrument_configurations_2["ocv_normally_closed"]:
+            if instrument["in_use"]:
+
+                index = len(self.ocv_normally_closed_open_commands) - instrument["id"]
+
+                current_open_command = bytes(self.ocv_normally_closed_open_commands[index], 'utf-8')
+                current_close_command = bytes(self.ocv_normally_closed_close_commands[index], 'utf-8')
+
+                new_ocv_nc = OCV_normallyClosed(command_open=current_open_command,
+                                              command_close=current_close_command,
+                                              arduino_id=instrument["arduino_id"],
+                                              id=index)
+
+                self.ocv_normally_closed_instruments.append(new_ocv_nc)
+
+        for instrument in conf_2.control_instrument_configurations_2["polarity"]:
+            if instrument["in_use"]:
+                # Since there is only one ED module, polarity is simply a class member and is not appended to a list
+                self.polarity = Polarity(arduino_id=instrument["arduino_id"],
+                                         id=instrument["id"])
+
+if __name__ == '__main__':
+    attempt = Arduino_Control_Instruments()
+
+    for pump in attempt.pcv_instruments:
+        print(pump.id)

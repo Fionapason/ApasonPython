@@ -1,4 +1,22 @@
-import configurations as conf
+#TODO TEST ALL OF THESE
+
+import configurations_1 as conf_1
+import configurations_2 as conf_2
+
+"""
+This is a class, which contains a lists of all the sensors,
+which will be used to easily display their values in the GUI.
+
+A class instance contains general information, like the specific sensor's name, the unit of measurement it uses,
+the unique id, which it has in common with the Arduino_Sensor object, and the current measurement.
+It may also have specific unique parameters.
+It gets these parameters from the configurations files.
+
+It can receive a new currentValue via the updateValue(self, newValue) function.
+"""
+
+# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+# Function: updateValue
 
 class Update_List_Pressure:
 
@@ -21,6 +39,9 @@ class Update_List_Pressure:
         self.current_value = newPressure
         return newPressure
 
+# Parameters: name, unit, id, current_value
+# Function: updateValue
+
 class Update_List_Massflow:
 
     name : str
@@ -38,6 +59,8 @@ class Update_List_Massflow:
         self.current_value = newMassflow
         return newMassflow
 
+# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+# Function: updateValue
 
 class Update_List_Conductivity:
 
@@ -56,6 +79,9 @@ class Update_List_Conductivity:
         self.current_value = newConductivity
         return newConductivity
 
+# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+# Function: updateValue
+
 class Update_List_Temperature:
 
     name : str
@@ -72,6 +98,9 @@ class Update_List_Temperature:
     def updateValue(self, newTemperature):
         self.current_value = newTemperature
         return newTemperature
+
+# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+# Function: updateValue
 
 class Update_List_LevelSwitch:
 
@@ -90,38 +119,69 @@ class Update_List_LevelSwitch:
         self.current_value = newState
         return newState
 
-
+# Contains all the lists for every sensor type
+# Parameters: pressure, massflow, conductivity, temperature, levelswitch
 class Sensor_Update_List:
 
     pressure = []
     massflow = []
+    conductivity = []
+    temperature = []
+    levelswitch = []
 
-    def __init__(self, arduino_sensors):
+    def __init__(self):
 
-
-        index = 0
-
-        for sensor in conf.sensor_configurations["pressure"]: #will eventually need to be two for loops
+        # Iterate through all sensors of one type
+        for sensor in conf_1.sensor_configurations_1["pressure"]:
+            # Check if sensor is in use
             if sensor["in_use"]:
-                new_pressure_sensor = Update_List_Pressure(sensor, arduino_sensors.pressure_sensors[index])
+                # Initiate new sensor
+                new_pressure_sensor = Update_List_Pressure(sensor)
+                # Append new sensor to the list
                 self.pressure.append(new_pressure_sensor)
-                index += 1
 
-        index = 0
-
-        for sensor in conf.sensor_configurations["massflow"]:
+        for sensor in conf_1.sensor_configurations_1["massflow"]:
             if sensor["in_use"]:
-                new_massflow_sensor = Update_List_Massflow(sensor, arduino_sensors.massflow_sensors[index])
+                new_massflow_sensor = Update_List_Massflow(sensor)
                 self.massflow.append(new_massflow_sensor)
-                index += 1
 
-        # TODO
+        for sensor in conf_1.sensor_configurations_1["conductivity"]:
+            if sensor["in_use"]:
+                new_conductivity_sensor = Update_List_Conductivity(sensor)
+                self.conductivity.append(new_conductivity_sensor)
 
-        for sensor in conf.sensor_configurations["conductivity"]:
-            pass
+        for sensor in conf_1.sensor_configurations_1["temperature"]:
+            if sensor["in_use"]:
+                new_temperature_sensor = Update_List_Temperature(sensor)
+                self.temperature.append(new_temperature_sensor)
 
-        for sensor in conf.sensor_configurations["temperature"]:
-            pass
+        for sensor in conf_1.sensor_configurations_1["level"]:
+            if sensor["in_use"]:
+                new_levelswitch_sensor = Update_List_LevelSwitch(sensor)
+                self.levelswitch.append(new_levelswitch_sensor)
 
-        for switch in conf.sensor_configurations["level"]:
-            pass
+        # Repeat for sensors on 2nd arduino
+        for sensor in conf_2.sensor_configurations_2["pressure"]:
+            if sensor["in_use"]:
+                new_pressure_sensor = Update_List_Pressure(sensor)
+                self.pressure.append(new_pressure_sensor)
+
+        for sensor in conf_2.sensor_configurations_2["massflow"]:
+            if sensor["in_use"]:
+                new_massflow_sensor = Update_List_Massflow(sensor)
+                self.massflow.append(new_massflow_sensor)
+
+        for sensor in conf_2.sensor_configurations_2["conductivity"]:
+            if sensor["in_use"]:
+                new_conductivity_sensor = Update_List_Conductivity(sensor)
+                self.conductivity.append(new_conductivity_sensor)
+
+        for sensor in conf_2.sensor_configurations_2["temperature"]:
+            if sensor["in_use"]:
+                new_temperature_sensor = Update_List_Temperature(sensor)
+                self.temperature.append(new_temperature_sensor)
+
+        for sensor in conf_2.sensor_configurations_2["level"]:
+            if sensor["in_use"]:
+                new_levelswitch_sensor = Update_List_LevelSwitch(sensor)
+                self.levelswitch.append(new_levelswitch_sensor)

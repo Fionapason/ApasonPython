@@ -4,6 +4,7 @@ from threading import Thread, Lock
 import time
 import Arduino_Sensors
 import Sensor_Update_List as ulist
+import Arduino_Control_Instruments as arduino_volt
 
 #TODO make better for control
 
@@ -12,10 +13,10 @@ class Command_Center:
     command_sender_thread: Thread
     run_cc = True
 
-    def __init__(self, arduino, interface, lock):
+    def __init__(self, arduino_sensors, interface, lock):
         self.voltage_1 = 0.0
         self.voltage_2 = 0.0
-        self.arduino: ard_com.ArduinoCommunication = arduino
+        self.arduino_sensors: arduino_volt.Arduino_Control_Instruments() = arduino_sensors
         self.interface: gui.apason_GUIApp = interface
 
         self.command_sender_thread = Thread(target=self.run, args=(lock,))
@@ -40,8 +41,8 @@ class Command_Center:
         while (self.run_cc):
 
             if(self.fetchVoltage()):
-                self.arduino.sendVoltage(1, self.voltage_1, 'A', lock)
-                self.arduino.sendVoltage(1, self.voltage_2, 'B', lock)
+                self.arduino_sensors.sendVoltage(1, self.voltage_1, 'A', lock)
+                self.arduino_sensors.sendVoltage(1, self.voltage_2, 'B', lock)
             time.sleep(1)
 
 
@@ -104,7 +105,7 @@ if __name__ == '__main__':
 
     sensors = Arduino_Sensors.Arduino_Sensors()
 
-    update_list = ulist.Sensor_Update_List(sensors)
+    update_list = ulist.Sensor_Update_List()
 
     view: gui.apason_GUIApp = gui.apason_GUIApp()
 

@@ -8,7 +8,8 @@ def readSerial(ser):
     buffer = ''
     count = 0
 
-    while (ser.inWaiting() < 1) & (count < maxLoops) & ((buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t')) :
+    while (ser.inWaiting() < 1) & (count < maxLoops) & \
+            ((buffer == '') | (buffer == '\n') | (buffer == '\r') | (buffer == '\t') | (buffer == '-') ) :
         time.sleep(0.001)
         count = count+1
         buffer = ser.read().decode('utf-8')
@@ -44,5 +45,4 @@ def handshake(ser):
         print("PORT " + ser.port + " CONNECTED! \n")
     else:
         print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
-
     return

@@ -1,6 +1,7 @@
 import serial
 import time
 import serialUtilities as ser
+from threading import Lock
 
 """
 This class contains a dictionary of all currently connected arduinos.
@@ -41,6 +42,9 @@ class ArduinoCommunication:
     def sendVoltage(self, volt, control_instrument, lock):
 
         lock.acquire()
+        voltage = bytes(str(volt), 'utf-8')
+
+
 
         if(control_instrument.DAC_output == 'A'):
             self.ports[control_instrument.arduino_id].write(b'!')
@@ -59,11 +63,13 @@ class ArduinoCommunication:
             return
 
         time.sleep(0.05)
-        self.ports[id].write(bytes(volt, 'utf-8'))
 
-        ser.findInSerial(self.ports[id], '+')
+        self.ports[control_instrument.arduino_id].write(voltage)
+
+        ser.findInSerial(self.ports[control_instrument.arduino_id], '+')
 
         lock.release()
+
 
         return
 
@@ -72,11 +78,15 @@ class ArduinoCommunication:
 
         lock.acquire()
 
-        self.ports[sensor.id].write(sensor.command)
+        self.ports[sensor.arduino_id].write(sensor.command)
+
+
+
         time.sleep(0.05)
-        raw_measurement = ser.readSerial(self.ports[id])
+        raw_measurement = ser.readSerial(self.ports[sensor.arduino_id])
 
         lock.release()
+
 
         return sensor.currentValue(raw_measurement)
 
@@ -115,6 +125,7 @@ if __name__ == '__main__':
     pass
     # arduinos = ArduinoCommunication()
     #
+    # lock = Lock()
     #
     # arduinos.sendVoltage(1, 5, 'A')
     # arduinos.sendVoltage(2, 2, 'A')

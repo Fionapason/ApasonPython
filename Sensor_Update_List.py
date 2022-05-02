@@ -112,16 +112,14 @@ class Update_List_Temperature:
 # Function: updateValue
 
 class Update_List_LevelSwitch:
-    '''**Parameters:** name, unit, id, current_value \n
+    '''**Parameters:** name, id, current_value \n
     **Function:** updateValue'''
     name: str
-    unit: str
     current_value: str
     id: float
 
     def __init__(self, sensor):
         self.name = sensor["name"]
-        self.unit = sensor["unit"]
         self.id = sensor["id"]
 
     def updateValue(self, newState):

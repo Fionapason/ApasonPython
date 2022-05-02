@@ -169,7 +169,7 @@ control_instrument_configurations_2 = {
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
 
     "pump": [ {"id": 2,  "DAC_output": 'A',"arduino_id": 2,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": False,  #D48 ON/OFF, DAC A
+               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #D48 ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 3, "DAC_output": 'B', "arduino_id": 2,

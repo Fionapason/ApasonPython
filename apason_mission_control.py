@@ -13,11 +13,12 @@ class Command_Center:
     command_sender_thread: Thread
     run_cc = True
 
-    def __init__(self, arduino_com, arduino_control, interface, pump_id, lock):
+    def __init__(self, arduino_com, arduino_control, interface, pump_id_1, pump_id_2, lock):
         self.voltage_int_1 = 0.0
         self.voltage_int_2 = 0.0
         self.arduino_control: arduino_volt.Arduino_Control_Instruments() = arduino_control
-        self.pump = self.arduino_control.pump_instruments[pump_id]
+        self.pump_1 = self.arduino_control.pump_instruments[pump_id_1]
+        self.pump_2 = self.arduino_control.pump_instruments[pump_id_2]
         self.ard_com : ard_com.ArduinoCommunication() = arduino_com
         self.interface: gui.apason_GUIApp = interface
 
@@ -43,8 +44,11 @@ class Command_Center:
         while (self.run_cc):
 
             if(self.fetchVoltage()):
-                new_volt = self.pump.find_Voltage(self.voltage_int_1)
-                self.ard_com.sendVoltage(new_volt, self.pump , lock)
+                new_volt_1 = self.pump_1.find_Voltage(self.voltage_int_1)
+                self.ard_com.sendVoltage(new_volt_1, self.pump_1 , lock)
+
+                new_volt_2 = self.pump_2.find_Voltage(self.voltage_int_2)
+                self.ard_com.sendVoltage(new_volt_2, self.pump_2, lock)
             time.sleep(1)
 
 
@@ -116,7 +120,8 @@ if __name__ == '__main__':
     voltage = Command_Center(arduino_com=arduinos,
                              arduino_control=control_instruments,
                              interface=view,
-                             pump_id=0,
+                             pump_id_1=0,
+                             pump_id_2=1,
                              lock=arduino_lock)
 
     pressure = Update_List(interface=view,

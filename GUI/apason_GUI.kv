@@ -2,7 +2,41 @@
 
 <GUI_GridLayout>:
 
-    cols: 2
+    cols: 3
+
+    voltage_input_1: input_1
+    voltage_input_2: input_2
+
+    Label:
+        font_size: 50
+        text: str(root.voltage_label_1)
+
+    TextInput:
+        id: input_1
+        font_size: 50
+        multiline: False
+        text: root.voltage_input_1.text
+
+    Button:
+        font_size: 50
+        text: str(root.submit_button_label_1)
+        on_press: root.press_1()
+
+    Label:
+        font_size: 50
+        center_x: root.width / 4
+        text: str(root.voltage_label_2)
+
+    TextInput:
+        id: input_2
+        font_size: 50
+        multiline: False
+        text: root.voltage_input_2.text
+
+    Button:
+        font_size: 50
+        text: str(root.submit_button_label_2)
+        on_press: root.press_2()
 
     Label:
         font_size: 50
@@ -11,43 +45,3 @@
     Label:
         font_size: 50
         text: str(root.pressure_display_1)
-
-    Label:
-        font_size: 50
-        text: str(root.pressure_label_2)
-
-    Label:
-        font_size: 50
-        text: str(root.pressure_display_2)
-
-    Label:
-        font_size: 50
-        text: str(root.pressure_label_3)
-
-    Label:
-        font_size: 50
-        text: str(root.pressure_display_3)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_label_1)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_display_1)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_label_2)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_display_2)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_label_3)
-
-    Label:
-        font_size: 50
-        text: str(root.massflow_display_3)

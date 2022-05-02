@@ -1,5 +1,7 @@
 """
 This file is used to configure the control systems of Apāson
+
+All starting states of control instruments will be set here
 """
 
 control_system_configurations = {

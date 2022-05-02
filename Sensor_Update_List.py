@@ -1,4 +1,4 @@
-#TODO TEST ALL OF THESE
+# TODO TEST ALL OF THESE
 
 import configurations_1 as conf_1
 import configurations_2 as conf_2
@@ -6,6 +6,8 @@ import configurations_2 as conf_2
 """
 This is a class, which contains a lists of all the sensors,
 which will be used to easily display their values in the GUI.
+
+Every sensor within the lists is an instance of its own class type.
 
 A class instance contains general information, like the specific sensor's name, the unit of measurement it uses,
 the unique id, which it has in common with the Arduino_Sensor object, and the current measurement.
@@ -15,82 +17,88 @@ It gets these parameters from the configurations files.
 It can receive a new currentValue via the updateValue(self, newValue) function.
 """
 
+
 # Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
 # Function: updateValue
 
 class Update_List_Pressure:
+    '''**Parameters:** name, unit, id, current_value, critical_pressure, warning_pressure \n
+    **Function:** updateValue'''
 
-    name : str
-    unit : str
-    critical_pressure : float
-    warning_pressure : float
-    current_value : float
-    id : int
+    name: str
+    unit: str
+    critical_pressure: float
+    warning_pressure: float
+    current_value: float
+    id: int
 
     def __init__(self, sensor):
-
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.critical_pressure = sensor["critical_pressure"]
         self.warning_pressure = sensor["warning_pressure"]
         self.id = sensor["id"]
 
-    def updateValue (self, newPressure):
+    def updateValue(self, newPressure):
         self.current_value = newPressure
         return newPressure
+
 
 # Parameters: name, unit, id, current_value
 # Function: updateValue
 
 class Update_List_Massflow:
+    '''**Parameters:** name, unit, id, current_value, \n
+    **Function:** updateValue'''
 
-    name : str
-    unit : str
-    current_value : float
-    id : float
+    name: str
+    unit: str
+    current_value: float
+    id: float
 
     def __init__(self, sensor):
-
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
 
-    def updateValue (self, newMassflow):
+    def updateValue(self, newMassflow):
         self.current_value = newMassflow
         return newMassflow
 
-# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+
+# Parameters: name, unit, id, current_value
 # Function: updateValue
 
 class Update_List_Conductivity:
-
-    name : str
-    unit : str
-    current_value : float
-    id : float
+    '''**Parameters:** name, unit, id, current_value \n
+    **Function:** updateValue'''
+    name: str
+    unit: str
+    current_value: float
+    id: float
 
     def __init__(self, sensor):
-
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
 
-    def updateValue (self, newConductivity):
+    def updateValue(self, newConductivity):
         self.current_value = newConductivity
         return newConductivity
 
-# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+
+# Parameters: name, unit, id, current_value
 # Function: updateValue
 
 class Update_List_Temperature:
-
-    name : str
-    unit : str
-    current_value : float
-    id : float
+    '''**Parameters:** name, unit, id, current_value \n
+    **Function:** updateValue'''
+    name: str
+    unit: str
+    current_value: float
+    id: float
 
     def __init__(self, sensor):
-
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
@@ -99,18 +107,19 @@ class Update_List_Temperature:
         self.current_value = newTemperature
         return newTemperature
 
-# Parameters: name, unit, id, current_value, critical_pressure, warning_pressure
+
+# Parameters: name, unit, id, current_value
 # Function: updateValue
 
 class Update_List_LevelSwitch:
-
-    name : str
-    unit : str
-    current_value : str
-    id : float
+    '''**Parameters:** name, unit, id, current_value \n
+    **Function:** updateValue'''
+    name: str
+    unit: str
+    current_value: str
+    id: float
 
     def __init__(self, sensor):
-
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
@@ -119,10 +128,12 @@ class Update_List_LevelSwitch:
         self.current_value = newState
         return newState
 
+
 # Contains all the lists for every sensor type
 # Parameters: pressure, massflow, conductivity, temperature, levelswitch
-class Sensor_Update_List:
 
+class Sensor_Update_List:
+    '''**Parameters:** *lists:* pressure, massflow, conductivity, temperature, levelswitch'''
     pressure = []
     massflow = []
     conductivity = []

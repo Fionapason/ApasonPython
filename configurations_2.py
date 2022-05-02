@@ -193,6 +193,5 @@ control_instrument_configurations_2 = {
 }
 
 if __name__ == '__main__':
+    pass
 
-    for sensor in sensor_configurations["pressure"]:
-        print(sensor["name"])

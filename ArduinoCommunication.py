@@ -13,6 +13,9 @@ sendVoltage also takes the needed value from 0-4095 to be sent to the appropriat
 """
 
 class ArduinoCommunication:
+    '''**Parameters:** ports *dict()*, portnames *list* \n
+    **Functions:** sendVoltage(volt, control_instrument, lock), retrieveMeasurement(sensor, lock)
+    '''
     ports = dict()
     port_names = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem11301'
     baud = 115200

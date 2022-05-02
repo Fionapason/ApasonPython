@@ -35,7 +35,8 @@ AND SIMPLY USES CLASS MEMBERS FROM HERE TO GET THE NECESSARY INFO
 # Function: currentValue(raw_measurement)
 
 class Pressure:
-
+    '''**Parameters:** command, max_pressure, arduino_id, id
+    **Functions:** currentValue(raw_measurement)'''
     command : str
 
     max_pressure : float
@@ -57,6 +58,8 @@ class Pressure:
 # Function: currentValue(raw_measurement)
 
 class Massflow:
+    '''**Parameters:** command, max_pressure, arduino_id, id
+    **Functions:** currentValue(raw_measurement)'''
 
     command : str
 
@@ -84,6 +87,8 @@ class Massflow:
 # Function: currentValue(raw_measurement)
 
 class Conductivity:
+    '''**Parameters:** command, graph_constant, max_cond, min_cond, arduino_id, id
+    **Functions:** currentValue(raw_measurement)'''
 
     command : str
 
@@ -113,6 +118,8 @@ class Conductivity:
 # Function: currentValue(raw_measurement)
 
 class Temperature:
+    '''**Parameters:** command, graph_constant, max_temp, min_temp, arduino_id, id
+    **Functions:** currentValue(raw_measurement)'''
 
     command : str
 
@@ -141,6 +148,7 @@ class Temperature:
 # Parameters: command, arduino_id, id
 
 class Switch:
+    '''*Parameters:* command, arduino_id, id'''
     command: str
 
     arduino_id : int
@@ -155,6 +163,8 @@ class Switch:
 
 
 class Arduino_Sensors:
+    '''**Parameters:** *lists:* pressure_sensors, massflow_sensors, conductivity_sensors, temperature_sensors, levelswitch_sensors \n
+    pressure_commands, massflow_commands, conductivity_commands, temperature_commands, levelswitch_commands'''
 
     # The sensors are kept in an ordered list, which in turn is a class member
 

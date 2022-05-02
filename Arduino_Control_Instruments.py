@@ -29,6 +29,8 @@ AND SIMPLY USES CLASS MEMBERS FROM HERE TO GET THE NECESSARY INFO
 # Function: find_Voltage(rpm)
 
 class Pump:
+    '''**Parameters:** max_RPM, DAC_output, arduino_id, id \n
+    **Function:** find_Voltage(rpm)'''
 
 #    command_on : str
 
@@ -57,6 +59,9 @@ class Pump:
 
 class PCV:
 
+    '''**Parameters:** DAC_output, arduino_id, id \n
+    **Function:** find_Voltage(percent)'''
+
     DAC_output: str
 
     arduino_id: int
@@ -75,6 +80,9 @@ class PCV:
 # Parameters: command_open, command_close, arduino_id, id
 
 class OCV_normallyOpen:
+    '''
+    **Parameters:** command_open, command_close, arduino_id, id
+    '''
 
     command_open : str
 
@@ -93,6 +101,9 @@ class OCV_normallyOpen:
 # Parameters: command_open, command_close, arduino_id, id
 
 class OCV_normallyClosed:
+    '''
+    **Parameters:** command_open, command_close, arduino_id, id
+    '''
 
     command_open: str
 
@@ -111,6 +122,9 @@ class OCV_normallyClosed:
 # Parameters: command_low, command_high, arduino_id, id
 
 class CV3:
+    '''
+    **Parameters:** command_low, command_high, arduino_id, id
+    '''
 
     command_high: str
 
@@ -129,6 +143,9 @@ class CV3:
 # Parameters: command_pos, command_neg, arduino_id, id
 
 class Polarity:
+    '''
+    **Parameters:** command_pos, command_neg, arduino_id, id
+    '''
 
     command_pos = '('
 
@@ -148,6 +165,8 @@ class Polarity:
 # Using the configurations file and its internally saved command lists, it builds the class instances iteratively
 
 class Arduino_Control_Instruments:
+    '''**Parameters**: *lists:*  pump_instruments, pcv_instruments, ocv_normally_open_instruments, ocv_normally_closed_instruments, cv3_instruments \n
+    ocv_normally_open_open_commands, ocv_normally_open_close_commands, ocv_normally_closed_open_commands, ocv_normally_closed_close_commands, cv3_high_commands, cv3_high_commands'''
 
     # The control instruments are kept in an ordered list, which in turn is a class member
 
@@ -169,7 +188,7 @@ class Arduino_Control_Instruments:
     ocv_normally_closed_close_commands = ['Y']
 
     cv3_high_commands = ['F', 'G', 'H', 'I', 'J', 'K']
-    cv3_low_commands = ['L', 'M', 'N', 'O', 'P', 'Q']
+    cv3_high_commands = ['L', 'M', 'N', 'O', 'P', 'Q']
 
     # These are hard-coded and should not be changed without also changing the arduino code!
 

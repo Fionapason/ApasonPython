@@ -6,19 +6,21 @@ import Arduino_Sensors
 import Sensor_Update_List as ulist
 import Arduino_Control_Instruments as arduino_volt
 
-#TODO make better for control
+# TODO make better for control
 
 class Command_Center:
 
     command_sender_thread: Thread
     run_cc = True
 
-    def __init__(self, arduino_com, arduino_control, interface, pump_id_1, pump_id_2, lock):
+    def __init__(self, arduino_com, arduino_control, interface, lock):
         self.voltage_int_1 = 0.0
         self.voltage_int_2 = 0.0
         self.arduino_control: arduino_volt.Arduino_Control_Instruments() = arduino_control
+
         self.pump_1 = self.arduino_control.pump_instruments[pump_id_1]
         self.pump_2 = self.arduino_control.pump_instruments[pump_id_2]
+
         self.ard_com : ard_com.ArduinoCommunication() = arduino_com
         self.interface: gui.apason_GUIApp = interface
 
@@ -36,6 +38,9 @@ class Command_Center:
             return True
 
         return False
+
+    #TODO
+
 
     def stop_server(self):
         self.run_cc = False
@@ -84,13 +89,15 @@ class Update_List:
         while (self.run_ul):
             index = 0
             for sensor in self.list.pressure:
-                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index], lock))
+                #sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index], lock))
+                sensor.updateValue(0, lock)
                 index += 1
 
             index = 0
 
             for sensor in self.list.massflow:
-                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index], lock))
+                #sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index], lock))
+                sensor.updateValue(0, lock)
                 index += 1
 
             self.set_from_list()

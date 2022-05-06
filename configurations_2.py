@@ -38,15 +38,15 @@ sensor_configurations_2 = {
                    ],
 
     "massflow": [ {"id": 4, "arduino_id": 2,
-                   "name": "UF Feed Flow", "unit": "l/min", "in_use": False, #A5
+                   "name": "idle", "unit": "l/min", "in_use": False, #A5
                    "max_flow": 20.0},
 
                   {"id": 5, "arduino_id": 2,
-                   "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A6
+                   "name": "idle", "unit": "l/min", "in_use": False, #A6
                    "max_flow": 10.0},
 
                   {"id": 6, "arduino_id": 2,
-                   "name": "UF Permeate Flow", "unit": "l/min", "in_use": False, #A7
+                   "name": "idle", "unit": "l/min", "in_use": False, #A7
                    "max_flow": 5.0},
 
                   {"id": 7, "arduino_id": 2,
@@ -124,27 +124,27 @@ control_instrument_configurations_2 = {
 
     "cv3": [ {"id": 6, "arduino_id": 2,
               "name": "idle", "in_use": False, #D38
-             "start_state": "LEFT"}, # or "RIGHT"
+             "start_state": "HIGH"}, # or "RIGHT"
 
              {"id": 7, "arduino_id": 2,
               "name": "idle", "in_use": False, #D39
-             "start_state": "LEFT"},
+             "start_state": "HIGH"},
 
              {"id": 8, "arduino_id": 2,
               "name": "idle", "in_use": False, #D40
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 9, "arduino_id": 2,
               "name": "idle", "in_use": False, #D41
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 10, "arduino_id": 2,
               "name": "idle", "in_use": False, #D42
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 11, "arduino_id": 2,
               "name": "idle", "in_use": False, #D43
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
             ],
 
     "ocv_normally_open": [{"id": 3, "arduino_id": 2,

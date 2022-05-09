@@ -6,6 +6,9 @@ from kivy.properties import StringProperty, NumericProperty
 from kivy.uix.button import Button
 from kivy.clock import Clock
 
+#TODO pick out actually visible values
+#TODO make needed buttons
+#TODO make waring messages
 
 class GUI_GridLayout(GridLayout):
     voltage_label_1 = StringProperty("Voltage 1?")

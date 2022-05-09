@@ -18,12 +18,12 @@ class ArduinoCommunication:
     **Functions:** sendVoltage(volt, control_instrument, lock), retrieveMeasurement(sensor, lock)
     '''
     ports = dict()
-    port_names = ['/dev/cu.usbmodem1401', '/dev/cu.usbmodem1201'] #, '/dev/cu.usbmodem1201'
+    port_names = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem1201'
     baud = 115200
     analogReference = 5
+    arduino_locks = [Lock(),Lock()]
 
     def __init__(self):
-
         arduino_counter = 1
 
         for name in self.port_names:
@@ -37,57 +37,95 @@ class ArduinoCommunication:
 
         return
 
+    def setDigital(self, control_instrument, state):
+        arduino_id = control_instrument.arduino_id
+        lock = self.arduino_locks[arduino_id - 1]
+        port = self.ports[arduino_id]
+        if state is "HIGH":
+            command = control_instrument.command_high
+        elif state is "LOW":
+            command = control_instrument.command_low
+        else:
+            command = bytes('a', 'utf-8')
 
-    def sendVoltage(self, volt, control_instrument, lock):
+        return self.set(lock=lock, port=port, command=command)
 
+    def set(self, lock, port, command):
         lock.acquire()
+        port.write(command)
+        ser.findInSerial(port, '+')
+        lock.release()
+        return
+
+    def checkDigital(self, level_switch):
+
+        arduino_id = level_switch.arduino_id
+        lock = self.arduino_locks[arduino_id - 1]
+        port = self.ports[arduino_id]
+        command = level_switch.command
+        return self.check(lock=lock, port=port, command=command)
+
+    def check(self, lock, port, command):
+        lock.acquire()
+        port.write(command)
+        time.sleep(0.05)
+        level_switch_status = ser.readSerial(port)
+        lock.release()
+        if level_switch_status == 1:
+            return 'CLOSED'
+        elif level_switch_status == 0:
+            return 'OPEN'
+
+    def sendVoltage(self, volt, control_instrument):
+
+        arduino_id = control_instrument.arduino_id
+        lock = self.arduino_locks[arduino_id - 1]
+        port = self.ports[arduino_id]
+
+        return self.send(control_instrument, lock, port, volt)
+
+    def send(self, control_instrument, lock, port, volt):
+
         voltage = bytes(str(volt), 'utf-8')
+        lock.acquire()
+        if (control_instrument.DAC_output == 'A'):
+            port.write(b'!')
 
-
-
-        if(control_instrument.DAC_output == 'A'):
-            self.ports[control_instrument.arduino_id].write(b'!')
-
-        elif(control_instrument.DAC_output == 'B'):
-            self.ports[control_instrument.arduino_id].write(b'@')
+        elif (control_instrument.DAC_output == 'B'):
+            port.write(b'@')
 
         elif (control_instrument.DAC_output == 'C'):
-            self.ports[control_instrument.arduino_id].write(b'#')
+            port.write(b'#')
 
         elif (control_instrument.DAC_output == 'D'):
-            self.ports[control_instrument.arduino_id].write(b'$')
+            port.write(b'$')
 
         else:
             print("ERROR! DAC OUTPUT ARGUMENT MUST BE 'A', 'B', 'C', OR 'D'!")
             return
-
         time.sleep(0.05)
-
-        self.ports[control_instrument.arduino_id].write(voltage)
-
-        ser.findInSerial(self.ports[control_instrument.arduino_id], '+')
-
+        port.write(voltage)
+        ser.findInSerial(port, '+')
         lock.release()
-
-
         return
 
+    def retrieveMeasurement(self, sensor):
 
-    def retrieveMeasurement(self, sensor, lock):
+        arduino_id = sensor.arduino_id
+        lock = self.arduino_locks[arduino_id - 1]
+        port = self.ports[arduino_id]
+        command = sensor.command
 
+        return self.retrieve(command, lock, port, sensor)
+
+    def retrieve(self, command, lock, port, sensor):
         lock.acquire()
-
-        self.ports[sensor.arduino_id].write(sensor.command)
-
-
-
+        port.write(command)
         time.sleep(0.05)
-        raw_measurement = ser.readSerial(self.ports[sensor.arduino_id])
-
+        raw_measurement = ser.readSerial(port)
         lock.release()
-
-
         return sensor.currentValue(raw_measurement)
+
 
     # def old_sendVoltage(self, id, volt, DAC_OUTPUT, lock):
     #

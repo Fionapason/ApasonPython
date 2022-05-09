@@ -1,4 +1,3 @@
-#TODO TEST ALL OF THESE
 
 import configurations_1 as conf_1
 import configurations_2 as conf_2
@@ -117,33 +116,33 @@ class Conductivity:
 # Parameters: command, graph_constant, max_temp, min_temp, arduino_id, id
 # Function: currentValue(raw_measurement)
 
-class Temperature:
-    '''**Parameters:** command, graph_constant, max_temp, min_temp, arduino_id, id
-    **Functions:** currentValue(raw_measurement)'''
-
-    command : str
-
-    graph_constant : float
-
-    max_temp : float
-
-    min_temp : float
-
-    arduino_id : int
-
-    id : int
-
-    def __init__(self, max, command, arduino_id, id):
-        self.max_temp = max
-        self.min_temp = 0
-        self.command = command
-        self.id = id
-        self.arduino_id = arduino_id
-        self.graph_constant = self.max_temp - ((self.max_temp - self.min_temp) / (analogReference - minVolt_current)) * analogReference
-
-
-    def currentValue(self, raw_measurement):
-        return float(raw_measurement) * (analogReference / 1023.0) * (self.max_temp - self.min_temp) / (analogReference - minVolt_current) + self.graph_constant
+# class Temperature:
+#     '''**Parameters:** command, graph_constant, max_temp, min_temp, arduino_id, id
+#     **Functions:** currentValue(raw_measurement)'''
+#
+#     command : str
+#
+#     graph_constant : float
+#
+#     max_temp : float
+#
+#     min_temp : float
+#
+#     arduino_id : int
+#
+#     id : int
+#
+#     def __init__(self, max, command, arduino_id, id):
+#         self.max_temp = max
+#         self.min_temp = 0
+#         self.command = command
+#         self.id = id
+#         self.arduino_id = arduino_id
+#         self.graph_constant = self.max_temp - ((self.max_temp - self.min_temp) / (analogReference - minVolt_current)) * analogReference
+#
+#
+#     def currentValue(self, raw_measurement):
+#         return float(raw_measurement) * (analogReference / 1023.0) * (self.max_temp - self.min_temp) / (analogReference - minVolt_current) + self.graph_constant
 
 # Parameters: command, arduino_id, id
 
@@ -171,7 +170,7 @@ class Arduino_Sensors:
     pressure_sensors = []
     massflow_sensors = []
     conductivity_sensors = []
-    temperature_sensors = []
+    # temperature_sensors = []
     levelswitch_sensors = []
 
     # CAREFUL! The index within this list is NOT necessarily equivalent to the id, taken from the configurations
@@ -183,7 +182,7 @@ class Arduino_Sensors:
     pressure_commands = ['a', 'b', 'c', 'd', 'e']
     massflow_commands = ['f', 'g', 'h', 'i']
     conductivity_commands = ['j', 'k', 'l']
-    temperature_commands = ['m', 'n', 'o'] # p, if Mouser
+    # temperature_commands = ['m', 'n', 'o'] # p, if Mouser
     levelswitch_commands = ['q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E']
 
     # These are hard-coded and should not be changed without also changing the arduino code!
@@ -232,16 +231,16 @@ class Arduino_Sensors:
                                                        arduino_id=sensor["arduino_id"])
                 self.conductivity_sensors.append(new_conductivity_sensor)
 
-        for sensor in conf_1.sensor_configurations_1["temperature"]:
-
-            index = sensor["id"]
-
-            if sensor["in_use"]:
-                current_command = bytes(self.temperature_commands[index], 'utf-8')
-                new_temperature_sensor = Temperature(max=sensor["max_Temp"],
-                                                      command=current_command, id=sensor["id"],
-                                                      arduino_id=sensor["arduino_id"])
-                self.temperature_sensors.append(new_temperature_sensor)
+        # for sensor in conf_1.sensor_configurations_1["temperature"]:
+        #
+        #     index = sensor["id"]
+        #
+        #     if sensor["in_use"]:
+        #         current_command = bytes(self.temperature_commands[index], 'utf-8')
+        #         new_temperature_sensor = Temperature(max=sensor["max_Temp"],
+        #                                               command=current_command, id=sensor["id"],
+        #                                               arduino_id=sensor["arduino_id"])
+        #         self.temperature_sensors.append(new_temperature_sensor)
 
         for sensor in conf_1.sensor_configurations_1["level"]:
 
@@ -295,16 +294,16 @@ class Arduino_Sensors:
                                                        arduino_id=sensor["arduino_id"])
                 self.conductivity_sensors.append(new_conductivity_sensor)
 
-        for sensor in conf_2.sensor_configurations_2["temperature"]:
-
-            index = len(self.temperature_commands) - sensor["id"]
-
-            if sensor["in_use"]:
-                current_command = bytes(self.temperature_commands[index], 'utf-8')
-                new_temperature_sensor = Temperature(max=sensor["max_Temp"],
-                                                      command=current_command, id=sensor["id"],
-                                                      arduino_id=sensor["arduino_id"])
-                self.temperature_sensors.append(new_temperature_sensor)
+        # for sensor in conf_2.sensor_configurations_2["temperature"]:
+        #
+        #     index = len(self.temperature_commands) - sensor["id"]
+        #
+        #     if sensor["in_use"]:
+        #         current_command = bytes(self.temperature_commands[index], 'utf-8')
+        #         new_temperature_sensor = Temperature(max=sensor["max_Temp"],
+        #                                               command=current_command, id=sensor["id"],
+        #                                               arduino_id=sensor["arduino_id"])
+        #         self.temperature_sensors.append(new_temperature_sensor)
 
         for sensor in conf_2.sensor_configurations_2["level"]:
 

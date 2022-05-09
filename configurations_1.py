@@ -16,6 +16,8 @@ The comment next to each sensor/instrument object is the equivalent arduino outp
 
 sensor_configurations_1 = {
 
+    # TODO REMOVE GEMS
+
     "pressure": [  {"id": 0, "arduino_id": 1,
                     "name": "GEMS", "unit": "bar", "in_use": True,
                     "max_pressure": 5.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A0
@@ -69,23 +71,23 @@ sensor_configurations_1 = {
 
                       ],
 
-    "temperature": [ {"id": 0, "arduino_id": 1,
-                      "name": "ED Feed Temp", "unit": "ºC",  "in_use": False,
-                      "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A12
-
-                     {"id": 1, "arduino_id": 1,
-                      "name": "ED Diluate Temp", "unit": "ºC", "in_use": False,
-                      "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A13
-
-                     {"id": 2, "arduino_id": 1,
-                      "name": "ED Concentrate Temp", "unit": "ºC", "in_use": False,
-                      "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0} #A14
-
-                    # ,
-                    #  {"id": 3, "arduino_id": 1,
-                    #   "name": "AC Tank Temp", "unit": "ºC", "in_use": True,
-                    #   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}  #A15
-                     ],
+    # "temperature": [ {"id": 0, "arduino_id": 1,
+    #                   "name": "ED Feed Temp", "unit": "ºC",  "in_use": False,
+    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A12
+    #
+    #                  {"id": 1, "arduino_id": 1,
+    #                   "name": "ED Diluate Temp", "unit": "ºC", "in_use": False,
+    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A13
+    #
+    #                  {"id": 2, "arduino_id": 1,
+    #                   "name": "ED Concentrate Temp", "unit": "ºC", "in_use": False,
+    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0} #A14
+    #
+    #                 # ,
+    #                 #  {"id": 3, "arduino_id": 1,
+    #                 #   "name": "AC Tank Temp", "unit": "ºC", "in_use": True,
+    #                 #   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}  #A15
+    #                  ],
 
 
     "level": [ {"id": 0, "arduino_id": 1,
@@ -125,71 +127,71 @@ control_instrument_configurations_1 = {
 
     "cv3": [ {"id": 0, "arduino_id": 1,
               "name": "idle", "in_use": False, #D38
-             "start_state": "HIGH"}, # or "RIGHT"
+             "start_state": "LOW"}, # or "HIGH"
 
              {"id": 1, "arduino_id": 1,
               "name": "idle", "in_use": False, #D39
-             "start_state": "HIGH"},
+             "start_state": "LOW"},
 
              {"id": 2, "arduino_id": 1,
               "name": "idle", "in_use": False, #D40
-              "start_state": "HIGH"},
+              "start_state": "LOW"},
 
              {"id": 3, "arduino_id": 1,
               "name": "idle", "in_use": False, #D41
-              "start_state": "HIGH"},
+              "start_state": "LOW"},
 
              {"id": 4, "arduino_id": 1,
               "name": "idle", "in_use": False, #D42
-              "start_state": "HIGH"},
+              "start_state": "LOW"},
 
              {"id": 5, "arduino_id": 1,
               "name": "idle", "in_use": False, #D43
-              "start_state": "HIGH"},
+              "start_state": "LOW"},
             ],
 
     "ocv_normally_open": [{"id": 0, "arduino_id": 1,
-                          "name": "UF OCV", "in_use": False, #D44
-                          "start_state": "OPEN"},  # or "CLOSED"
+                          "name": "UF OCV", "in_use": True, #D44
+                          "start_state": "LOW"}, # 'LOW' == open, 'HIGH' == closed
 
                          {"id": 1, "arduino_id": 1,
                           "name": "UF OCV", "in_use": False, #D45
-                          "start_state": "OPEN"},
+                          "start_state": "LOW"},
 
                          {"id": 2, "arduino_id": 1,
                           "name": "UF OCV", "in_use": False, #D46
-                          "start_state": "OPEN"},
+                          "start_state": "LOW"},
 
                          ],
 
     "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
                             "name": "UF OCV", "in_use": True, #D47
-                            "start_state": "CLOSED"}  # or "CLOSED"
+                            "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
 
     "pump": [ {"id": 0,  "DAC_output": 'A',"arduino_id": 1,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #D48 ON/OFF, DAC A
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 1, "DAC_output": 'B', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #D49 ON/OFF, DAC B
+               "name": "UF Feed Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0}
             ],
 
-    "pcv": [ {"id": 0, "DAC_output": 'C', "arduino_id": 1,
-              "name": "UF PCV", "unit": "%", "in_use": False, #DAC C
-              "start_opening": 100.0},
-
-             {"id": 1, "DAC_output": 'D', "arduino_id": 1,
-              "name": "ED PCV", "unit": "%", "in_use": False, #DAC D
-              "start_opening": 40.0}
-             ],
+    # "pcv": [ {"id": 0, "DAC_output": 'C', "arduino_id": 1,
+    #           "name": "UF PCV", "unit": "%", "in_use": False, #DAC C
+    #           "start_opening": 100.0},
+    #
+    #          {"id": 1, "DAC_output": 'D', "arduino_id": 1,
+    #           "name": "ED PCV", "unit": "%", "in_use": False, #DAC D
+    #           "start_opening": 40.0}
+    #          ],
 
     "polarity": [ {"id": 0, "arduino_id": 1,
-                   "name": "ED Polarity", "in_use": False, #D50
-                   "start_state": "POSITIVE"} #or "NEGATIVE"
+                   "name": "ED Polarity", "in_use": True, #D50
+                   "start_state": "LOW"} # 'LOW' == positive, 'HIGH' == negative
                   ]
 }
 

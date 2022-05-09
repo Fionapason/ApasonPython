@@ -34,11 +34,14 @@ def findInSerial(ser, find):
     else:
         return True
 
+# TODO MAKE HANDSHAKE BETTER
+
 def handshake(ser):
 
     ser.flush()
 
-    findInSerial(ser, 'a')
+    while not findInSerial(ser, 'a'):
+        pass
     ser.write(b'a')
 
     if findInSerial(ser, "I AM DONE!"):

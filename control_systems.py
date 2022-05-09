@@ -59,7 +59,6 @@ class UF:
         self.count = 0
 
     def control_UF_Feed_Flow(self):
-        print("CONTROL ENTERED")
         while self.run_uf:
             if self.count == 0:
                 self.time_start = time.time()  # current time in seconds
@@ -90,6 +89,7 @@ class UF:
             # control adder
             self.output = self.output + out
 
+            # TODO check this non_saturated_input thing!
             self.non_saturated_input = self.output
 
             # make sure we aren't already at the maximum or below 0
@@ -104,7 +104,7 @@ class UF:
 
             self.count += 1
 
-            print("1s job current time : {}".format(time.ctime()))
+            # print("1s job current time : {}".format(time.ctime()))
             time.sleep(1)
 
 # TODO
@@ -124,12 +124,13 @@ class Overall_Control:
     def __init__(self, update_list, apason_system):
         self.system = apason_system
         self.update_list = update_list
-        self.overall_control_thread = Timer(1.0,function=self.run_test)
+        self.overall_control_thread = Timer(2.0, function=self.run_test)
         self.overall_control_thread.start()
 
     def run_test(self):
-        uf = UF(self.update_list, self.system)
-        uf.control_UF_Feed_Flow()
+        pass
+        # uf = UF(self.update_list, self.system)
+        # uf.control_UF_Feed_Flow()
 
 
 if __name__ == '__main__':

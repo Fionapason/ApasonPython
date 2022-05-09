@@ -9,6 +9,7 @@ fonttools==4.32.0
 future==0.18.2
 idna==3.3
 iniconfig==1.1.1
+ischedule==1.2.5
 Kivy==2.1.0
 Kivy-examples==2.1.0
 Kivy-Garden==0.1.5

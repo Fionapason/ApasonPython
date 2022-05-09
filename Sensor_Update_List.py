@@ -135,7 +135,7 @@ class Sensor_Update_List:
     pressure = []
     massflow = []
     conductivity = []
-    temperature = []
+    # temperature = []
     levelswitch = []
 
 
@@ -160,10 +160,10 @@ class Sensor_Update_List:
                 new_conductivity_sensor = Update_List_Conductivity(sensor)
                 self.conductivity.append(new_conductivity_sensor)
 
-        for sensor in conf_1.sensor_configurations_1["temperature"]:
-            if sensor["in_use"]:
-                new_temperature_sensor = Update_List_Temperature(sensor)
-                self.temperature.append(new_temperature_sensor)
+        # for sensor in conf_1.sensor_configurations_1["temperature"]:
+        #     if sensor["in_use"]:
+        #         new_temperature_sensor = Update_List_Temperature(sensor)
+        #         self.temperature.append(new_temperature_sensor)
 
         for sensor in conf_1.sensor_configurations_1["level"]:
             if sensor["in_use"]:
@@ -186,10 +186,10 @@ class Sensor_Update_List:
                 new_conductivity_sensor = Update_List_Conductivity(sensor)
                 self.conductivity.append(new_conductivity_sensor)
 
-        for sensor in conf_2.sensor_configurations_2["temperature"]:
-            if sensor["in_use"]:
-                new_temperature_sensor = Update_List_Temperature(sensor)
-                self.temperature.append(new_temperature_sensor)
+        # for sensor in conf_2.sensor_configurations_2["temperature"]:
+        #     if sensor["in_use"]:
+        #         new_temperature_sensor = Update_List_Temperature(sensor)
+        #         self.temperature.append(new_temperature_sensor)
 
         for sensor in conf_2.sensor_configurations_2["level"]:
             if sensor["in_use"]:

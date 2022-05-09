@@ -28,9 +28,10 @@ class System_Pump:
     id : float
     name : str
     state : float
+    changed = False
     max_RPM : float
 
-    def __init__(self, id, max_RPM, name, state=0):
+    def __init__(self, id, max_RPM, name, state=0.0):
 
         self.state = state
         self.id = id
@@ -39,22 +40,23 @@ class System_Pump:
 
     def set_new_state(self, new_state):
         self.state = new_state
+        self.changed = True
 
-# TODO
-class System_PCV:
 
-    id : float
-    state : float
-    name : str
-    max_Opening = 100
-
-    def __init__(self, id, name, state=0):
-        self.id = id
-        self.name = name
-        self.state = state
-
-    def set_new_state(self, new_state):
-        self.state = new_state
+# class System_PCV:
+#
+#     id : float
+#     state : float
+#     name : str
+#     max_Opening = 100
+#
+#     def __init__(self, id, name, state=0):
+#         self.id = id
+#         self.name = name
+#         self.state = state
+#
+#     def set_new_state(self, new_state):
+#         self.state = new_state
 
 # Parameters: id, name, state (str; "OPEN"/"CLOSED)
 # Function: set_new_state(new_state)
@@ -66,6 +68,7 @@ class System_OCV_NO:
     id : float
     name : str
     state : str
+    changed = False
 
     def __init__(self, id, name, state="OPEN"):
         self.id = id
@@ -74,6 +77,7 @@ class System_OCV_NO:
 
     def set_new_state(self, new_state):
         self.state = new_state
+        self.changed = True
 
 # Parameters: id, name, state (str; "OPEN"/"CLOSED")
 # Function: set_new_state(new_state)
@@ -85,6 +89,7 @@ class System_OCV_NC:
     id : float
     name : str
     state : str
+    changed = False
 
     def __init__(self, id, name, state="CLOSED"):
         self.id = id
@@ -93,6 +98,7 @@ class System_OCV_NC:
 
     def set_new_state(self, new_state):
         self.state = new_state
+        self.changed = True
 
 # Parameters: id, name, state (str; "HIGH"/"LOW")
 # Function: set_new_state(new_state)
@@ -105,6 +111,7 @@ class System_CV3:
     id: float
     name: str
     state : str
+    changed = False
 
     def __init__(self, id, name, state="HIGH"):
         self.id = id
@@ -113,21 +120,24 @@ class System_CV3:
 
     def set_new_state(self, new_state):
         self.state = new_state
+        self.changed = True
 
-# Parameters: state (str; "POSITIVE"/"HIGH")
+# Parameters: state (str; "LOW"/"HIGH")
 # Function: set_new_state(new_state)
 class System_Polarity:
     """
-    **Parameters:** state (str; "POSITIVE"/"HIGH")
+    **Parameters:** state (str; "LOW"/"HIGH")
     **Function:** set_new_state(new_state)
     """
     state: str
+    changed = False
 
-    def __init__(self, state="POSITIVE"):
+    def __init__(self, state="LOW"):
         self.state = state
 
     def set_new_state(self, new_state):
         self.state = new_state
+        self.changed = True
 
 # Parameter: system_on = True, time_start (time.time()),
 # lists for pumps, ocvs_no, ocvs_nc, cv3s
@@ -141,7 +151,7 @@ class Apason_System():
     system_on = True
 
     system_pumps = []
-    system_pcvs = []
+    #system_pcvs = []
     system_ocvs_no = []
     system_ocvs_nc = []
     system_cv3s = []
@@ -157,7 +167,7 @@ class Apason_System():
         self.set_instruments()
 
     def turn_on_control(self):
-        overall_control = control.Overall_Control(update_list=update_list, apason_system=self)
+        overall_control = control.Overall_Control(update_list=self.update_list, apason_system=self)
 
 
     def set_instruments(self):
@@ -171,12 +181,13 @@ class Apason_System():
                                        max_RPM=pump["max_RPM"],
                                        state=pump["starting_RPM"])
                 self.system_pumps.append(new_pump)
-        for pcv in conf_1.control_instrument_configurations_1["pcv"]:
-            if pcv["in_use"]:
-                new_pcv = System_PCV(id=pcv["id"],
-                                     name=pcv["name"],
-                                     state=pcv["start_opening"])
-                self.system_pcvs.append(new_pcv)
+        # for pcv in conf_1.control_instrument_configurations_1["pcv"]:
+        #     if pcv["in_use"]:
+        #         new_pcv = System_PCV(id=pcv["id"],
+        #                              name=pcv["name"],
+        #                              state=pcv["start_opening"])
+        #         self.system_pcvs.append(new_pcv)
+
         for cv3 in conf_1.control_instrument_configurations_1["cv3"]:
             if cv3["in_use"]:
                 new_cv3 = System_CV3(id=cv3["id"],
@@ -208,12 +219,12 @@ class Apason_System():
                                        max_RPM=pump["max_RPM"],
                                        state=pump["starting_RPM"])
                 self.system_pumps.append(new_pump)
-        for pcv in conf_2.control_instrument_configurations_2["pcv"]:
-            if pcv["in_use"]:
-                new_pcv = System_PCV(id=pcv["id"],
-                                     name=pcv["name"],
-                                     state=pcv["start_opening"])
-                self.system_pcvs.append(new_pcv)
+        # for pcv in conf_2.control_instrument_configurations_2["pcv"]:
+        #     if pcv["in_use"]:
+        #         new_pcv = System_PCV(id=pcv["id"],
+        #                              name=pcv["name"],
+        #                              state=pcv["start_opening"])
+        #         self.system_pcvs.append(new_pcv)
         for cv3 in conf_2.control_instrument_configurations_2["cv3"]:
             if cv3["in_use"]:
                 new_cv3 = System_CV3(id=cv3["id"],
@@ -232,6 +243,7 @@ class Apason_System():
                                            name=ocv_nc["name"],
                                            state=ocv_nc["start_state"])
                 self.system_ocvs_nc.append(new_ocv_nc)
+
 
 
 if __name__ == '__main__':

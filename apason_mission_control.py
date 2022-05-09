@@ -104,12 +104,12 @@ class Command_Center:
 
         while(self.run_cc):
             self.send_commands()
-            time.sleep(3)
+            time.sleep(2)
 
             self.apason_system.system_ocvs_nc[0].set_new_state(new_state='HIGH')
             self.send_commands()
 
-            time.sleep(3)
+            time.sleep(2)
             self.apason_system.system_ocvs_nc[0].set_new_state(new_state='LOW')
 
 

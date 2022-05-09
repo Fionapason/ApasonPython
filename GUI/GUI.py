@@ -115,8 +115,8 @@ class apason_GUIApp(App):
 
     def build(self):
         self.layout = GUI_GridLayout()
-        Clock.schedule_interval(self.update_outputs, 1.0 / 20.0)
-        Clock.schedule_interval(self.update_inputs, 1.0 / 20.0)
+        Clock.schedule_interval(self.update_outputs, 1.0)
+        Clock.schedule_interval(self.update_inputs, 1.0)
         return self.layout
 
     def on_stop(self):

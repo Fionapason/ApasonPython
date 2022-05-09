@@ -138,6 +138,7 @@ class Sensor_Update_List:
     temperature = []
     levelswitch = []
 
+
     def __init__(self):
 
         # Iterate through all sensors of one type

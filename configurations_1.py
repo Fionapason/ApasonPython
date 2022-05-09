@@ -39,7 +39,7 @@ sensor_configurations_1 = {
                    ],
 
     "massflow": [ {"id": 0, "arduino_id": 1,
-                   "name": "UF Feed Flow", "unit": "l/min", "in_use": False, #A5
+                   "name": "UF Feed Flow", "unit": "l/min", "in_use": True, #A5
                    "max_flow": 20.0},
 
                   {"id": 1, "arduino_id": 1,
@@ -125,27 +125,27 @@ control_instrument_configurations_1 = {
 
     "cv3": [ {"id": 0, "arduino_id": 1,
               "name": "idle", "in_use": False, #D38
-             "start_state": "LEFT"}, # or "RIGHT"
+             "start_state": "HIGH"}, # or "RIGHT"
 
              {"id": 1, "arduino_id": 1,
               "name": "idle", "in_use": False, #D39
-             "start_state": "LEFT"},
+             "start_state": "HIGH"},
 
              {"id": 2, "arduino_id": 1,
               "name": "idle", "in_use": False, #D40
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 3, "arduino_id": 1,
               "name": "idle", "in_use": False, #D41
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 4, "arduino_id": 1,
               "name": "idle", "in_use": False, #D42
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
 
              {"id": 5, "arduino_id": 1,
               "name": "idle", "in_use": False, #D43
-              "start_state": "LEFT"},
+              "start_state": "HIGH"},
             ],
 
     "ocv_normally_open": [{"id": 0, "arduino_id": 1,
@@ -164,7 +164,7 @@ control_instrument_configurations_1 = {
 
     "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
                             "name": "UF OCV", "in_use": True, #D47
-                            "start_state": "OPEN"}  # or "CLOSED"
+                            "start_state": "CLOSED"}  # or "CLOSED"
                            ],
 
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC

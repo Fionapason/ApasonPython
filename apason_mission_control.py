@@ -7,12 +7,10 @@ import Sensor_Update_List as ulist
 import Arduino_Control_Instruments as ard_control_ins
 import apason_system as system
 
-# TODO finish the Command_Center thread
-# TODO stop control when command_center stops
 
 class Command_Center:
 
-    command_sender_thread: Thread
+    command_center_thread: Thread
     run_cc = True
     #
     # def __init__(self, arduino_com, arduino_control, pump_id_1, pump_id_2, interface):
@@ -68,8 +66,8 @@ class Command_Center:
         self.ard_control : ard_control_ins.Arduino_Control_Instruments() = ard_control
         self.apason_system.turn_on_system(update_list)
         self.interface = interface
-        self.command_sender_thread = Thread(target=self.run)
-        self.command_sender_thread.start()
+        self.command_center_thread = Thread(target=self.run)
+        self.command_center_thread.start()
 
     def send_commands(self):
 
@@ -147,7 +145,7 @@ class Update_List:
 
     def set_from_list(self):
 
-        self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
+        self.interface.pressure_display_1 = str(self.list.levelswitch[0].current_value)
         # self.interface.pressure_display_2 = str(self.list.pressure[1].current_value)
         # self.interface.pressure_display_3 = str(self.list.pressure[2].current_value)
         #
@@ -160,19 +158,23 @@ class Update_List:
     def run(self):
         while (self.run_ul):
             index = 0
-            #TODO test level switches
-            for sensor in self.list.pressure:
-                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index]))
+            # for sensor in self.list.pressure:
+            #     sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index]))
+            #     index += 1
+
+            for sensor in self.list.levelswitch:
+                digital = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                sensor.updateValue(digital)
                 index += 1
 
             index = 0
 
             for sensor in self.list.massflow:
-                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index]))
+                sensor.updateValue(self.arduino.checkDigital(sensors.massflow_sensors[index]))
                 index += 1
 
             self.set_from_list()
-            time.sleep(1)
+            time.sleep(0.1)
 
 
     def stop_server(self):

@@ -83,9 +83,9 @@ class ArduinoCommunication:
         time.sleep(0.05)
         level_switch_status = ser.readSerial(port)
         lock.release()
-        if level_switch_status == 1:
+        if level_switch_status == '1':
             return 'CLOSED'
-        elif level_switch_status == 0:
+        elif level_switch_status == '0':
             return 'OPEN'
 
     def sendVoltage(self, volt, control_instrument):

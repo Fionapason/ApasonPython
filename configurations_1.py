@@ -89,7 +89,7 @@ sensor_configurations_1 = {
 
 
     "level": [ {"id": 0, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D22
+                "name": "idle", "in_use": True}, #D22
                {"id": 1, "arduino_id": 1,
                 "name": "idle", "in_use": False}, #D23
                {"id": 2, "arduino_id": 1,

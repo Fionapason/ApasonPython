@@ -1,8 +1,7 @@
-#TODO TEST ALL OF THESE
-
 import configurations_1 as conf_1
 import configurations_2 as conf_2
 
+#TODO TEST ALL OF THESE
 """
 These classes define all the Arduino control instruments
 They take their parameters from the configurations file
@@ -21,7 +20,7 @@ which returns the int from 0-4095 that needs to be set using sendV to attain the
 These classes also have their respective DAC output as a member, also set in the configurations file.
 
 THE ARDUINO_CONTROL_INSTRUMENTS OBJECTS ARE NOT *SUPPOSED* TO INTERACT DIRECTLY WITH THE ARDUINO
-THE ARDUINOCOMMUNICATION CLASS IS RESPONSIBLE FOR THIS,
+THE ARDUINO COMMUNICATION CLASS IS RESPONSIBLE FOR THIS,
 AND SIMPLY USES CLASS MEMBERS FROM HERE TO GET THE NECESSARY INFO
 """
 

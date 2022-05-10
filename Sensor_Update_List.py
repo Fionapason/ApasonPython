@@ -30,6 +30,8 @@ class Update_List_Pressure:
     critical_pressure: float
     warning_pressure: float
     current_value: float
+    average = []
+    average_count = 3
     id: int
 
     def __init__(self, sensor):
@@ -39,9 +41,12 @@ class Update_List_Pressure:
         self.warning_pressure = sensor["warning_pressure"]
         self.id = sensor["id"]
 
-    def updateValue(self, newPressure):
-        self.current_value = newPressure
-        return newPressure
+    def updateValue(self, newValue):
+        if len(self.average) == self.average_count:
+            self.average.pop(0)
+        self.average.append(newValue)
+        self.current_value = sum(self.average) / len(self.average)
+        return self.current_value
 
 
 # Parameters: name, unit, id, current_value
@@ -54,6 +59,8 @@ class Update_List_Massflow:
     name: str
     unit: str
     current_value: float
+    average = []
+    average_count = 3
     id: float
 
     def __init__(self, sensor):
@@ -61,9 +68,12 @@ class Update_List_Massflow:
         self.unit = sensor["unit"]
         self.id = sensor["id"]
 
-    def updateValue(self, newMassflow):
-        self.current_value = newMassflow
-        return newMassflow
+    def updateValue(self, newValue):
+        if len(self.average) == self.average_count:
+            self.average.pop(0)
+        self.average.append(newValue)
+        self.current_value = sum(self.average) / len(self.average)
+        return self.current_value
 
 
 # Parameters: name, unit, id, current_value
@@ -75,6 +85,8 @@ class Update_List_Conductivity:
     name: str
     unit: str
     current_value: float
+    average = []
+    average_count = 3
     id: float
 
     def __init__(self, sensor):
@@ -82,9 +94,12 @@ class Update_List_Conductivity:
         self.unit = sensor["unit"]
         self.id = sensor["id"]
 
-    def updateValue(self, newConductivity):
-        self.current_value = newConductivity
-        return newConductivity
+    def updateValue(self, newValue):
+        if len(self.average) == self.average_count:
+            self.average.pop(0)
+        self.average.append(newValue)
+        self.current_value = sum(self.average) / len(self.average)
+        return self.current_value
 
 
 # # Parameters: name, unit, id, current_value
@@ -195,3 +210,6 @@ class Sensor_Update_List:
             if sensor["in_use"]:
                 new_levelswitch_sensor = Update_List_LevelSwitch(sensor)
                 self.levelswitch.append(new_levelswitch_sensor)
+
+if __name__ == '__main__':
+    pass

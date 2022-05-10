@@ -43,6 +43,8 @@ class UF:
         self.output = 0.0 #in Volt!
         self.non_saturated_input = 0.0
         self.system = apason_system
+        self.back_flush = False
+        self.first_loop = True
 
         self.control_value_sensor_name = self.configuration["control_value_sensor_name"]
 
@@ -56,59 +58,57 @@ class UF:
             if control_instrument.name == self.control_instrument_name:
                 self.control_instrument = control_instrument
 
-        self.count = 0
 
-    def control_UF_Feed_Flow(self):
+    def control_UF(self):
+        # TODO
         while self.run_uf:
-            if self.count == 0:
-                self.time_start = time.time()  # current time in seconds
-                self.time_current = self.time_start
-                elapsed_time = self.time_start - self.system.time_start
-                # ignore stopIdentifier for now, that's for backwash
-            else:
-                self.time_current = time.time()
-                elapsed_time = self.time_current - self.time_last
+            while self.back_flush == False:
+                self.uf_feed_massflow_control()
+                self.check_for_backflush()
+                # print("1s job current time : {}".format(time.ctime()))
+                time.sleep(1)
+            self.back_flush()
 
-            last_measurement = self.control_value_sensor.current_value
+    def uf_feed_massflow_control(self):
 
-            error = self.desired_value - last_measurement
+        if self.first_loop:
+            self.time_start = time.time()  # current time in seconds
+            self.time_current = self.time_start
+            elapsed_time = self.time_start - self.system.time_start
+            self.first_loop = False
+            # ignore stopIdentifier for now, that's for backwash
+        else:
+            self.time_current = time.time()
+            elapsed_time = self.time_current - self.time_last
+        last_measurement = self.control_value_sensor.current_value
+        error = self.desired_value - last_measurement
+        # Proportional Controller
+        P_out = self.K_p * error
+        # Integrative Controller
+        if self.non_saturated_input is not self.output:
+            I_out = 0.0
+        else:
+            self.integral = self.integral + elapsed_time * error
+            I_out = self.K_i * self.integral
+        out = P_out + I_out
+        # control adder
+        self.output = self.output + out
+        # Do this before possible saturation
+        self.non_saturated_input = self.output
+        # make sure we aren't already at the maximum or below 0
+        # Conditional saturation
+        if self.output > self.control_instrument.max_RPM:
+            self.output = 5.0
+        elif self.output < 0.0:
+            self.output = 0.0
+        self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.output))
+        self.time_last = self.time_current
 
-            # Proportional Controller
-            P_out = self.K_p * error
-
-            # Integrative Controller
-            if self.non_saturated_input is not self.output:
-                I_out = 0.0
-            else:
-                self.integral = self.integral + elapsed_time * error
-                I_out = self.K_i * self.integral
-
-
-            out = P_out + I_out
-
-            # control adder
-            self.output = self.output + out
-
-            #Do this before possible saturation
-            self.non_saturated_input = self.output
-
-            # make sure we aren't already at the maximum or below 0
-            # Conditional saturation
-            if self.output > self.control_instrument.max_RPM:
-                self.output = 5.0
-            elif self.output < 0.0:
-                self.output = 0.0
-
-
-
-            self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.output))
-
-            self.time_last = self.time_current
-
-            self.count += 1
-
-            # print("1s job current time : {}".format(time.ctime()))
-            time.sleep(1)
+    def check_for_backflush(self):
+        #TODO
+        #do something
+        self.back_flush = True
+        self.first_loop = True
 
 # TODO
 class ED:
@@ -133,7 +133,15 @@ class Overall_Control:
     def run_test(self):
         pass
         # uf = UF(self.update_list, self.system)
-        # uf.control_UF_Feed_Flow()
+        # uf.control_UF()
+
+    # TODO
+    def check_if_UF(self):
+        pass
+
+    # TODO
+    def check_if_ED(self):
+        pass
 
     def stop(self):
         self.overall_control_thread.join()

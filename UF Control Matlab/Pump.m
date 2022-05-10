@@ -119,7 +119,7 @@ classdef Pump < handle %UF3
             
             if O.count == 0
                 elapsedTime = (O.controlTime(end)-O.mfObj.time(end));
-                O.stopIdentifier = length(O.controlTime);
+                O.stopIdentifier = length(O.controlTime); % index
             else
                 elapsedTime = (O.controlTime(end)-O.controlTime(end-1));
             end
@@ -129,6 +129,7 @@ classdef Pump < handle %UF3
 %            while isnan(actualValue)
 %                actualValue = O.mfObj.value;
 %            end
+%           https://towardsdatascience.com/5-methods-to-check-for-nan-values-in-in-python-3f21ddd17eed
 
             error = O.setFlow.value(end) - actualValue;
             
@@ -162,6 +163,7 @@ classdef Pump < handle %UF3
             O.count = O.count + 1;
             
             if O.setTime ~= 1 %"if this is a backwash pump"
+                % time of backwash pump running
                 if (O.controlTime(end)- O.controlTime(O.stopIdentifier)) > O.setTime
                     stop(O.pumpTimer)
                     pause(1)

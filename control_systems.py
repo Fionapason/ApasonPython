@@ -3,10 +3,6 @@ import Sensor_Update_List as ul
 from threading import Thread, Timer
 import time
 
-from timeloop import Timeloop
-from datetime import timedelta
-from ischedule import schedule, run_loop
-
 """
 Here all control systems are initiated, and their control loops are defined. They take their specifications from the configurations_control file.
 
@@ -35,39 +31,59 @@ class UF:
 
     def __init__(self, update_list, apason_system):
 
-        self.configuration = conf.control_system_configurations["uf_massflow_control"]
-        self.K_p = self.configuration["K_p"]
-        self.K_i = self.configuration["K_i"]
-        self.desired_value = self.configuration["desired_value"]
-        self.integral = 0.0
-        self.output = 0.0 #in Volt!
-        self.non_saturated_input = 0.0
         self.system = apason_system
         self.back_flush = False
         self.first_loop = True
 
-        self.control_value_sensor_name = self.configuration["control_value_sensor_name"]
+        self.massflow_control_configuration = conf.control_configurations["uf_massflow_control"]
+        self.backflush_configuration = conf.control_configurations["uf_backflush"]
 
-        # Find corresponding sensor from the update list
+        self.K_p = self.massflow_control_configuration["K_p"]
+        self.K_i = self.massflow_control_configuration["K_i"]
+        self.desired_value = self.massflow_control_configuration["desired_value"]
+        self.integral = 0.0
+        self.pump_output = 0.0 #in Volt!
+        self.non_saturated_input = 0.0
+
+        self.max_tmp = self.backflush_configuration["switch_value"]
+
+
+        self.control_value_sensor_name = self.massflow_control_configuration["control_value_sensor_name"]
+        self.feed_pressure_name = self.backflush_configuration["control_value_sensor_name_1"]
+        self.permeate_pressure_name = self.backflush_configuration["control_value_sensor_name_2"]
+
+        # Find corresponding sensor for massflow control in the update list
         for sensor in update_list.massflow:
             if sensor.name == self.control_value_sensor_name:
                 self.control_value_sensor: ul.Update_List_Massflow = sensor
 
-        # Find corresponding control instrument in the system
+        # Find corresponding pump for massflow control in the system
         for control_instrument in self.system.system_pumps:
             if control_instrument.name == self.control_instrument_name:
                 self.control_instrument = control_instrument
 
+        # Find pressure sensors for TMP
+        for sensor in update_list.pressure:
+            if sensor.name == self.feed_pressure_name:
+                self.feed_pressure_sensor : ul.Update_List_Pressure = sensor
+            if sensor.name == self.permeate_pressure_name:
+                self.permeate_pressure_sensor: ul.Update_List_Pressure = sensor
+
+
+
 
     def control_UF(self):
-        # TODO
+        # TODO :)
         while self.run_uf:
             while self.back_flush == False:
+
                 self.uf_feed_massflow_control()
+
                 self.check_for_backflush()
-                # print("1s job current time : {}".format(time.ctime()))
+
                 time.sleep(1)
-            self.back_flush()
+
+            self.backflush()
 
     def uf_feed_massflow_control(self):
 
@@ -80,35 +96,50 @@ class UF:
         else:
             self.time_current = time.time()
             elapsed_time = self.time_current - self.time_last
+
         last_measurement = self.control_value_sensor.current_value
         error = self.desired_value - last_measurement
+
         # Proportional Controller
         P_out = self.K_p * error
+
         # Integrative Controller
-        if self.non_saturated_input is not self.output:
+        if self.non_saturated_input is not self.pump_output:
             I_out = 0.0
         else:
             self.integral = self.integral + elapsed_time * error
             I_out = self.K_i * self.integral
         out = P_out + I_out
+
         # control adder
-        self.output = self.output + out
+        self.pump_output = self.pump_output + out
+
         # Do this before possible saturation
-        self.non_saturated_input = self.output
-        # make sure we aren't already at the maximum or below 0
-        # Conditional saturation
-        if self.output > self.control_instrument.max_RPM:
-            self.output = 5.0
-        elif self.output < 0.0:
-            self.output = 0.0
-        self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.output))
+        self.non_saturated_input = self.pump_output
+
+        # make sure we aren't already at the maximum or below 0: saturation check
+        if self.pump_output > self.control_instrument.max_RPM:
+            self.pump_output = 5.0
+        elif self.pump_output < 0.0:
+            self.pump_output = 0.0
+
+        self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
         self.time_last = self.time_current
 
     def check_for_backflush(self):
-        #TODO
-        #do something
-        self.back_flush = True
-        self.first_loop = True
+        self.find_tmp()
+
+        #or other conditions
+        if self.tmp >= self.max_tmp:
+            self.back_flush = True
+            self.first_loop = True
+
+    def backflush(self):
+        # TODO
+        pass
+
+    def find_tmp(self):
+        self.tmp = self.feed_pressure_sensor.current_value - self.permeate_pressure_sensor.current_value
 
 # TODO
 class ED:

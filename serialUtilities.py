@@ -16,13 +16,14 @@ def readSerial(ser):
 
     while ser.inWaiting() > 0 :
         buffer = buffer + ser.read().decode('utf-8')
+        time.sleep(0.005)
 
     return buffer
 
 def findInSerial(ser, find):
 
     count = 0
-    maxLoops = timeout_time * 1000
+    maxLoops = timeout_time * 100
     read = readSerial(ser)
 
     while (find not in read) & (count < maxLoops):
@@ -34,18 +35,25 @@ def findInSerial(ser, find):
     else:
         return True
 
-# TODO MAKE HANDSHAKE BETTER
 
 def handshake(ser):
 
     ser.flush()
 
-    while not findInSerial(ser, 'a'):
-        pass
+    timeout_counter = 0
+
+    while (not findInSerial(ser, 'a') ) & (timeout_counter < 100):
+        ser.write(b'a')
+        timeout_counter += 1
+
+    if timeout_counter >= 100:
+        return False
+
     ser.write(b'a')
 
     if findInSerial(ser, "I AM DONE!"):
         print("PORT " + ser.port + " CONNECTED! \n")
+        return True
     else:
         print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
     return

@@ -8,7 +8,7 @@ from kivy.clock import Clock
 
 #TODO pick out actually visible values
 #TODO make needed buttons
-#TODO make waring messages
+#TODO make warning messages
 
 class GUI_GridLayout(GridLayout):
     voltage_label_1 = StringProperty("Voltage 1?")

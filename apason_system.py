@@ -42,6 +42,9 @@ class System_Pump:
         self.state = new_state
         self.changed = True
 
+    def voltage_to_rpm(self, voltage):
+        return voltage / 5.0 * self.max_RPM
+
 
 # class System_PCV:
 #

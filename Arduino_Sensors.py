@@ -260,7 +260,7 @@ class Arduino_Sensors:
             if sensor["in_use"]:
 
                 # Adjust command index
-                index = len(self.pressure_commands) -sensor["id"]
+                index = len(self.pressure_commands) - sensor["id"]
 
                 current_command = bytes(self.pressure_commands[index], 'utf-8')
                 new_pressure_sensor = Pressure(max=sensor["max_pressure"],

@@ -18,7 +18,7 @@ class ArduinoCommunication:
     **Functions:** sendVoltage(volt, control_instrument, lock), retrieveMeasurement(sensor, lock)
     '''
     ports = dict()
-    port_names = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem1201'
+    port_names = ['/dev/cu.usbmodem1401', '/dev/cu.usbmodem1201'] #, '/dev/cu.usbmodem1201'
     baud = 115200
     analogReference = 5
     arduino_locks = [Lock(),Lock()]
@@ -27,11 +27,21 @@ class ArduinoCommunication:
         arduino_counter = 1
 
         for name in self.port_names:
-            self.ports[arduino_counter] = serial.Serial(port=name, baudrate=self.baud, parity=serial.PARITY_NONE,
-                                                        bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE,
-                                                        timeout=ser.timeout_time, xonxoff=False, rtscts=False, dsrdtr=False)
-            print("PORT OPENED \n")
-            ser.handshake(self.ports[arduino_counter])
+
+            connection_problem = True
+
+            while connection_problem:
+                connection_problem = False
+                self.ports[arduino_counter] = serial.Serial(port=name, baudrate=self.baud, parity=serial.PARITY_NONE,
+                                                            bytesize=serial.EIGHTBITS, stopbits=serial.STOPBITS_ONE,
+                                                            timeout=ser.timeout_time, xonxoff=False, rtscts=False, dsrdtr=False)
+                print("PORT OPENED \n")
+
+                if not ser.handshake(self.ports[arduino_counter]):
+                    print("There is a Connection Problem")
+                    self.ports[arduino_counter].close()
+                    connection_problem = True
+
 
             arduino_counter += 1
 

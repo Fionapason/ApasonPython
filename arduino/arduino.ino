@@ -72,10 +72,10 @@ Adafruit_MCP4728 mcp;
 
 // OPEN CLOSE VALVES
 
-#define OCV_NO_1 44 // normally open
-#define OCV_NO_2 45
-#define OCV_NO_3 46
-#define OCV_NC_4 47 // normally closed
+#define OCV_NC_1 44 // normally closed
+#define OCV_NC_2 45
+#define OCV_NC_3 46
+#define OCV_NO_4 47 // normally open
 
 // PUMP ON/OFF
 
@@ -84,7 +84,7 @@ Adafruit_MCP4728 mcp;
 
 
 // ED POLARITY
-#define ED_POLARITY 51
+#define ED_POLARITY 50
 
 void handshake();
 
@@ -142,15 +142,15 @@ void set_LOW_TWV_4();
 void set_LOW_TWV_5();
 void set_LOW_TWV_6();
 
-void OPEN_OCV_NO_1();
-void OPEN_OCV_NO_2();
-void OPEN_OCV_NO_3();
-void OPEN_OCV_NC_4();
+void OPEN_OCV_NC_1();
+void OPEN_OCV_NC_2();
+void OPEN_OCV_NC_3();
+void OPEN_OCV_NO_4();
 
-void CLOSE_OCV_NO_1();
-void CLOSE_OCV_NO_2();
-void CLOSE_OCV_NO_3();
-void CLOSE_OCV_NC_4();
+void CLOSE_OCV_NC_1();
+void CLOSE_OCV_NC_2();
+void CLOSE_OCV_NC_3();
+void CLOSE_OCV_NO_4();
 
 void PUMP_1_ON();
 void PUMP_1_OFF();
@@ -192,10 +192,10 @@ void setup() {
   pinMode(TWV_5, OUTPUT);
   pinMode(TWV_6, OUTPUT);
 
-  pinMode(OCV_NO_1  , OUTPUT);
-  pinMode(OCV_NO_2  , OUTPUT);
-  pinMode(OCV_NO_3  , OUTPUT);
-  pinMode(OCV_NC_4  , OUTPUT);
+  pinMode(OCV_NC_1  , OUTPUT);
+  pinMode(OCV_NC_2  , OUTPUT);
+  pinMode(OCV_NC_3  , OUTPUT);
+  pinMode(OCV_NO_4  , OUTPUT);
 
   pinMode(PUMP_1, OUTPUT);
   pinMode(PUMP_2, OUTPUT);
@@ -458,32 +458,32 @@ void set_LOW_TWV_6(){
 // OPEN OPEN CLOSE VALVES
 
 
-void OPEN_OCV_NO_1(){
-  digitalWrite(OCV_NO_1, HIGH);
+void OPEN_OCV_NC_1(){
+  digitalWrite(OCV_NC_1, LOW);
 }
-void OPEN_OCV_NO_2(){
-  digitalWrite(OCV_NO_2, HIGH);
+void OPEN_OCV_NC_2(){
+  digitalWrite(OCV_NC_2, LOW);
 }
-void OPEN_OCV_NO_3(){
-  digitalWrite(OCV_NO_3, HIGH);
+void OPEN_OCV_NC_3(){
+  digitalWrite(OCV_NC_3, LOW);
 }
-void OPEN_OCV_NC_4(){
-  digitalWrite(OCV_NC_4, LOW);
+void OPEN_OCV_NO_4(){
+  digitalWrite(OCV_NO_4, HIGH);
 }
 
 // CLOSE OPEN CLOSE VALVES
 
-void CLOSE_OCV_NO_1(){
-  digitalWrite(OCV_NO_1, LOW);
+void CLOSE_OCV_NC_1(){
+  digitalWrite(OCV_NC_1, HIGH);
 }
-void CLOSE_OCV_NO_2(){
-  digitalWrite(OCV_NO_2, LOW);
+void CLOSE_OCV_NC_2(){
+  digitalWrite(OCV_NC_2, HIGH);
 }
-void CLOSE_OCV_NO_3(){
-  digitalWrite(OCV_NO_3, LOW);
+void CLOSE_OCV_NC_3(){
+  digitalWrite(OCV_NC_3, HIGH);
 }
-void CLOSE_OCV_NC_4(){
-  digitalWrite(OCV_NC_4, HIGH);
+void CLOSE_OCV_NO_4(){
+  digitalWrite(OCV_NO_4, LOW);
 }
 
 // PUMP ON
@@ -766,21 +766,21 @@ void inputSwitch(char input){
 
 
  case 'R':
-      OPEN_OCV_NO_1();
+      OPEN_OCV_NC_1();
       Serial.write('+');
       break;
 
     case 'S':
-      OPEN_OCV_NO_2();
+      OPEN_OCV_NC_2();
       Serial.write('+');
       break;
     case 'T':
-      OPEN_OCV_NO_3();
+      OPEN_OCV_NC_3();
       Serial.write('+');
 
       break;
     case 'U':
-      OPEN_OCV_NC_4();
+      OPEN_OCV_NO_4();
       Serial.write('+');
 
       break;
@@ -788,22 +788,22 @@ void inputSwitch(char input){
 
 
     case 'V':
-      CLOSE_OCV_NO_1();
+      CLOSE_OCV_NC_1();
       Serial.write('+');
       break;
 
     case 'W':
-      CLOSE_OCV_NO_2();
+      CLOSE_OCV_NC_2();
       Serial.write('+');
       break;
 
     case 'X':
-     CLOSE_OCV_NO_3();
+     CLOSE_OCV_NC_3();
       Serial.write('+');
       break;
 
     case 'Y':
-      CLOSE_OCV_NC_4();
+      CLOSE_OCV_NO_4();
       Serial.write('+');
       break;
 

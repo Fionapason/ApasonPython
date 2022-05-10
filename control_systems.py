@@ -40,7 +40,7 @@ class UF:
         self.K_i = self.configuration["K_i"]
         self.desired_value = self.configuration["desired_value"]
         self.integral = 0.0
-        self.output = 0.0
+        self.output = 0.0 #in Volt!
         self.non_saturated_input = 0.0
         self.system = apason_system
 
@@ -89,16 +89,19 @@ class UF:
             # control adder
             self.output = self.output + out
 
-            # TODO check this non_saturated_input thing!
+            #Do this before possible saturation
             self.non_saturated_input = self.output
 
             # make sure we aren't already at the maximum or below 0
+            # Conditional saturation
             if self.output > self.control_instrument.max_RPM:
-                self.output = 9000.0
+                self.output = 5.0
             elif self.output < 0.0:
                 self.output = 0.0
 
-            self.control_instrument.set_new_state(self.output)
+
+
+            self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.output))
 
             self.time_last = self.time_current
 

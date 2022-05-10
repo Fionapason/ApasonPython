@@ -16,8 +16,6 @@ The comment next to each sensor/instrument object is the equivalent arduino outp
 
 sensor_configurations_1 = {
 
-    # TODO REMOVE GEMS
-
     "pressure": [  {"id": 0, "arduino_id": 1,
                     "name": "GEMS", "unit": "bar", "in_use": True,
                     "max_pressure": 5.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A0
@@ -150,7 +148,7 @@ control_instrument_configurations_1 = {
               "start_state": "LOW"},
             ],
 
-    "ocv_normally_open": [{"id": 0, "arduino_id": 1,
+    "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
                           "name": "UF OCV", "in_use": True, #D44
                           "start_state": "LOW"}, # 'LOW' == open, 'HIGH' == closed
 
@@ -164,7 +162,7 @@ control_instrument_configurations_1 = {
 
                          ],
 
-    "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
+    "ocv_normally_open": [{"id": 0, "arduino_id": 1,
                             "name": "UF OCV", "in_use": True, #D47
                             "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],

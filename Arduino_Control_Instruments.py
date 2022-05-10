@@ -183,11 +183,11 @@ class Arduino_Control_Instruments:
 
     # The commands to be sent to the arduino,
     # all single characters to make serial communication as simple as possible
-    ocv_normally_open_open_commands = ['R', 'S', 'T']
-    ocv_normally_open_close_commands = ['V', 'W', 'X']
+    ocv_normally_closed_open_commands = ['R', 'S', 'T']
+    ocv_normally_closed_close_commands = ['V', 'W', 'X']
 
-    ocv_normally_closed_open_commands = ['U']
-    ocv_normally_closed_close_commands = ['Y']
+    ocv_normally_open_open_commands = ['U']
+    ocv_normally_open_close_commands = ['Y']
 
     cv3_high_commands = ['F', 'G', 'H', 'I', 'J', 'K']
     cv3_low_commands = ['L', 'M', 'N', 'O', 'P', 'Q']

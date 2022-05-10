@@ -55,6 +55,8 @@ class ArduinoCommunication:
             command = control_instrument.command_high
         elif state is "LOW":
             command = control_instrument.command_low
+        elif state is "OFF":
+            command = control_instrument.command_off
         else:
             command = bytes('a', 'utf-8')
 

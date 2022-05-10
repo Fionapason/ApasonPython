@@ -135,6 +135,9 @@ class Overall_Control:
         # uf = UF(self.update_list, self.system)
         # uf.control_UF_Feed_Flow()
 
+    def stop(self):
+        self.overall_control_thread.join()
+
 
 if __name__ == '__main__':
     pass

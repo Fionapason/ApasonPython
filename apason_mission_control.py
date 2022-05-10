@@ -75,7 +75,7 @@ class Command_Center:
 
         for pump in self.apason_system.system_pumps:
             if pump.changed:
-                self.ard_com.sendVoltage(state=self.ard_control.pump_instruments[pump.id].find_Voltage(pump.state), control_instrument=self.ard_control.pump_instruments[pump.id])
+                self.ard_com.sendVoltage(volt=self.ard_control.pump_instruments[pump.id].find_Voltage(pump.state), control_instrument=self.ard_control.pump_instruments[pump.id])
                 pump.changed = False
 
         for ocv_no in self.apason_system.system_ocvs_no:
@@ -106,12 +106,28 @@ class Command_Center:
             self.send_commands()
             time.sleep(2)
 
-            self.apason_system.system_ocvs_nc[0].set_new_state(new_state='HIGH')
+            self.apason_system.polarity.set_new_state(new_state='HIGH')
             self.send_commands()
 
             time.sleep(2)
-            self.apason_system.system_ocvs_nc[0].set_new_state(new_state='LOW')
+            self.apason_system.polarity.set_new_state(new_state='LOW')
 
+    def stop_server(self):
+        self.run_cc = False
+        self.set_zero()
+        self.send_commands()
+        self.apason_system.turn_off_system()
+
+    def set_zero(self):
+        for pump in self.apason_system.system_pumps:
+            pump.set_new_state(new_state=0.0)
+        for ocv_no in self.apason_system.system_ocvs_no:
+            ocv_no.set_new_state(new_state="LOW")
+        for ocv_nc in self.apason_system.system_ocvs_nc:
+            ocv_nc.set_new_state(new_state="LOW")
+        for cv3 in self.apason_system.system_cv3s:
+            cv3.set_new_state(new_state="LOW")
+        self.apason_system.polarity.set_new_state(new_state="OFF")
 
 
 # TODO finish Update_List

@@ -188,7 +188,7 @@ control_instrument_configurations_2 = {
 
     "polarity": [ {"id": 0, "arduino_id": 2,
                    "name": "ED Polarity", "in_use": False, #D50
-                   "start_state": "LOW"} # 'LOW' == positive, 'LOW' == negative
+                   "start_state": "OFF"} # 'LOW' == positive, 'HIGH' == negative
                   ]
 }
 

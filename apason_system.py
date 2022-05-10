@@ -61,11 +61,11 @@ class System_Pump:
 #     def set_new_state(self, new_state):
 #         self.state = new_state
 
-# Parameters: id, name, state (str; "OPEN"/"CLOSED)
+# Parameters: id, name, state (str; "LOW" (eq. open) /"HIGH" (eq. closed)
 # Function: set_new_state(new_state)
 class System_OCV_NO:
     """
-    **Parameters:** id, name, state (str; "OPEN"/"CLOSED) \n
+    **Parameters:** id, name, state (str; "LOW" (eq. open) /"HIGH" (eq. closed) \n
     **Function:** set_new_state(new_state)
     """
     id : float
@@ -73,7 +73,7 @@ class System_OCV_NO:
     state : str
     changed = False
 
-    def __init__(self, id, name, state="OPEN"):
+    def __init__(self, id, name, state="LOW"):
         self.id = id
         self.name = name
         self.state = state
@@ -82,11 +82,11 @@ class System_OCV_NO:
         self.state = new_state
         self.changed = True
 
-# Parameters: id, name, state (str; "OPEN"/"CLOSED")
+# Parameters: id, name, state (str; "LOW" (eq. closed) /"HIGH" (eq. open)
 # Function: set_new_state(new_state)
 class System_OCV_NC:
     """
-    **Parameters:** id, name, state (str; "OPEN"/"CLOSED") \n
+    **Parameters:** id, name, state (str; "LOW" (eq. closed) /"HIGH" (eq. open) \n
     **Function:** set_new_state(new_state)
     """
     id : float
@@ -94,7 +94,7 @@ class System_OCV_NC:
     state : str
     changed = False
 
-    def __init__(self, id, name, state="CLOSED"):
+    def __init__(self, id, name, state="LOW"):
         self.id = id
         self.name = name
         self.state = state
@@ -170,8 +170,10 @@ class Apason_System():
         self.set_instruments()
 
     def turn_on_control(self):
-        overall_control = control.Overall_Control(update_list=self.update_list, apason_system=self)
+        self.overall_control = control.Overall_Control(update_list=self.update_list, apason_system=self)
 
+    def turn_off_system(self):
+        self.overall_control.stop()
 
     def set_instruments(self):
         # Iterate through every pump in the configurations for the first arduino,

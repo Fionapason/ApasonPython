@@ -84,7 +84,8 @@ Adafruit_MCP4728 mcp;
 
 
 // ED POLARITY
-#define ED_POLARITY 50
+#define ED_POLARITY_Plus 50
+#define ED_POLARITY_Minus 51
 
 void handshake();
 
@@ -166,7 +167,7 @@ void set_mcp_D();
 
 void ED_Polarity_Pos();
 void ED_Polarity_Neg();
-
+void ED_Polarity_Off();
 
 
 
@@ -200,7 +201,10 @@ void setup() {
   pinMode(PUMP_1, OUTPUT);
   pinMode(PUMP_2, OUTPUT);
 
-  pinMode(ED_POLARITY, OUTPUT);
+  pinMode(ED_POLARITY_Plus, OUTPUT);
+  pinMode(ED_POLARITY_Minus, OUTPUT);
+
+  ED_Polarity_Off();
 
   Serial.println("I AM DONE! \n");
 
@@ -507,15 +511,23 @@ void PUMP_2_OFF(){
 // ED POLARITY IN POSITIVE DIRECTION
 
 void ED_Polarity_Pos(){
-  digitalWrite(ED_POLARITY, HIGH);
+  digitalWrite(ED_POLARITY_Plus, LOW);
+  digitalWrite(ED_POLARITY_Minus, HIGH);
 }
 
 // ED POLARITY IN NEGATIVE DIRECTION
 
 void ED_Polarity_Neg(){
-    digitalWrite(ED_POLARITY, LOW);
+  digitalWrite(ED_POLARITY_Plus, HIGH);
+  digitalWrite(ED_POLARITY_Minus, LOW);
 }
 
+// ED POLARITY TURN OFF
+
+void ED_Polarity_Off(){
+  digitalWrite(ED_POLARITY_Plus, HIGH);
+  digitalWrite(ED_POLARITY_Minus, HIGH);
+}
 
 
 // SET VOLTAGES ON MCP
@@ -584,7 +596,7 @@ void handshake() {
   while (a != 'a') {
     Serial.print('a');
     a = Serial.read();
-    delay(500);
+    delay(100);
   }
 
 }
@@ -838,6 +850,11 @@ void inputSwitch(char input){
        ED_Polarity_Neg();
        Serial.write('+');
        break;
+
+    case '*':
+      ED_Polarity_Off();
+      Serial.write('+');
+      break;
 
    default: Serial.write('-');
   }

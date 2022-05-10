@@ -151,6 +151,8 @@ class Polarity:
 
     command_high = ')'
 
+    command_off = '*'
+
     arduino_id : int
 
     id: int
@@ -159,6 +161,7 @@ class Polarity:
         self.arduino_id = arduino_id
         self.command_low =  bytes(self.command_low, 'utf-8')
         self.command_high = bytes(self.command_high, 'utf-8')
+        self.command_off = bytes(self.command_off, 'utf-8')
         self.id = id
 
 # The class contains all the control instruments that are currently in use

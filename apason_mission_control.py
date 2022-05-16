@@ -175,6 +175,9 @@ class Update_List:
                 sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index]))
                 index += 1
 
+            index = 0
+            for sensor in self.list.conductivity:
+                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.conductivity_sensors[index]))
             self.set_from_list()
             time.sleep(5)
 

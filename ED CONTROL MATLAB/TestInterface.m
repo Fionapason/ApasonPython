@@ -15,12 +15,12 @@ arduinoObj = talkToArduino('COM8');
 %fourth column for the Kp constant
 %fifth column for the Ki constant
 %sixth column to say which massflow sensor to control in the normal operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8   
-%seventh column to say which massflow sensor to control in the backflush operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8   
-configuration.pump = [1 5 0.66 1 0.1 4 1; %A -- Posttreatment Pump
-                      1 5 2.5 2 0 3 1; %B --Rinse Pump always at 150 l/h
-                      1 5 0.66 1 0 1 2; %C -- Concentrate
-                      1 5 0.66 1 0 2 1]; %D -- Diluate
-                  
+%seventh column to say which massflow sensor to control in the reversal operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8
+configuration.pump = [1  5   0.66  1   0.1     4     4; %A -- Posttreatment Pump
+                      1  5   2.5   2    0      3     3; %B --Rinse Pump always at 150 l/h
+                      1  5   0.66  1    0      1     2; %C -- Concentrate
+                      1  5   0.66  1    0      2     1]; %D -- Diluate
+                    %       flow   Kp  Ki    sensor  sensor
 names.pump = ["Posttreatment Pump";
               "Rinse Pump";
               "Concentrate Pump";
@@ -73,7 +73,7 @@ configuration.pressuredifferenceDC = [1; %is it used or not
                                       2; % Diluate pressure Sensor
                                       3; %Concentrate pressure sensor
                                       10]; %maximum pressure difference
-
+                                        % 0.1 probably
 %Pressure Difference between Rinse and Diluate
 configuration.pressuredifferenceRD = [1; %is it used or not
                                       2; % Diluate pressure Sensor
@@ -86,9 +86,11 @@ configuration.pressuredifferenceRD = [1; %is it used or not
 %first column is either 1 or 0 if the sensor is used or not
 %second column for the maximum conductivity in mS/cm
 %third column for minimum conductivity in mS/cm
-configuration.conductivity = [1 10 0.1; %Channel 1 -- Diluate out
-                              1 60 50; %Channel 2 -- Concentrate
-                              1 10 0.1]; %Channel 3 -- Diluate in
+%fourth column for Kp
+%fifth column for Ki
+configuration.conductivity = [1 10 0.1 1 0; %Channel 1 -- Diluate out
+                              1 60 50  0 0; %Channel 2 -- Concentrate
+                              1 10 0.1 0 0]; %Channel 3 -- Diluate in
                           
    
 configuration.maxConductivity = 56; %mS/cm

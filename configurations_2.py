@@ -34,7 +34,7 @@ sensor_configurations_2 = {
                    ],
 
     "massflow": [ {"id": 4, "arduino_id": 2,
-                   "name": "ED Concentrate Flow", "unit": "l/min", "in_use": False, #A5
+                   "name": "Posttreatment Flow", "unit": "l/min", "in_use": False, #A5
                    "max_flow": 20.0},
 
                   {"id": 5, "arduino_id": 2,
@@ -46,21 +46,21 @@ sensor_configurations_2 = {
                    "max_flow": 5.0},
 
                   {"id": 7, "arduino_id": 2,
-                   "name": "Posttreatment Flow", "unit": "l/min", "in_use": False, #A8
+                   "name": "Concentrate Flow", "unit": "l/min", "in_use": False, #A8
                    "max_flow": 0}
                   ],
 
     "conductivity": [ {"id": 3, "arduino_id": 2,
-                       "name": "ED Feed Cond", "unit": "mS/cm", "in_use": True, #A9
-                       "max_Cond": 50.0, "min_Cond": 0.1},
+                       "name": "ED Diluate In Cond", "unit": "mS/cm", "in_use": True, #A9
+                       "max_Cond": 10.0, "min_Cond": 0.1},
 
                       {"id": 4, "arduino_id": 2,
-                       "name": "ED Diluate Cond", "unit": "mS/cm", "in_use": True, #A10
-                       "max_Cond": 50.0, "min_Cond": 0.1},
+                       "name": "ED Diluate Out Cond", "unit": "mS/cm", "in_use": True, #A10
+                       "max_Cond": 10.0, "min_Cond": 0.1},
 
                       {"id": 5, "arduino_id": 2,
                        "name": "ED Concentrate Cond", "unit": "mS/cm", "in_use": True, #A11
-                       "max_Cond": 50.0, "min_Cond": 0.1}
+                       "max_Cond": 60.0, "min_Cond": 50.0}
 
                       ],
 

@@ -331,11 +331,262 @@ class UF:
 
             time.sleep(2)
 
+class ED_Massflow_PI:
+    K_p : float
+    K_i : float
+    desired_value : float
+    integral : float
+    non_saturated_output : float
+    pump_output : float # in Volt!
+
+    first_loop = True
+
+    control_value_sensor_name : str # Massflow sensor
+    control_instrument_name : str # Pump
+    steady_state_tmp_set = False
+
+    def __init__(self, update_list, apason_system, control_configuration : str):
+
+        self.K_p = conf.control_configurations[control_configuration]["K_p"]
+        self.K_i = conf.control_configurations[control_configuration]["K_i"]
+        self.desired_value = conf.control_configurations[control_configuration]["desired_value"]
+        self.integral = 0.0
+        self.pump_output = 0.0
+        self.non_saturated_output = 0.0
+        self.system_time_start = apason_system.time_start
+
+        self.control_value_sensor_normal_name = conf.control_configurations[control_configuration]["control_value_sensor_normal_name"]
+        self.control_value_sensor_reversal_name = conf.control_configurations[control_configuration]["control_value_sensor_reversal_name"]
+
+        self.control_instrument_name = conf.control_configurations[control_configuration]["control_instrument_name"]
+
+        for sensor in update_list.massflow:
+            if sensor.name == self.control_value_sensor_normal_name:
+                self.control_value_sensor_normal: ul.Update_List_Massflow = sensor
+            if sensor.name == self.control_value_sensor_reversal_name:
+                self.control_value_sensor_reversal : ul.Update_List_Massflow = sensor
+
+        for instrument in apason_system.system_pumps:
+            if instrument.name == self.control_instrument_name:
+                self.control_instrument = instrument
+                break
+
+        self.control_value_sensor = self.control_value_sensor_normal
+
+    def set_reversal_control(self):
+        self.control_value_sensor = self.control_value_sensor_reversal
+        self.reset_pump_control()
+
+    def set_normal_control(self):
+        self.control_value_sensor = self.control_value_sensor_normal
+        self.reset_pump_control()
+
+    def stop_pump(self):
+        self.control_instrument.set_new_state(0.0)
+        print(self.control_instrument_name + " SET TO 0.")
+
+    def reset_pump_control(self):
+        print("RESETTING " + self.control_instrument_name)
+
+        self.integral = 0.0
+        self.pump_output = 0.0  # in Volt!
+        self.non_saturated_output = 0.0
+        self.system_time_start = time.time()
+        self.first_loop = True
+
+    def massflow_pi(self):
+
+        if self.first_loop:
+            self.time_start = time.time()  # current time in seconds
+            self.time_current = self.time_start
+            elapsed_time = self.time_start - self.system_time_start
+            self.first_loop = False
+        else:
+            self.time_current = time.time()
+            elapsed_time = self.time_current - self.time_last
+
+        sensor = self.control_value_sensor
+        last_measurement = sensor.current_value
+        error = self.desired_value - last_measurement
+
+        # Proportional Controller
+        P_out = self.K_p * error
+
+        # Integrative Controller
+        if self.non_saturated_output is not self.pump_output:
+            I_out = 0.0
+        else:
+            self.integral = self.integral + elapsed_time * error
+            I_out = self.K_i * self.integral
+        out = P_out + I_out
+
+        # control adder
+        self.pump_output = self.pump_output + out
+
+        # Do this before possible saturation
+        self.non_saturated_output = self.pump_output
+
+        # make sure we aren't already at the maximum or below 0: saturation check
+        if self.pump_output > 5.0:
+            self.pump_output = 5.0
+        elif self.pump_output < 0.0:
+            self.pump_output = 0.0
+
+        print("Setting " + self.control_instrument_name + " to Voltage: " + str(self.pump_output))
+
+        self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
+        self.time_last = self.time_current
+
+        time.sleep(2) # Waiting time
+
+class ED_Conductivity_PI:
+
+    def __init__(self,update_list, apason_system, control_configuration : str,
+                 ed_concentrate_flow_control  : ED_Massflow_PI, ed_diluate_flow_control  : ED_Massflow_PI, ed_pt_flow_control  : ED_Massflow_PI):
+        self.K_p = conf.control_configurations[control_configuration]["K_p"]
+        self.K_i = conf.control_configurations[control_configuration]["K_i"]
+        self.desired_value = conf.control_configurations[control_configuration]["desired_value"]
+        self.integral = 0.0
+        self.massflow_set_value_output = 0.0
+        self.non_saturated_output = 0.0
+        self.system_time_start = apason_system.time_start
+
+        self.control_value_sensor_name = conf.control_configurations[control_configuration]["conductivity_sensor_name"]
+
+        self.minimum_flow = conf.control_configurations[control_configuration]["minimum_flow"]
+        self.maximum_flow = conf.control_configurations[control_configuration]["maximum_flow"]
+
+        self.concentrate_desired_flow = ed_concentrate_flow_control.desired_value
+        self.diluate_desired_flow = ed_diluate_flow_control.desired_value
+        self.posttreatment_desired_flow = ed_pt_flow_control.desired_value
+
+        self.concentrate_desired_flow = conf.control_configurations[control_configuration]["minimum_flow"]
+        self.diluate_desired_flow = conf.control_configurations[control_configuration]["minimum_flow"]
+        self.posttreatment_desired_flow = conf.control_configurations[control_configuration]["minimum_flow"]
+
+        for sensor in update_list.conductivity:
+            if sensor.name == self.control_value_sensor_name:
+                self.control_value_sensor: ul.Update_List_Conductivity= sensor
+
+        self.first_loop = True
+
+
+    def conductivity_pi(self):
+
+        if self.first_loop:
+            self.time_start = time.time()  # current time in seconds
+            self.time_current = self.time_start
+            elapsed_time = self.time_start - self.system_time_start
+            self.first_loop = False
+        else:
+            self.time_current = time.time()
+            elapsed_time = self.time_current - self.time_last
+
+        sensor = self.control_value_sensor
+        last_measurement = sensor.current_value
+        error = self.desired_value - last_measurement
+
+        # Proportional Controller
+        P_out = self.K_p * error
+
+        # Integrative Controller
+        if self.non_saturated_output is not self.massflow_set_value_output:
+            I_out = 0.0
+        else:
+            self.integral = self.integral + elapsed_time * error
+            I_out = self.K_i * self.integral
+        out = P_out + I_out
+
+        # control adder
+        self.massflow_set_value_output = self.massflow_set_value_output + out
+
+        # Do this before possible saturation
+        self.non_saturated_output = self.massflow_set_value_output
+
+        # make sure we aren't already at the maximum or below 0: saturation check
+        if self.massflow_set_value_output > self.maximum_flow:
+            self.massflow_set_value_output = self.maximum_flow
+        elif self.massflow_set_value_output < self.minimum_flow:
+            self.massflow_set_value_output = self.minimum_flow
+
+        print("Setting desired massflow to: " + str(self.massflow_set_value_output))
+
+        self.new_desired_flows(self.massflow_set_value_output)
+
+        self.time_last = self.time_current
+
+        time.sleep(1)  # Waiting time
+
+
+    def new_desired_flows(self, desired_flow):
+        self.concentrate_desired_flow = desired_flow
+        self.diluate_desired_flow = desired_flow
+        self.posttreatment_desired_flow = desired_flow
 
 class ED_Pressure_Control:
-    pass
+
+    def __init__(self, update_list, ed_massflow_diluate, ed_massflow_concentrate):
+
+        self.critical_value_dc = conf.control_configurations["ed_pressures"]["critical_value_DC"]
+        self.critical_value_rd = conf.control_configurations["ed_pressures"]["critical_value_RD"]
+
+        self.concentrate_pressure_sensor_name = conf.control_configurations["ed_pressures"]["concentrate_pressure_sensor_name"]
+        self.rinse_pressure_sensor_name = conf.control_configurations["ed_pressures"]["rinse_pressure_sensor_name"]
+        self.diluate_pressure_sensor_name = conf.control_configurations["ed_pressures"]["diluate_pressure_sensor_name"]
+
+        for sensor in update_list.pressure:
+            if sensor.name == self.concentrate_pressure_sensor_name:
+                self.concentrate_pressure_sensor: ul.Update_List_Pressure = sensor
+            elif sensor.name == self.rinse_pressure_sensor_name:
+                self.rinse_pressure_sensor: ul.Update_List_Pressure = sensor
+            elif sensor.name == self.diluate_pressure_sensor_name:
+                self.diluate_pressure_sensor: ul.Update_List_Pressure = sensor
+
+        self.ed_massflow_diluate : ED_Massflow_PI = ed_massflow_diluate
+        self.ed_massflow_concentrate : ED_Massflow_PI = ed_massflow_concentrate
+
+        self.pdrd_problem = "NONE"
+
+
+
+    def current_concentrate_diluate_pressure_difference(self):
+        concentrate_pressure = self.concentrate_pressure_sensor.current_value
+        diluate_pressure = self.diluate_pressure_sensor.current_value
+        pddc = diluate_pressure - concentrate_pressure
+        return pddc
+
+    def pddc_exceeded(self):
+        return abs(self.current_concentrate_diluate_pressure_difference()) > self.critical_value_dc
+
+    def pddc_exceeded_positive_sign(self):
+        return self.current_concentrate_diluate_pressure_difference() > 0
+
+    def current_diluate_rinse_pressure_difference(self):
+        rinse_pressure = self.rinse_pressure_sensor.current_value
+        diluate_pressure = self.diluate_pressure_sensor.current_value
+        pdrd = diluate_pressure - rinse_pressure
+        return pdrd
+
+    def pdrd_exceeded(self):
+        return abs(self.current_diluate_rinse_pressure_difference()) > self.critical_value_dc
+
+    def pdrd_exceeded_positive_sign(self):
+        return self.current_diluate_rinse_pressure_difference() > 0
+
+    def manage_pressures(self):
+        if self.pddc_exceeded():
+            if self.pddc_exceeded_positive_sign():
+                self.ed_massflow_diluate.desired_value = self.ed_massflow_diluate.desired_value - 1.0/60.0
+            else:
+                self.ed_massflow_concentrate.desired_value = self.ed_massflow_concentrate.desired_value - 1.0/60.0
+        if self.pdrd_exceeded():
+            if self.pdrd_exceeded_positive_sign():
+                self.pdrd_problem = "TURN RIGHT"
+            else:
+                self.pdrd_problem = "TURN LEFT"
 
 class ED:
+
     run_ed = False
 
     def __init__(self, update_list, apason_system):
@@ -354,6 +605,8 @@ class ED:
         self.ed_rinse_tank_ls_name = conf.control_configurations["ed_general"]["ed_rinse_tank_ls_name"]
         self.uf_tank_low_ls_name = conf.control_configurations["ed_general"]["uf_tank_low_ls_name"]
 
+        self.ed_concentrate_conductivity_name = conf.control_configurations["ed_general"]["ed_concentrate_conductivity_name"]
+
         for sensor in update_list.levelswitch:
             if sensor.name == self.ed_con_tank_high_ls_name:
                 self.ed_con_tank_high_ls = sensor
@@ -367,6 +620,10 @@ class ED:
                 self.ed_rinse_tank_ls = sensor
             elif sensor.name == self.uf_tank_low_ls_name:
                 self.uf_tank_low_ls = sensor
+
+        for sensor in update_list.conductivity:
+            if sensor.name == self.ed_concentrate_conductivity_name:
+                self.ed_concentrate_conductivity = sensor
 
         for valve in apason_system.system_ocvs_nc:
             if valve.name == self.ed_concentrate_dilute_valve_name:
@@ -392,6 +649,22 @@ class ED:
         self.starting_up = True
         self.uf_ready = False
 
+        self.too_concentrated = False
+
+        self.massflow_concentrate = ED_Massflow_PI(update_list,apason_system,"ed_concentrate_flow")
+        self.massflow_diluate = ED_Massflow_PI(update_list, apason_system, "ed_diluate_flow")
+        self.massflow_rinse = ED_Massflow_PI(update_list, apason_system, "ed_rinse_flow")
+        self.massflow_posttreatment = ED_Massflow_PI(update_list, apason_system, "ed_pt_flow")
+
+        self.pressure_control = ED_Pressure_Control(update_list,
+                                                    ed_massflow_diluate=self.massflow_diluate,
+                                                    ed_massflow_concentrate=self.massflow_concentrate)
+
+        self.conductivity_control = ED_Conductivity_PI(update_list, apason_system, "ed_conductivity",
+                                                       ed_diluate_flow_control=self.massflow_diluate,
+                                                       ed_concentrate_flow_control=self.massflow_concentrate,
+                                                       ed_pt_flow_control=self.massflow_posttreatment)
+
     def UF_ready(self):
         self.uf_ready = True
 
@@ -402,6 +675,9 @@ class ED:
         self.ed_post_concentrate_valve.set_new_state("HIGH")
 
         self.polarity.set_new_state("HIGH") # "HIGH" == "NEG"
+        self.massflow_diluate.set_reversal_control()
+        self.massflow_concentrate.set_reversal_control()
+
 
     def setup_normal(self):
         self.ed_pre_diluate_valve.set_new_state("HIGH")
@@ -410,6 +686,9 @@ class ED:
         self.ed_post_concentrate_valve.set_new_state("LOW")
 
         self.polarity.set_new_state("LOW") # "LOW" == "POS"
+        self.massflow_diluate.set_normal_control()
+        self.massflow_concentrate.set_normal_control()
+
 
     def startup_ED(self):
 
@@ -432,50 +711,89 @@ class ED:
     def initialize_ED(self):
         if self.post_treatment:
             self.setup_normal()
-            #start Pumps with MF control, wait 1 second for PT pump
+            self.do_ed_no_pt()
+
+            time.sleep(1)
+
+            self.massflow_posttreatment.massflow_pi()
         else:
             self.setup_normal()
-            #start Pumps with MF control, except PT pump
+            self.do_ed_no_pt()
+
 
 
     def change_polarity(self):
         if self.polarity.state == "LOW": # currently normal, switch to reversal
-            #Stop diluate and concentrate pumps
+            self.massflow_concentrate.stop_pump()
+            self.massflow_diluate.stop_pump()
             self.setup_reversal()
-            #Start diluate and concentrate pumps
         if self.polarity.state == "HIGH":
-            #Stop diluate and concentrate pumps
+            self.massflow_concentrate.stop_pump()
+            self.massflow_diluate.stop_pump()
             self.setup_normal()
-            #Start diluate and concentrate pumps
         self.last_polarity_switch_time = time.time()
 
-    def
+    def concentration_tank(self):
+        if (self.ed_concentrate_conductivity.current_value > 56) & (not self.too_concentrated):
+            # open dilute valve
+            self.ed_concentrate_dilute_valve.set_new_state("HIGH")
+            self.valve_opening_time = time.time()
+
+        if self.too_concentrated & ( (self.uf_tank_low_ls.current_value == "OPEN") | (time.time() - self.valve_opening_time > 30.0)):
+            # close dilute valve
+            self.ed_concentrate_dilute_valve.set_new_state("LOW")
+            self.too_concentrated = False
+
+    def do_ed_no_pt(self):
+        self.massflow_concentrate.massflow_pi()
+        self.massflow_diluate.massflow_pi()
+        self.massflow_rinse.massflow_pi()
+
+    def do_ed_with_pt(self):
+        self.massflow_concentrate.massflow_pi()
+        self.massflow_diluate.massflow_pi()
+        self.massflow_rinse.massflow_pi()
+        self.massflow_concentrate.massflow_pi()
+
 
     def run_ED(self):
 
-        # check pressures
-
         now = time.time()
+
+        self.pressure_control.manage_pressures()
+        if self.pressure_control.pdrd_problem != "NONE":
+            self.massflow_posttreatment.stop_pump()
+            self.massflow_rinse.stop_pump()
+            self.massflow_concentrate.stop_pump()
+            self.massflow_diluate.stop_pump()
+            print("THE PRESSURE DIFFERENCE BETWEEN THE RINSE AND THE DILUATE IS TOO HIGH. ADJUST THE HANDVALVE:")
+            print(self.pressure_control.pdrd_problem)
+            return
+            # TODO SEND ON MESSAGE TO GUI
+
 
         if now - self.last_polarity_switch_time > self.reversal_time:
             self.change_polarity()
 
+        self.concentration_tank()
+
+        # TODO count here
+        self.conductivity_control.conductivity_pi()
+
         if self.ed_split_tank_middle_ls.current_value == "CLOSED":
             if self.post_treatment:
-                pass
-               #massflow control all pumps
+                self.do_ed_with_pt()
             else:
-                # start pt pump
+                self.massflow_posttreatment.reset_pump_control()
                 self.post_treatment = True
-                # massflow control all pumps
+                self.do_ed_with_pt()
         else:
             if self.post_treatment:
-                # stop pt pump
+                self.massflow_posttreatment.stop_pump()
                 self.post_treatment = False
-                # massflow control pumps except pt
+                self.do_ed_no_pt()
             else:
-                pass
-                # massflow control pumps except pt
+                self.do_ed_no_pt()
 
 
 
@@ -496,6 +814,7 @@ class Overall_Control:
     """
     overall_control_thread: Timer
     run_overall = True
+
 
     def __init__(self, update_list, apason_system):
         self.system = apason_system

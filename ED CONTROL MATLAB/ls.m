@@ -8,7 +8,7 @@ classdef ls < handle %UF General Code -- level switch
 
         closed = 0;
         
-        command = ['q', 'r', 's', 't']; %D22 - D25
+        command = ['q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A']; %D22 - D32
         
         arduinoObj
         
@@ -33,8 +33,8 @@ classdef ls < handle %UF General Code -- level switch
             
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
-            elseif identifier > 4 || identifier < 1
-                error('Input argument 2 has to be a number between 1 and 4');
+            elseif identifier > 8 || identifier < 1
+                error('Input argument 2 has to be a number between 1 and 8');
             elseif ~isstring(name)
                 error('Input argument 3 has to be a string for the name');
             end

@@ -135,7 +135,7 @@ class System_Polarity:
     state: str
     changed = False
 
-    def __init__(self, state="LOW"):
+    def __init__(self, state="OFF"):
         self.state = state
 
     def set_new_state(self, new_state):
@@ -211,10 +211,7 @@ class Apason_System():
                                            name=ocv_nc["name"],
                                            state=ocv_nc["start_state"])
                 self.system_ocvs_nc.append(new_ocv_nc)
-        for polarity in conf_1.control_instrument_configurations_1["polarity"]:
-            if polarity["in_use"]:
-                new_polarity = System_Polarity(state=polarity["start_state"])
-                self.polarity = new_polarity
+
 
         # Second arduino
         for pump in conf_2.control_instrument_configurations_2["pump"]:
@@ -248,6 +245,11 @@ class Apason_System():
                                            name=ocv_nc["name"],
                                            state=ocv_nc["start_state"])
                 self.system_ocvs_nc.append(new_ocv_nc)
+
+        for polarity in conf_2.control_instrument_configurations_2["polarity"]:
+            if polarity["in_use"]:
+                new_polarity = System_Polarity(state=polarity["start_state"])
+                self.polarity = new_polarity
 
 
 

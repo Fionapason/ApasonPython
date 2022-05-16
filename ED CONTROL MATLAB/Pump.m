@@ -1,8 +1,6 @@
-classdef Pump < handle %UF3
+classdef Pump < handle %ED General Code
     
-    % Now this Pump can also be used as a controller (22.4.22 - Dana)
-    
-     properties (GetAccess = public, SetAccess = protected)
+    properties (GetAccess = public, SetAccess = protected)
         
         Ki %Integral Constant
         
@@ -14,15 +12,11 @@ classdef Pump < handle %UF3
         
         minValue = 0.6;
         
-        command = [ '!', '@'];
+        command = ['!', '@', '#', '$'];
         
         arduinoObj
         
         pumpTimer
-        
-        setupTimer
-        
-        mfObj %to say which massflowsensor is used for comparison
         
     end
     
@@ -30,11 +24,11 @@ classdef Pump < handle %UF3
         
         data = 0; % to store
         
-        time = 0; %to store
-
-        controlTime = 0;
+        time = 0;
         
         value
+        
+        controlTime = 0;
         
         setValue
         
@@ -58,10 +52,13 @@ classdef Pump < handle %UF3
         
         tmpCount = 1;
         
+        mfObj %to say which massflowsensor is used for comparison
+        
     end
     
+    
     methods
-        function O = Pump(arduinoObj, maxValue, identifier, name, setFlow, Kp, Ki, mfObj, pressureSensors, setTime, Interface)
+        function O = Pump(arduinoObj, maxValue, identifier, name, setFlow, Kp, Ki, mfObj, pressureSensors, Interface)
             
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
@@ -88,7 +85,6 @@ classdef Pump < handle %UF3
             O.nonSatV = 0; % in the beginning they are the same
             O.count = 0;
             O.pressureSensors = pressureSensors;
-            O.setTime = setTime;
             O.Interface = Interface;
 
             O.pumpTimer = timer('ExecutionMode', 'fixedSpacing','Period',1);
@@ -101,10 +97,10 @@ classdef Pump < handle %UF3
         
         function changeSetting(O)
             
-            arduinoValue = (O.value(end)/O.maxValue)*4095;
+            arduinoValue = (O.value/O.maxValue)*4095;
             
             if arduinoValue > 4095
-                error(['The input value has to be smaller or equal to ', num2str(O.maxValue), ' rpm']);
+                error(['The input value has to be smaller or equal to ', num2str(O.value), ' rpm']);
             elseif arduinoValue < 0
                 error(['The input value has to be a positive number and smaller or equal to ', num2str(arduinoValue), ' rpm']);
             end
@@ -114,6 +110,7 @@ classdef Pump < handle %UF3
         end %changeSetting
         
         function controlFlow(O) %Controller
+            
             
             O.controlTime(end+1) = (now - O.pressureSensors(O.beginTimeIdentifier).time(2))*24*3600;
             
@@ -155,46 +152,11 @@ classdef Pump < handle %UF3
                 O.value = O.minValue;
             end
             
-            O.setValue(end+1) = O.value; %for display
+            O.setValue(end+1) = O.value;
             
             O.changeSetting;
             
             O.count = O.count + 1;
-            
-            if O.setTime ~= 1 %"if this is a backwash pump"
-                
-                if (O.controlTime(end)- O.controlTime(O.stopIdentifier)) > O.setTime
-                    stop(O.pumpTimer)
-                    pause(1)
-                    O.value = 0;
-                    O.integral = 0;
-                    O.setValue(end+1) = O.value;
-                    O.changeSetting;
-                    O.count = 0;
-                    if O.Interface.UFState == 3
-                        O.Interface.UFState = 0;
-                    end
-                end
-                
-            elseif O.setTime == 1 
-                if (O.controlTime(end)- O.controlTime(O.stopIdentifier)) > 60 && O.tmpCount == 1 %wait one minute for the feed pump such that it will measure the current TMP
-                    O.Interface.sensor.transmembrane.begin = sum(O.Interface.sensor.transmembrane.data(end-2:end))/3; %relies on a log!
-                    O.Interface.sensor.transmembrane.end = O.Interface.sensor.transmembrane.begin + 0.2;
-                    O.tmpCount = 0;
-                elseif sum(O.Interface.sensor.transmembrane.data(end-2:end))/3 > O.Interface.sensor.transmembrane.end && O.tmpCount == 0 && O.Interface.startState == -1%tmpCount tells you if TMPbegin has been measured or not
-                    stop(O.pumpTimer)                                                                                                                             %and the startState tells you that you are no longer in the startup
-                    pause(0.5)
-                    disp('The transmembrane pressure went 0.2 bar higher than the beginning, so the feed pump stopped');
-                    O.value = 0;
-                    O.integral = 0;
-                    O.setValue(end+1) = O.value;
-                    O.changeSetting;
-                    O.Interface.GUI.startPumpButton.Value = false;
-                    O.count = 0;
-                    O.tmpCount = 1;
-                    O.Interface.UFState = 2;
-                end
-            end
             
         end %controlFlow
      

@@ -25,11 +25,11 @@ sensor_configurations_1 = {
                     "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A1
 
                   {"id": 2, "arduino_id": 1,
-                   "name": "UF Retentate Pressure", "unit": "bar","in_use": False,
+                   "name": "UF Retentate Pressure", "unit": "bar","in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A2
 
                   {"id": 3, "arduino_id": 1,
-                   "name": "UF Permeate Pressure", "unit": "bar",  "in_use": False,
+                   "name": "UF Permeate Pressure", "unit": "bar",  "in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A3
 
                   {"id": 4, "arduino_id": 1,
@@ -40,19 +40,19 @@ sensor_configurations_1 = {
 
     "massflow": [ {"id": 0, "arduino_id": 1,
                    "name": "UF Feed Flow", "unit": "l/min", "in_use": True, #A5
-                   "max_flow": 20.0},
+                   "max_flow": 5.0},
 
                   {"id": 1, "arduino_id": 1,
                    "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A6
-                   "max_flow": 10.0},
+                   "max_flow": 5.0},
 
                   {"id": 2, "arduino_id": 1,
                    "name": "UF Permeate Flow", "unit": "l/min", "in_use": False, #A7
                    "max_flow": 5.0},
 
                   {"id": 3, "arduino_id": 1,
-                   "name": "idle", "unit": "l/min", "in_use": False, #A8
-                   "max_flow": 0}
+                   "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A8
+                   "max_flow": 10.0}
                   ],
 
     "conductivity": [ {"id": 0, "arduino_id": 1,
@@ -89,11 +89,11 @@ sensor_configurations_1 = {
 
 
     "level": [ {"id": 0, "arduino_id": 1,
-                "name": "idle", "in_use": True}, #D22
+                "name": "UF Tank High", "in_use": True}, #D22
                {"id": 1, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D23
+                "name": "UF Tank Middle", "in_use": True}, #D23
                {"id": 2, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D24
+                "name": "UF Tank Low", "in_use": True}, #D24
                {"id": 3, "arduino_id": 1,
                 "name": "idle", "in_use": False}, #D25
                {"id": 4, "arduino_id": 1,
@@ -124,15 +124,15 @@ sensor_configurations_1 = {
 control_instrument_configurations_1 = {
 
     "cv3": [ {"id": 0, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D38
+              "name": "UF Switch", "in_use": True, #D38
              "start_state": "LOW"}, # or "HIGH"
 
              {"id": 1, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D39
+              "name": "idle", "in_use": True, #D39
              "start_state": "LOW"},
 
              {"id": 2, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D40
+              "name": "idle", "in_use": True, #D40
               "start_state": "LOW"},
 
              {"id": 3, "arduino_id": 1,
@@ -149,7 +149,7 @@ control_instrument_configurations_1 = {
             ],
 
     "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
-                          "name": "UF OCV", "in_use": True, #D44
+                          "name": "UF Backwash Valve", "in_use": True, #D44
                           "start_state": "LOW"}, # 'LOW' == open, 'HIGH' == closed
 
                          {"id": 1, "arduino_id": 1,
@@ -163,19 +163,28 @@ control_instrument_configurations_1 = {
                          ],
 
     "ocv_normally_open": [{"id": 0, "arduino_id": 1,
-                            "name": "UF OCV", "in_use": True, #D47
+                            "name": "UF Feed Valve", "in_use": True, #D47
                             "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
 
     "pump": [ {"id": 0,  "DAC_output": 'A',"arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
+               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 1, "DAC_output": 'B', "arduino_id": 1,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC B
-               "max_RPM": 9000.0, "starting_RPM": 0.0}
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "max_RPM": 9000.0, "starting_RPM": 0.0},
+
+              {"id": 2, "DAC_output": 'C', "arduino_id": 1,
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "max_RPM": 9000.0, "starting_RPM": 0.0},
+
+               {"id": 3, "DAC_output": 'D', "arduino_id": 1,
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "max_RPM": 9000.0, "starting_RPM": 0.0},
+
             ],
 
     # "pcv": [ {"id": 0, "DAC_output": 'C', "arduino_id": 1,
@@ -188,7 +197,7 @@ control_instrument_configurations_1 = {
     #          ],
 
     "polarity": [ {"id": 0, "arduino_id": 1,
-                   "name": "ED Polarity", "in_use": True, #D50
+                   "name": "ED Polarity", "in_use": False, #D50, 51
                    "start_state": "OFF"} # 'LOW' == positive, 'HIGH' == negative
                   ]
 }

@@ -1,15 +1,15 @@
-classdef massFlowSensor < handle
+classdef ConductivitySensor < handle
     properties (GetAccess = public, SetAccess = protected)
         
         name
         
         maxValue
         
-        command = ['f' 'g' 'h' 'i'];
+        command = ['j' 'k' 'l'];
         
         arduinoObj
         
-        minMassflow = 0;
+        minConductivity;
         
         minVoltage = 1; % check if the 250 Ohm resistor is attached!!
         
@@ -34,9 +34,9 @@ classdef massFlowSensor < handle
     
     methods
         
-        % command = ['f' 'g' 'h' 'i'];
+        % command = ['j' 'k' 'l'];
         
-        function O = massFlowSensor(arduinoObj, maxValue, identifier, name)
+        function O = ConductivitySensor(arduinoObj, maxValue, minValue, identifier, name)
             
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
@@ -50,6 +50,7 @@ classdef massFlowSensor < handle
             
             O.arduinoObj = arduinoObj;
             O.maxValue = maxValue;
+            O.minConductivity = minValue;
             O.command = O.command(identifier);
             O.name = name;
             O.data = 0;
@@ -59,20 +60,17 @@ classdef massFlowSensor < handle
         function f = get.value(O)
             
             % get the value from the arduino
-            raw_flow_measurement = O.arduinoObj.sendCommand(O.command);
+            raw_conductivity_measurement = O.arduinoObj.sendCommand(O.command);
             
-            graphConstant = O.maxValue - ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
+            graphConstant = O.maxValue - ((O.maxValue - O.minConductivity) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
             
             %calculate the data into l/min
-            f = raw_flow_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage)) + graphConstant;
+            f = raw_conductivity_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxValue - O.minConductivity) / (O.maxVoltage - O.minVoltage)) + graphConstant;
 
         end %end get the value
         
          
-    end
-    
-    
-    
-    
+    end %end methods
+       
     
 end

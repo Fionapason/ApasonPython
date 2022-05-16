@@ -18,7 +18,7 @@ class ArduinoCommunication:
     **Functions:** sendVoltage(volt, control_instrument, lock), retrieveMeasurement(sensor, lock)
     '''
     ports = dict()
-    port_names = ['/dev/cu.usbmodem1401', '/dev/cu.usbmodem1201'] #, '/dev/cu.usbmodem1201'
+    port_names = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem1201'
     baud = 115200
     analogReference = 5
     arduino_locks = [Lock(),Lock()]
@@ -51,11 +51,11 @@ class ArduinoCommunication:
         arduino_id = control_instrument.arduino_id
         lock = self.arduino_locks[arduino_id - 1]
         port = self.ports[arduino_id]
-        if state is "HIGH":
+        if state == "HIGH":
             command = control_instrument.command_high
-        elif state is "LOW":
+        elif state == "LOW":
             command = control_instrument.command_low
-        elif state is "OFF":
+        elif state == "OFF":
             command = control_instrument.command_off
         else:
             command = bytes('a', 'utf-8')

@@ -1,22 +1,16 @@
-classdef ocvNO < handle % UF3
+classdef cv < handle 
+    %UNTITLED5 Summary of this class goes here
+    %   Detailed explanation goes here
     
     % this file was copied from PCV by Yannik on 18.04.22
     
     properties (GetAccess = public, SetAccess = protected)
         
-        %Ki %Integral Constant
-        
-        %Kp %Proportional Constant
-        
         name
         
-        maxValue = 5; %Volt
+        commandopen = ['F' 'G' 'H' 'I' 'J']; % D38 - D41
         
-        minValue = 0; %Volt
-        
-        commandopen = 'R'; %D44
-        
-        commandclose = 'V'; %D44
+        commandclose = ['L' 'M' 'N' 'O' 'P']; % D38 - D41
         
         arduinoObj
         
@@ -39,7 +33,8 @@ classdef ocvNO < handle % UF3
     end
     
     methods
-        function O = ocvNO(arduinoObj, identifier, name)
+        
+        function O = cv(arduinoObj, identifier, name)
             
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
@@ -49,6 +44,8 @@ classdef ocvNO < handle % UF3
                 error('Input argument 3 has to be a string for the name');
             end
             
+            O.commandopen = O.commandopen(identifier);
+            O.commandclose = O.commandclose(identifier);
             O.arduinoObj = arduinoObj;
             O.name = name;
             
@@ -58,7 +55,7 @@ classdef ocvNO < handle % UF3
             
             O.arduinoObj.valveSendCommand(O.commandopen);
             
-            O.value = 0;
+            O.value = 5;
             
         end %end open
         
@@ -66,9 +63,10 @@ classdef ocvNO < handle % UF3
             
             O.arduinoObj.valveSendCommand(O.commandclose);
             
-            O.value = 5;
+            O.value = 0;
             
         end %end close
+            
      
     end %methods
 end

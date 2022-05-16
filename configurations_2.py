@@ -16,54 +16,50 @@ The comment next to each sensor/instrument object is the equivalent arduino outp
 sensor_configurations_2 = {
 
     "pressure": [  {"id": 5, "arduino_id": 2,
-                    "name": "GEMS", "unit": "bar", "in_use": False,
-                    "max_pressure": 5.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A0
-
-                   {"id": 6, "arduino_id": 2,
-                    "name": "UF Feed Pressure", "unit": "bar", "in_use": False,
+                    "name": "Diluate In Pressure", "unit": "bar", "in_use": True,
                     "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A1
 
-                  {"id": 7, "arduino_id": 2,
-                   "name": "UF Retentate Pressure", "unit": "bar","in_use": False,
+                  {"id": 6, "arduino_id": 2,
+                   "name": "Concentrate In Pressure", "unit": "bar","in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A2
 
-                  {"id": 8, "arduino_id": 2,
-                   "name": "UF Permeate Pressure", "unit": "bar",  "in_use": False,
+                  {"id": 7, "arduino_id": 2,
+                   "name": "Rinse Pressure", "unit": "bar",  "in_use": True,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A3
 
-                  {"id": 9, "arduino_id": 2,
+                  {"id": 8, "arduino_id": 2,
                    "name": "idle", "unit": "bar",  "in_use": False,
                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7} #A4
 
                    ],
 
     "massflow": [ {"id": 4, "arduino_id": 2,
-                   "name": "idle", "unit": "l/min", "in_use": False, #A5
+                   "name": "ED Concentrate Flow", "unit": "l/min", "in_use": False, #A5
                    "max_flow": 20.0},
 
                   {"id": 5, "arduino_id": 2,
-                   "name": "idle", "unit": "l/min", "in_use": False, #A6
+                   "name": "ED Diluate Flow", "unit": "l/min", "in_use": False, #A6
                    "max_flow": 10.0},
 
                   {"id": 6, "arduino_id": 2,
-                   "name": "idle", "unit": "l/min", "in_use": False, #A7
+                   "name": "ED Rinse Flow", "unit": "l/min", "in_use": False, #A7
                    "max_flow": 5.0},
 
                   {"id": 7, "arduino_id": 2,
-                   "name": "idle", "unit": "l/min", "in_use": False, #A8
+                   "name": "Posttreatment Flow", "unit": "l/min", "in_use": False, #A8
                    "max_flow": 0}
                   ],
 
     "conductivity": [ {"id": 3, "arduino_id": 2,
-                       "name": "ED Feed Cond", "unit": "mS/cm", "in_use": False, #A9
+                       "name": "ED Feed Cond", "unit": "mS/cm", "in_use": True, #A9
                        "max_Cond": 50.0, "min_Cond": 0.1},
 
                       {"id": 4, "arduino_id": 2,
-                       "name": "ED Diluate Cond", "unit": "mS/cm", "in_use": False, #A10
+                       "name": "ED Diluate Cond", "unit": "mS/cm", "in_use": True, #A10
                        "max_Cond": 50.0, "min_Cond": 0.1},
 
                       {"id": 5, "arduino_id": 2,
-                       "name": "ED Concentrate Cond", "unit": "mS/cm", "in_use": False, #A11
+                       "name": "ED Concentrate Cond", "unit": "mS/cm", "in_use": True, #A11
                        "max_Cond": 50.0, "min_Cond": 0.1}
 
                       ],
@@ -88,15 +84,15 @@ sensor_configurations_2 = {
 
 
     "level": [ {"id": 15, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D22
+                "name": "ED-Con Tank High", "in_use": True}, #D22
                {"id": 16, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D23
+                "name": "ED-Con Tank Middle", "in_use": True}, #D23
                {"id": 17, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D24
+                "name": "ED-Split Tank Middle", "in_use": True}, #D24
                {"id": 18, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D25
+                    "name": "ED-Split Tank Low", "in_use": True}, #D25
                {"id": 19, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D26
+                "name": "ED-Rinse Tank", "in_use": True}, #D26
                {"id": 20, "arduino_id": 2,
                 "name": "idle", "in_use": False}, #D27
                {"id": 21, "arduino_id": 2,
@@ -123,32 +119,32 @@ sensor_configurations_2 = {
 control_instrument_configurations_2 = {
 
     "cv3": [ {"id": 6, "arduino_id": 2,
-              "name": "idle", "in_use": False, #D38
-             "start_state": "HIGH"}, # or "RIGHT"
+              "name": "ED Pre-Diluate", "in_use": True, #D38
+             "start_state": "LOW"}, # or "RIGHT"
 
              {"id": 7, "arduino_id": 2,
-              "name": "idle", "in_use": False, #D39
-             "start_state": "HIGH"},
+              "name": "ED Pre-Concentrate", "in_use": True, #D39
+             "start_state": "LOW"},
 
              {"id": 8, "arduino_id": 2,
-              "name": "idle", "in_use": False, #D40
-              "start_state": "HIGH"},
+              "name": "ED Post-Diluate", "in_use": True, #D40
+              "start_state": "LOW"},
 
              {"id": 9, "arduino_id": 2,
-              "name": "idle", "in_use": False, #D41
-              "start_state": "HIGH"},
+              "name": "ED Post-Concentrate", "in_use": True, #D41
+              "start_state": "LOW"},
 
              {"id": 10, "arduino_id": 2,
-              "name": "idle", "in_use": False, #D42
-              "start_state": "HIGH"},
+              "name": "ED Second-Pre-Diluate", "in_use": True, #D42
+              "start_state": "LOW"},
 
              {"id": 11, "arduino_id": 2,
               "name": "idle", "in_use": False, #D43
-              "start_state": "HIGH"},
+              "start_state": "LOW"},
             ],
 
     "ocv_normally_closed": [{"id": 3, "arduino_id": 2,
-                          "name": "UF OCV", "in_use": False, #D44
+                          "name": "ED Dilute Concentrate", "in_use": True, #D44
                           "start_state": "LOW"},  # 'LOW' == open, 'HIGH' == closed
 
                          {"id": 4, "arduino_id": 2,
@@ -163,17 +159,25 @@ control_instrument_configurations_2 = {
 
     "ocv_normally_open": [{"id": 1, "arduino_id": 2,
                             "name": "UF OCV", "in_use": False, #D47
-                            "start_state": "HIGH"}  # 'HIGH' == open, 'LOW' == closed
+                            "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
 
     "pump": [ {"id": 2,  "DAC_output": 'A', "arduino_id": 2,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": False,  #D48 ON/OFF, DAC A
+               "name": "Posttreatment Pump", "unit": "RPM", "in_use": False,  #D48 ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 3, "DAC_output": 'B', "arduino_id": 2,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": False,  #D49 ON/OFF, DAC B
+               "name": "Rinse Pump", "unit": "RPM", "in_use": False,  #D49 ON/OFF, DAC B
+               "max_RPM": 9000.0, "starting_RPM": 0.0},
+
+              {"id": 4, "DAC_output": 'B', "arduino_id": 2,
+               "name": "Concentrate Pump", "unit": "RPM", "in_use": False,  #D49 ON/OFF, DAC B
+               "max_RPM": 9000.0, "starting_RPM": 0.0},
+
+              {"id": 5, "DAC_output": 'B', "arduino_id": 2,
+               "name": "Diluate Pump", "unit": "RPM", "in_use": False,  #D49 ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0}
             ],
 
@@ -187,8 +191,8 @@ control_instrument_configurations_2 = {
     #          ],
 
     "polarity": [ {"id": 0, "arduino_id": 2,
-                   "name": "ED Polarity", "in_use": False, #D50
-                   "start_state": "OFF"} # 'LOW' == positive, 'HIGH' == negative
+                   "name": "ED Polarity", "in_use": True, #D50
+                   "start_state": "OFF"} # 'LOW' == positive, 'HIGH' == negative, "OFF" == no voltage
                   ]
 }
 

@@ -206,6 +206,19 @@ void setup() {
 
   ED_Polarity_Off();
 
+  CLOSE_OCV_NC_1();
+  CLOSE_OCV_NC_2();
+  CLOSE_OCV_NC_3();
+  OPEN_OCV_NO_4();
+
+  set_LOW_TWV_1();
+  set_LOW_TWV_2();
+  set_LOW_TWV_3();
+  set_LOW_TWV_4();
+  set_LOW_TWV_5();
+  set_LOW_TWV_6();
+
+
   Serial.println("I AM DONE! \n");
 
 }

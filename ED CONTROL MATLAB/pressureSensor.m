@@ -1,6 +1,6 @@
 classdef pressureSensor < handle
     %UNTITLED3 Summary of this class goes here
-    % Detailed explanation goes here
+    %   Detailed explanation goes here
     
     properties (GetAccess = public, SetAccess = protected)
         
@@ -8,7 +8,7 @@ classdef pressureSensor < handle
         
         maxValue
         
-        command = ['b' 'c' 'd'];
+        command = ['a' 'b' 'c' 'd' 'e' 'p'];
         
         arduinoObj
         
@@ -31,6 +31,7 @@ classdef pressureSensor < handle
         num = 0;
         
         Interface
+        
     end
     
     properties (Dependent)
@@ -47,8 +48,8 @@ classdef pressureSensor < handle
                 error('Input argument 1 has to be talkToArduino class object');
             elseif ~isnumeric(maxValue)
                 error('Input argument 2 has to be a double for the maxValue');
-            elseif identifier > 5 || identifier < 1
-                error('Input argument 3 has to be a number between 1 and 5'); % 
+            elseif identifier > 6 || identifier < 1
+                error('Input argument 3 has to be a number between 1 and 6'); % 
             elseif ~isstring(name)
                 error('Input argument 4 has to be a string for the name'); % "" is for string
             end
@@ -84,48 +85,7 @@ classdef pressureSensor < handle
             
             if average > O.criticalValue
                 disp(['The pressure sensor ', num2str(O.name), ' has reached the critical value so the pumps and arduino were shut down']);
-                
                 O.Interface.endSystem;
-                % SET THE PUMPS TO 0 and display this!
-%             for identifier = 1:2
-%                 if O.Interface.configuration.pump(identifier,1) == 1
-%                    O.Interface.sensor.pump(identifier).value = 0;
-%                    O.Interface.sensor.pump(identifier).changeSetting;
-%                 end
-%             end
-%             
-%             disp('The Pumps are set to 0 rpm');
-%         
-%             %Stop pressureTimer
-%             for identifier = 1:3
-%                 if O.Interface.configuration.pressure(identifier,1)
-%                     stop(O.Interface.sensor.pressure(identifier).pressureTimer);
-%                     delete(O.Interface.sensor.pressure(identifier).pressureTimer);
-%                 end
-%             end
-%             
-%             %stop pcvTimer
-%             if O.Interface.GUI.startControlButton.Value == true
-%                 for identifier = 1:2
-%                     if O.Interface.configuration.pcv(identifier,1)
-%                         stop(O.Interface.sensor.pcv(identifier).pcvTimer); %pressure tester stopped
-%                         delete(O.Interface.sensor.pcv(identifier).pcvTimer);
-%                     end
-%                 end
-%             end
-%             
-%             if O.Interface.GUI.startButton.Value == true
-%                 stop(O.Interface.timerLog);
-%             end
-%             
-%             delete(O.Interface.timerLog); %measurements stopped
-%             
-%             delete(O.Interface.GUI.fig);
-%             delete(O.arduinoObj);
-%             
-%             %Saving all the data as a matfile so you can read from it very easily with the same names as here 
-%             %--> load('filename.mat') brings all the things into the workspace
-%             save(O.Interface.export.filename);
             elseif average > O.warningValue
                 warning(['The pressure sensor ', num2str(O.name), 'is near your critical value of ', num2str(O.criticalValue), ' bar. Take the according measures']);
             end

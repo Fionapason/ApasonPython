@@ -83,7 +83,7 @@ class GUI_GridLayout(GridLayout):
 
 
 class apason_GUIApp(App):
-    command_centre = None
+    command_center = None
 
     voltage_output_1 : float = 0
     voltage_output_2 : float = 0
@@ -110,7 +110,7 @@ class apason_GUIApp(App):
         self.layout.massflow_display_3 = self.massflow_display_3
 
     def setServer(self, cc_server, sl_server):
-        self.command_centre = cc_server
+        self.command_center = cc_server
         self.sensor_list = sl_server
 
     def build(self):
@@ -120,7 +120,7 @@ class apason_GUIApp(App):
         return self.layout
 
     def on_stop(self):
-        self.command_centre.stop_server()
+        self.command_center.stop_server()
         self.sensor_list.stop_server()
 
 

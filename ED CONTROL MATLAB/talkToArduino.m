@@ -6,7 +6,7 @@ classdef talkToArduino
         
         comPort
         
-        baudRate
+        baudRate = 115200;
         
         analogReference = 5.0;
         
@@ -15,12 +15,11 @@ classdef talkToArduino
    
     methods
         
-        function O = talkToArduino(comPort, baudRate)
+        function O = talkToArduino(comPort)
             if nargin<1
                 error('Indicate the com port as first argument');
             end
             O.comPort = comPort;
-            O.baudRate = baudRate;
             
             %to find the correct serialport name, go to the command line and type
             %"serialportlist("available")"
@@ -36,8 +35,6 @@ classdef talkToArduino
             assert(isequal(read(O.arduinoObj,1,"char"), 'a'));
             
             write(O.arduinoObj,'a', "char")
-            
-%             pause(2)
             
             assert(isequal(read(O.arduinoObj,1,"char"), '+'));
             
@@ -82,11 +79,9 @@ classdef talkToArduino
             write(O.arduinoObj, command , "char");
             pause(0.1)
             write(O.arduinoObj, value, 'string');
-            pause(0.1);
+%             pause(0.1);
             
-%           assert(isequal(read(O.arduinoObj, 1, "char"), '+'));
-            
-            flush(O.arduinoObj);
+%             assert(isequal(read(O.arduinoObj, 1, "char"), '+'));
             
             flush(O.arduinoObj);
             

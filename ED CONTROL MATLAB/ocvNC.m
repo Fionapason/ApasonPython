@@ -1,22 +1,12 @@
-classdef ocvNO < handle % UF3
-    
-    % this file was copied from PCV by Yannik on 18.04.22
+classdef ocvNC < handle % ED General Code
     
     properties (GetAccess = public, SetAccess = protected)
         
-        %Ki %Integral Constant
-        
-        %Kp %Proportional Constant
-        
         name
         
-        maxValue = 5; %Volt
+        commandopen = ['R' 'S' 'T']; %D44 - D46
         
-        minValue = 0; %Volt
-        
-        commandopen = 'R'; %D44
-        
-        commandclose = 'V'; %D44
+        commandclose = ['V' 'W' 'X']; %D44
         
         arduinoObj
         
@@ -30,7 +20,7 @@ classdef ocvNO < handle % UF3
 
         controlTime = 0;
         
-        value = 0;
+        value;
         
         setValue = 0; %in the beginning
         
@@ -39,18 +29,21 @@ classdef ocvNO < handle % UF3
     end
     
     methods
-        function O = ocvNO(arduinoObj, identifier, name)
+        function O = ocvNC(arduinoObj, identifier, name)
             
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
-            elseif identifier > 4 || identifier < 1
-                error('Input argument 2 has to be a number between 1 and 4');
+            elseif identifier > 3 || identifier < 1
+                error('Input argument 2 has to be a number between 1 and 3');
             elseif ~isstring(name)
                 error('Input argument 3 has to be a string for the name');
             end
             
+            O.commandopen = O.commandopen(identifier);
+            O.commandclose = O.commandclose(identifier);
             O.arduinoObj = arduinoObj;
             O.name = name;
+            O.value = 5; %in the beginning it is closed
             
         end %end constructor
         

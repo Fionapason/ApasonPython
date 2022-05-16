@@ -1,5 +1,5 @@
 import ArduinoCommunication as ard_com
-import GUI.GUI as gui
+import GUI.gui as gui
 from threading import Thread
 import time
 import Arduino_Sensors
@@ -102,13 +102,7 @@ class Command_Center:
 
         while(self.run_cc):
             self.send_commands()
-            time.sleep(2)
-
-            self.apason_system.polarity.set_new_state(new_state='HIGH')
-            self.send_commands()
-
-            time.sleep(2)
-            self.apason_system.polarity.set_new_state(new_state='LOW')
+            time.sleep(1)
 
     def stop_server(self):
         self.run_cc = False
@@ -140,12 +134,12 @@ class Update_List:
         self.list = list
         self.arduino = arduino
 
-        self.update_list_thread = Thread(target=self.run)
+        self.update_list_thread = Thread(target=self.run_update_list)
         self.update_list_thread.start()
 
     def set_from_list(self):
 
-        self.interface.pressure_display_1 = str(self.list.levelswitch[0].current_value)
+        self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
         # self.interface.pressure_display_2 = str(self.list.pressure[1].current_value)
         # self.interface.pressure_display_3 = str(self.list.pressure[2].current_value)
         #
@@ -153,14 +147,22 @@ class Update_List:
         # self.interface.massflow_display_2 = str(self.list.massflow[1].current_value)
         # self.interface.massflow_display_3 = str(self.list.massflow[2].current_value)
 
+        print("UF Feed Current Massflow: " + str(self.list.massflow[0].current_value) + "\n")
+        print("UF Backwash Current Massflow: " + str(self.list.massflow[1].current_value) + "\n")
+
+        # print("UF HIGH LEVEL SWITCH READING: " + self.list.levelswitch[0].current_value)
+        # print("UF MIDDLE LEVEL SWITCH READING: " + self.list.levelswitch[1].current_value)
 
 
-    def run(self):
+    def run_update_list(self):
         while (self.run_ul):
             index = 0
-            # for sensor in self.list.pressure:
-            #     sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index]))
-            #     index += 1
+
+            for sensor in self.list.pressure:
+                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index]))
+                index += 1
+
+            index = 0
 
             for sensor in self.list.levelswitch:
                 digital = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
@@ -170,11 +172,11 @@ class Update_List:
             index = 0
 
             for sensor in self.list.massflow:
-                sensor.updateValue(self.arduino.checkDigital(sensors.massflow_sensors[index]))
+                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index]))
                 index += 1
 
             self.set_from_list()
-            time.sleep(0.1)
+            time.sleep(5)
 
 
     def stop_server(self):
@@ -195,17 +197,22 @@ if __name__ == '__main__':
 
     update_list = ulist.Sensor_Update_List()
 
+    arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[0])
+    arduinos.sendVoltage(volt=820, control_instrument=control_instruments.pump_instruments[2])
+    arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[1])
+    arduinos.sendVoltage(volt=575, control_instrument=control_instruments.pump_instruments[3])
+
     view: gui.apason_GUIApp = gui.apason_GUIApp()
 
-    pressure = Update_List(interface=view,
-                           list=update_list,
-                           arduino=arduinos)
+    update = Update_List(interface=view,
+                         list=update_list,
+                         arduino=arduinos)
 
-    voltage = Command_Center(arduinos=arduinos,
-                             ard_control=control_instruments,
-                             update_list=update_list,
-                             interface=view)
+    command_center = Command_Center(arduinos=arduinos,
+                                    ard_control=control_instruments,
+                                    update_list=update_list,
+                                    interface=view)
 
-    view.setServer(voltage, pressure)
+    view.setServer(command_center, update)
 
     view.run()

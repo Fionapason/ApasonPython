@@ -764,6 +764,16 @@ void inputSwitch(char input){
       Serial.write('+');
       break;
 
+      case 'J':
+      set_HIGH_TWV_5();
+      Serial.write('+');
+      break;
+
+    case 'K':
+      set_HIGH_TWV_6();
+      Serial.write('+');
+      break;
+
 
 
 
@@ -786,7 +796,15 @@ void inputSwitch(char input){
       set_LOW_TWV_4();
       Serial.write('+');
       break;
+    case 'P':
+      set_LOW_TWV_5();
+      Serial.write('+');
+      break;
 
+    case 'Q':
+      set_LOW_TWV_6();
+      Serial.write('+');
+      break;
 
 
 

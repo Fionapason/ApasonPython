@@ -40,16 +40,16 @@ classdef Polarity < handle
         function changeSetting(O)
             
             if O.value == 1
-               O.arduinoObj.sendCommand('(');
+               O.arduinoObj.sendCommand('('); %normal polarity
 
             elseif O.value == -1
-               O.arduinoObj.sendCommand(')');
-               
+               O.arduinoObj.sendCommand(')'); %negative
+
             elseif O.value == 0
-                O.arduinoObj.sendCommand('*');
-                
+                O.arduinoObj.sendCommand('*'); %off
+
             else
-                error('Changing value to undefined state')
+                error('Changing ED polarity to undefined state')
             end
 
         end %changeSetting

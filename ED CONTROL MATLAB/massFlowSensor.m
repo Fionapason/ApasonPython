@@ -15,29 +15,30 @@ classdef massFlowSensor < handle
         
         maxVoltage = 5;
         
+        graphConstant
     end
-    
+
     properties
-        
+
         data % to store
-        
+
         time
 
     end
-    
+
     properties (Dependent)
-        
+
         value
-        
+
     end
-    
-    
+
+
     methods
-        
+
         % command = ['f' 'g' 'h' 'i'];
-        
+
         function O = massFlowSensor(arduinoObj, maxValue, identifier, name)
-            
+
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
             elseif ~isnumeric(maxValue)
@@ -47,24 +48,24 @@ classdef massFlowSensor < handle
             elseif ~isstring(name)
                 error('Input argument 4 has to be a string for the name');
             end
-            
+
             O.arduinoObj = arduinoObj;
             O.maxValue = maxValue;
             O.command = O.command(identifier);
             O.name = name;
             O.data = 0;
             O.time = 0;
+            O.graphConstant = O.maxValue - ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
+
         end % end constructor
-        
+
         function f = get.value(O)
-            
+
             % get the value from the arduino
             raw_flow_measurement = O.arduinoObj.sendCommand(O.command);
-            
-            graphConstant = O.maxValue - ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
-            
+
             %calculate the data into l/min
-            f = raw_flow_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage)) + graphConstant;
+            f = raw_flow_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxValue - O.minMassflow) / (O.maxVoltage - O.minVoltage)) + O.graphConstant;
 
         end %end get the value
         

@@ -8,58 +8,58 @@ classdef cv < handle
         
         name
         
-        commandopen = ['F' 'G' 'H' 'I' 'J']; % D38 - D41
-        
-        commandclose = ['L' 'M' 'N' 'O' 'P']; % D38 - D41
-        
+        commandopen = ['F' 'G' 'H' 'I' 'J']; % D38 - D42 - SET HIGH - changed from normal
+
+        commandclose = ['L' 'M' 'N' 'O' 'P']; % D38 - D42 - SET LOW - "normal" like in datasheet
+
         arduinoObj
-        
+
     end
-    
+
     properties
-        
+
         data = 0; % to store
-        
+
         time = 0; %to store
 
         controlTime = 0;
-        
+
         value = 0;
-        
+
         setValue = 0; %in the beginning
-        
+
         count
-        
+
     end
-    
+
     methods
-        
+
         function O = cv(arduinoObj, identifier, name)
-            
+
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
-            elseif identifier > 4 || identifier < 1
+            elseif identifier > 5 || identifier < 1
                 error('Input argument 2 has to be a number between 1 and 4');
             elseif ~isstring(name)
                 error('Input argument 3 has to be a string for the name');
             end
-            
+
             O.commandopen = O.commandopen(identifier);
             O.commandclose = O.commandclose(identifier);
             O.arduinoObj = arduinoObj;
             O.name = name;
-            
+
         end %end constructor
-        
+
         function open(O) %change the position of the valve
-            
+
             O.arduinoObj.valveSendCommand(O.commandopen);
-            
+
             O.value = 5;
-            
+
         end %end open
-        
-        function close(O)
+
+        function close(O) % normal position like in datasheet
             
             O.arduinoObj.valveSendCommand(O.commandclose);
             

@@ -84,48 +84,8 @@ classdef pressureSensor < handle
             
             if average > O.criticalValue
                 disp(['The pressure sensor ', num2str(O.name), ' has reached the critical value so the pumps and arduino were shut down']);
-                
+                O.arduinoObj.sendCommand(']'); %UF is shutting down - sending to ED
                 O.Interface.endSystem;
-                % SET THE PUMPS TO 0 and display this!
-%             for identifier = 1:2
-%                 if O.Interface.configuration.pump(identifier,1) == 1
-%                    O.Interface.sensor.pump(identifier).value = 0;
-%                    O.Interface.sensor.pump(identifier).changeSetting;
-%                 end
-%             end
-%             
-%             disp('The Pumps are set to 0 rpm');
-%         
-%             %Stop pressureTimer
-%             for identifier = 1:3
-%                 if O.Interface.configuration.pressure(identifier,1)
-%                     stop(O.Interface.sensor.pressure(identifier).pressureTimer);
-%                     delete(O.Interface.sensor.pressure(identifier).pressureTimer);
-%                 end
-%             end
-%             
-%             %stop pcvTimer
-%             if O.Interface.GUI.startControlButton.Value == true
-%                 for identifier = 1:2
-%                     if O.Interface.configuration.pcv(identifier,1)
-%                         stop(O.Interface.sensor.pcv(identifier).pcvTimer); %pressure tester stopped
-%                         delete(O.Interface.sensor.pcv(identifier).pcvTimer);
-%                     end
-%                 end
-%             end
-%             
-%             if O.Interface.GUI.startButton.Value == true
-%                 stop(O.Interface.timerLog);
-%             end
-%             
-%             delete(O.Interface.timerLog); %measurements stopped
-%             
-%             delete(O.Interface.GUI.fig);
-%             delete(O.arduinoObj);
-%             
-%             %Saving all the data as a matfile so you can read from it very easily with the same names as here 
-%             %--> load('filename.mat') brings all the things into the workspace
-%             save(O.Interface.export.filename);
             elseif average > O.warningValue
                 warning(['The pressure sensor ', num2str(O.name), 'is near your critical value of ', num2str(O.criticalValue), ' bar. Take the according measures']);
             end

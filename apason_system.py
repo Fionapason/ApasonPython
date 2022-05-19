@@ -116,7 +116,7 @@ class System_CV3:
     state : str
     changed = False
 
-    def __init__(self, id, name, state="HIGH"):
+    def __init__(self, id, name, state="LOW"):
         self.id = id
         self.name = name
         self.state = state
@@ -168,6 +168,7 @@ class Apason_System():
 
     def turn_on_instruments(self):
         self.set_instruments()
+
 
     def turn_on_control(self):
         self.overall_control = control.Overall_Control(update_list=self.update_list, apason_system=self)
@@ -233,12 +234,14 @@ class Apason_System():
                                      name=cv3["name"],
                                      state=cv3["start_state"])
                 self.system_cv3s.append(new_cv3)
+
         for ocv_no in conf_2.control_instrument_configurations_2["ocv_normally_open"]:
             if ocv_no["in_use"]:
                 new_ocv_no = System_OCV_NO(id=ocv_no["id"],
                                            name=ocv_no["name"],
                                         state=ocv_no["start_state"])
                 self.system_ocvs_no.append(new_ocv_no)
+
         for ocv_nc in conf_2.control_instrument_configurations_2["ocv_normally_closed"]:
             if ocv_nc["in_use"]:
                 new_ocv_nc = System_OCV_NC(id=ocv_nc["id"],
@@ -250,6 +253,8 @@ class Apason_System():
             if polarity["in_use"]:
                 new_polarity = System_Polarity(state=polarity["start_state"])
                 self.polarity = new_polarity
+
+
 
 
 

@@ -145,7 +145,6 @@ classdef ConductivitySensor < handle
 
             O.setFlow = O.setFlow + out;
 
-
             O.nonSatFlow = O.setFlow;
 
             if O.setFlow > O.maxFlow
@@ -154,15 +153,18 @@ classdef ConductivitySensor < handle
                 O.setFlow = O.minFlow;
             end
 
-            for identifier = [1 3 4] % all but the rinse
-                O.Interface.sensor.pump(identifier).setFlow.value(end) = O.setFlow;
-                O.Interface.sensor.pump(identifier).setFlow.t(end) = (now - O.Interface.sensor.pressure(O.Interface.sensor.beginTimeIdentifier).time(2))*24*3600;
-            end
-
             if actualValue > 1 && O.Interface.sensor.cv(5).value == 0
                 O.Interface.sensor.cv(5).open % value = 5 -- change sucht that it goes into the concentrate tank
             elseif actualValue < 1 && O.Interface.sensor.cv(5).value == 5
                 O.Interface.sensor.cv(5).close % value = 0 -- normal
+            end
+
+            for identifier = [1 3 4] % all but the rinse
+                O.Interface.sensor.pump(identifier).setFlow.value(end) = O.setFlow*O.Interface.sensor.pump(identifier).adjustment;
+                if O.Interface.sensor.pump(identifier).setFlow.value(end) < 0.25
+                    O.Interface.sensor.pump(identifier).setFlow.value(end) = 0.25;
+                end
+                O.Interface.sensor.pump(identifier).setFlow.t(end) = (now - O.Interface.sensor.pressure(O.Interface.sensor.beginTimeIdentifier).time(2))*24*3600;
             end
 
             O.count = O.count + 1;

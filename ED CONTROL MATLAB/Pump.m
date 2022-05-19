@@ -54,12 +54,14 @@ classdef Pump < handle %ED General Code
         
         mfObj %to say which massflowsensor is used for comparison
         
+        adjustment
+
     end
-    
-    
+
+
     methods
         function O = Pump(arduinoObj, maxValue, identifier, name, setFlow, Kp, Ki, mfObj, pressureSensors, Interface)
-            
+
             if ~isa(arduinoObj,'talkToArduino')
                 error('Input argument 1 has to be talkToArduino class object');
             elseif ~isnumeric(maxValue)
@@ -69,7 +71,7 @@ classdef Pump < handle %ED General Code
             elseif ~isstring(name)
                 error('Input argument 4 has to be a string for the name');
             end
-            
+
             O.arduinoObj = arduinoObj;
             O.maxValue = maxValue;
             O.command = O.command(identifier);
@@ -86,6 +88,7 @@ classdef Pump < handle %ED General Code
             O.count = 0;
             O.pressureSensors = pressureSensors;
             O.Interface = Interface;
+            O.adjustment = 1;
 
             O.pumpTimer = timer('ExecutionMode', 'fixedSpacing','Period',1);
             O.pumpTimer.StartFcn = @(~,~)disp([char(O.name), ' Controller started']);

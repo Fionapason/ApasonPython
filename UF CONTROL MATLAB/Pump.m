@@ -115,7 +115,7 @@ classdef Pump < handle %UF3
         
         function controlFlow(O) %Controller
             
-            O.controlTime(end+1) = (now - O.pressureSensors(O.beginTimeIdentifier).time(2))*24*3600;
+            O.controlTime(end+1) = (now - O.pressureSensors(O.Interface.sensor.beginTimeIdentifier).time(2))*24*3600;
             
             if O.count == 0
                 elapsedTime = (O.controlTime(end)-O.mfObj.time(end));

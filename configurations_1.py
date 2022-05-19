@@ -38,21 +38,23 @@ sensor_configurations_1 = {
 
                    ],
 
-    "massflow": [ {"id": 0, "arduino_id": 1,
-                   "name": "UF Feed Flow", "unit": "l/min", "in_use": True, #A5
-                   "max_flow": 5.0},
-
-                  {"id": 1, "arduino_id": 1,
-                   "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A6
+    "massflow": [{"id": 1, "arduino_id": 1,
+                   "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A5
                    "max_flow": 5.0},
 
                   {"id": 2, "arduino_id": 1,
-                   "name": "UF Permeate Flow", "unit": "l/min", "in_use": False, #A7
-                   "max_flow": 5.0},
+                   "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A6
+                   "max_flow": 10.0},
 
                   {"id": 3, "arduino_id": 1,
-                   "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A8
-                   "max_flow": 10.0}
+                   "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A7
+                   "max_flow": 5.0},
+
+                 {"id": 0, "arduino_id": 1,
+                  "name": "UF Feed Flow", "unit": "l/min", "in_use": False,  # A8
+                  "max_flow": 5.0}
+
+
                   ],
 
     "conductivity": [ {"id": 0, "arduino_id": 1,
@@ -69,41 +71,22 @@ sensor_configurations_1 = {
 
                       ],
 
-    # "temperature": [ {"id": 0, "arduino_id": 1,
-    #                   "name": "ED Feed Temp", "unit": "ºC",  "in_use": False,
-    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A12
-    #
-    #                  {"id": 1, "arduino_id": 1,
-    #                   "name": "ED Diluate Temp", "unit": "ºC", "in_use": False,
-    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}, #A13
-    #
-    #                  {"id": 2, "arduino_id": 1,
-    #                   "name": "ED Concentrate Temp", "unit": "ºC", "in_use": False,
-    #                   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0} #A14
-    #
-    #                 # ,
-    #                 #  {"id": 3, "arduino_id": 1,
-    #                 #   "name": "AC Tank Temp", "unit": "ºC", "in_use": True,
-    #                 #   "max_Temp": 50.0, "critical_temp": 40.0, "warning_temp": 38.0}  #A15
-    #                  ],
-
-
     "level": [ {"id": 0, "arduino_id": 1,
-                "name": "UF Tank High", "in_use": True}, #D22
+                "name": "Feed Tank High", "in_use": True}, #D22
                {"id": 1, "arduino_id": 1,
-                "name": "UF Tank Middle", "in_use": True}, #D23
+                "name": "Feed Tank Middle", "in_use": True}, #D23
                {"id": 2, "arduino_id": 1,
-                "name": "UF Tank Low", "in_use": True}, #D24
+                "name": "Feed Tank Low", "in_use": True}, #D24
                {"id": 3, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D25
+                "name": "UF Tank High", "in_use": True}, #D25
                {"id": 4, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D26
+                "name": "UF Tank Middle", "in_use": True}, #D26
                {"id": 5, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D27
+                "name": "Purge Tank Middle", "in_use": True}, #D27
                {"id": 6, "arduino_id": 1,
                 "name": "idle", "in_use": False}, #D28
                {"id": 7, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D29
+                "name": "Purge Tank High", "in_use": False}, #D29
                {"id": 8, "arduino_id": 1,
                 "name": "idle", "in_use": False}, #D30
                {"id": 9, "arduino_id": 1,
@@ -126,39 +109,11 @@ control_instrument_configurations_1 = {
     "cv3": [ {"id": 0, "arduino_id": 1,
               "name": "UF Switch", "in_use": True, #D38
              "start_state": "LOW"}, # or "HIGH"
-
-             {"id": 1, "arduino_id": 1,
-              "name": "idle", "in_use": True, #D39
-             "start_state": "LOW"},
-
-             {"id": 2, "arduino_id": 1,
-              "name": "idle", "in_use": True, #D40
-              "start_state": "LOW"},
-
-             {"id": 3, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D41
-              "start_state": "LOW"},
-
-             {"id": 4, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D42
-              "start_state": "LOW"},
-
-             {"id": 5, "arduino_id": 1,
-              "name": "idle", "in_use": False, #D43
-              "start_state": "LOW"},
             ],
 
     "ocv_normally_closed": [{"id": 0, "arduino_id": 1,
                           "name": "UF Backwash Valve", "in_use": True, #D44
-                          "start_state": "LOW"}, # 'LOW' == open, 'HIGH' == closed
-
-                         {"id": 1, "arduino_id": 1,
-                          "name": "UF OCV", "in_use": False, #D45
-                          "start_state": "LOW"},
-
-                         {"id": 2, "arduino_id": 1,
-                          "name": "UF OCV", "in_use": False, #D46
-                          "start_state": "LOW"},
+                          "start_state": "LOW"} # 'LOW' == open, 'HIGH' == closed
 
                          ],
 
@@ -185,21 +140,8 @@ control_instrument_configurations_1 = {
                "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
-            ],
+            ]
 
-    # "pcv": [ {"id": 0, "DAC_output": 'C', "arduino_id": 1,
-    #           "name": "UF PCV", "unit": "%", "in_use": False, #DAC C
-    #           "start_opening": 100.0},
-    #
-    #          {"id": 1, "DAC_output": 'D', "arduino_id": 1,
-    #           "name": "ED PCV", "unit": "%", "in_use": False, #DAC D
-    #           "start_opening": 40.0}
-    #          ],
-
-    "polarity": [ {"id": 0, "arduino_id": 1,
-                   "name": "ED Polarity", "in_use": False, #D50, 51
-                   "start_state": "OFF"} # 'LOW' == positive, 'HIGH' == negative
-                  ]
 }
 
 if __name__ == '__main__':

@@ -7,8 +7,9 @@ All starting states of control instruments will be set here
 # MAKE SURE THE SENSORS AND PUMP NAMES ARE CONGRUOUS WITH THE NAMES IN CONF 1 + 2!!!!
 
 control_configurations = {
+
     "uf_feed_flow":     {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
-                         "control_value_sensor_name": "UF Feed Flow", "control_instrument_name": "UF Feed Pump", "in_use": True,
+                         "control_value_sensor_name": "UF Permeate Flow", "control_instrument_name": "UF Feed Pump", "in_use": True,
                          "desired_value": 1.0, "K_p": 5, "K_i": 0.01},
 
     "uf_backwash_flow": {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
@@ -31,22 +32,22 @@ control_configurations = {
     "ed_pt_flow":           {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "Posttreatment Flow", "control_value_sensor_reversal_name": "Posttreatment Flow",
                              "control_instrument_name": "Posttreatment Pump", "in_use": True,
-                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.01},
+                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.01, "pressure_dependent": False},
 
     "ed_rinse_flow":        {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "ED Rinse Flow", "control_value_sensor_reversal_name": "ED Rinse Flow",
                              "control_instrument_name": "Rinse Pump", "in_use": True,
-                            "desired_value": 2.5, "K_p": 2.0, "K_i": 0.0},
+                            "desired_value": 2.5, "K_p": 2.0, "K_i": 0.0, "pressure_dependent": False},
 
     "ed_concentrate_flow":  {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "Concentrate Flow", "control_value_sensor_reversal_name": "ED Diluate Flow",
                              "control_instrument_name": "Concentrate Pump", "in_use": True,
-                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.0},
+                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.0, "pressure_dependent": True},
 
     "ed_diluate_flow":     {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "ED Diluate Flow", "control_value_sensor_reversal_name": "Concentrate Flow",
                             "control_instrument_name": "Diluate Pump", "in_use": True,
-                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.0},
+                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.0, "pressure_dependent": True},
 
 
     "ed_pressures": {"diluate_pressure_sensor_name": "Diluate In Pressure",
@@ -55,8 +56,9 @@ control_configurations = {
                      "in_use": True,
                      "critical_value_DC": 0.1, "critical_value_RD": 0.2},
 
-    "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond",
-                        "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67},
+    "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond", "control_cv3": "ED Second-Pre-Diluate",
+                        "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67,
+                        "K_p": 1.0, "K_i": 0.0}, # TODO ADJUST
 
     "ed_general": {"ed_pre_diluate_valve_name": "ED Pre-Diluate", "ed_pre_concentrate_valve_name": "ED Pre-Concentrate",
                    "ed_post_diluate_valve_name": "ED Post-Diluate", "ed_post_concentrate_valve_name": "ED Post-Concentrate",

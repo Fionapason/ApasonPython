@@ -260,7 +260,7 @@ class Arduino_Sensors:
             if sensor["in_use"]:
 
                 # Adjust command index
-                index = len(self.pressure_commands) - sensor["id"]
+                index = sensor["id"] - len(self.pressure_commands)
 
                 current_command = bytes(self.pressure_commands[index], 'utf-8')
                 new_pressure_sensor = Pressure(max=sensor["max_pressure"],
@@ -271,7 +271,7 @@ class Arduino_Sensors:
 
         for sensor in conf_2.sensor_configurations_2["massflow"]:
 
-            index = len(self.massflow_commands) - sensor["id"]
+            index = sensor["id"] - len(self.massflow_commands)
 
             if sensor["in_use"]:
                 current_command = bytes(self.massflow_commands[index], 'utf-8')
@@ -283,16 +283,18 @@ class Arduino_Sensors:
 
         for sensor in conf_2.sensor_configurations_2["conductivity"]:
 
-            index = len(self.conductivity_commands) - sensor["id"]
+            index = sensor["id"] - len(self.conductivity_commands)
 
             if sensor["in_use"]:
-                current_command = bytes(self.conductivity_commands[index], 'utf-8')
+                index_ = self.conductivity_commands[index]
+                current_command = bytes(index_, 'utf-8')
                 new_conductivity_sensor = Conductivity(max=sensor["max_Cond"],
                                                        min=sensor["min_Cond"],
                                                        command=current_command,
                                                        id=sensor["id"],
                                                        arduino_id=sensor["arduino_id"])
                 self.conductivity_sensors.append(new_conductivity_sensor)
+
 
         # for sensor in conf_2.sensor_configurations_2["temperature"]:
         #
@@ -307,7 +309,7 @@ class Arduino_Sensors:
 
         for sensor in conf_2.sensor_configurations_2["level"]:
 
-            index = len(self.levelswitch_commands) - sensor["id"]
+            index = sensor["id"] - len(self.levelswitch_commands)
 
             if sensor["in_use"]:
                 current_command = bytes(self.levelswitch_commands[index], 'utf-8')
@@ -331,8 +333,8 @@ if __name__ == '__main__':
     for sensor in try_list.conductivity_sensors:
         print(sensor.id)
 
-    for sensor in try_list.temperature_sensors:
-        print(sensor.id)
+    # for sensor in try_list.temperature_sensors:
+    #     print(sensor.id)
 
     for sensor in try_list.levelswitch_sensors:
         print(sensor.id)

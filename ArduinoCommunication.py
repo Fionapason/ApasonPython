@@ -18,7 +18,7 @@ class ArduinoCommunication:
     **Functions:** sendVoltage(volt, control_instrument, lock), retrieveMeasurement(sensor, lock)
     '''
     ports = dict()
-    port_names = ['/dev/cu.usbmodem1401'] #, '/dev/cu.usbmodem1201'
+    port_names = ['/dev/cu.usbmodem1401', '/dev/cu.usbmodem1201'] #, '/dev/cu.usbmodem1201'
     baud = 115200
     analogReference = 5
     arduino_locks = [Lock(),Lock()]

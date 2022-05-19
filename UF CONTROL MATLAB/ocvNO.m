@@ -14,9 +14,9 @@ classdef ocvNO < handle % UF3
         
         minValue = 0; %Volt
         
-        commandopen = 'R'; %D44
-        
-        commandclose = 'V'; %D44
+        commandopen = 'T'; %D44
+
+        commandclose = 'X'; %D44
         
         arduinoObj
         

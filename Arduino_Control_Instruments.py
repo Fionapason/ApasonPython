@@ -260,12 +260,6 @@ class Arduino_Control_Instruments:
 
                 self.ocv_normally_closed_instruments.append(new_ocv_nc)
 
-        for instrument in conf_1.control_instrument_configurations_1["polarity"]:
-            if instrument["in_use"]:
-                # Since there is only one ED module, polarity is simply a class member and is not appended to a list
-                self.polarity = Polarity(arduino_id=instrument["arduino_id"],
-                                         id=instrument["id"])
-
         # Repeat for the instruments on the second arduino
 
         for instrument in conf_2.control_instrument_configurations_2["pump"]:
@@ -290,8 +284,7 @@ class Arduino_Control_Instruments:
             if instrument["in_use"]:
 
                 # Start over in the command list vector
-                index = len(self.cv3_high_commands) - instrument["id"]
-
+                index = instrument["id"] - len(self.cv3_high_commands)
                 current_command_high = bytes(self.cv3_high_commands[index], 'utf-8')
                 current_command_low = bytes(self.cv3_low_commands[index], 'utf-8')
 
@@ -305,7 +298,8 @@ class Arduino_Control_Instruments:
             if instrument["in_use"]:
 
 
-                index = len(self.ocv_normally_open_instruments) - instrument["id"]
+                index = instrument["id"] - len(self.cv3_high_commands)
+
 
                 current_open_command = bytes(self.ocv_normally_open_open_commands[index], 'utf-8')
                 current_close_command = bytes(self.ocv_normally_open_close_commands[index], 'utf-8')
@@ -319,7 +313,7 @@ class Arduino_Control_Instruments:
         for instrument in conf_2.control_instrument_configurations_2["ocv_normally_closed"]:
             if instrument["in_use"]:
 
-                index = len(self.ocv_normally_closed_open_commands) - instrument["id"]
+                index = instrument["id"] - len(self.cv3_high_commands)
 
                 current_open_command = bytes(self.ocv_normally_closed_open_commands[index], 'utf-8')
                 current_close_command = bytes(self.ocv_normally_closed_close_commands[index], 'utf-8')
@@ -336,6 +330,7 @@ class Arduino_Control_Instruments:
                 # Since there is only one ED module, polarity is simply a class member and is not appended to a list
                 self.polarity = Polarity(arduino_id=instrument["arduino_id"],
                                          id=instrument["id"])
+
 
 if __name__ == '__main__':
     attempt = Arduino_Control_Instruments()

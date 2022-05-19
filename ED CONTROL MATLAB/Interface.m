@@ -44,27 +44,127 @@ classdef Interface < handle %ED General Code
         
         startState;
         
+        pddcProblem
+
+        pddcProblemstart
+
+        saver
+
+        checkTanks
     end
-    
-    %IDEA TO SHOW THE TIME: datetime(now,'ConvertFrom','datenum','Format','HH:mm:ss')
-    
-    
+
     methods
-        
+
+        function saveData(O)
+
+            for i = 1:4
+            assignin('base', ['mfdata', num2str(i)], O.sensor.mf(i).data)
+            assignin('base', ['mftime', num2str(i)], O.sensor.mf(i).time)
+            assignin('base', ['pdata', num2str(i)], O.sensor.pressure(i).data)
+            assignin('base', ['ptime', num2str(i)], O.sensor.pressure(i).time)
+            assignin('base', ['pumpdata', num2str(i)], O.sensor.pump(i).data)
+            assignin('base', ['pumptime', num2str(i)], O.sensor.pump(i).time)
+            assignin('base', ['mfSetpump', num2str(i)], O.sensor.pump(i).setFlow)
+                if i == 4
+                    continue
+                end
+            assignin('base', ['conductivitydata', num2str(i)], O.sensor.conductivity(i).data)
+            assignin('base', ['conductivitytime', num2str(i)], O.sensor.conductivity(i).time)
+            end
+            mfdata1 = evalin('base', 'mfdata1');
+            mftime1 = evalin('base', 'mftime1');
+            mfdata2 = evalin('base', 'mfdata2');
+            mftime2 = evalin('base', 'mftime2');
+            mfdata3 = evalin('base', 'mfdata3');
+            mftime3 = evalin('base', 'mftime3');
+            mfdata4 = evalin('base', 'mfdata4');
+            mftime4 = evalin('base', 'mftime4');
+
+            pdata2 = evalin('base', 'pdata2');
+            pdata3 = evalin('base', 'pdata3');
+            pdata4 = evalin('base', 'pdata4');
+            ptime2 = evalin('base', 'ptime2');
+            ptime3 = evalin('base', 'ptime3');
+            ptime4 = evalin('base', 'ptime4');
+
+            conductivitydata1 = evalin('base', 'conductivitydata1');
+            conductivitytime1 = evalin('base', 'conductivitytime1');
+            conductivitydata2 = evalin('base', 'conductivitydata2');
+            conductivitytime2 = evalin('base', 'conductivitytime2');
+            conductivitydata3 = evalin('base', 'conductivitydata3');
+            conductivitytime3 = evalin('base', 'conductivitytime3');
+
+            pumpdata1 = evalin('base', 'pumpdata1');
+            pumptime1 = evalin('base', 'pumptime1');
+            pumpdata2 = evalin('base', 'pumpdata2');
+            pumptime2 = evalin('base', 'pumptime2');
+            pumpdata3 = evalin('base', 'pumpdata3');
+            pumptime3 = evalin('base', 'pumptime3');
+            pumpdata4 = evalin('base', 'pumpdata4');
+            pumptime4 = evalin('base', 'pumptime4');
+
+            mfSetpump1 = evalin('base', 'mfSetpump1');
+            mfSetpump2 = evalin('base', 'mfSetpump2');
+            mfSetpump3 = evalin('base', 'mfSetpump3');
+            mfSetpump4 = evalin('base', 'mfSetpump4');
+
+            save('Saver.mat','mfdata1');
+            save('Saver.mat','mftime1', '-append');
+            save('Saver.mat','mfdata2', '-append');
+            save('Saver.mat','mftime2', '-append');
+            save('Saver.mat','mfdata3', '-append');
+            save('Saver.mat','mftime3', '-append');
+            save('Saver.mat','mfdata4', '-append');
+            save('Saver.mat','mftime4', '-append');
+
+            save('Saver.mat','pdata2', '-append');
+            save('Saver.mat','ptime2', '-append');
+            save('Saver.mat','pdata3', '-append');
+            save('Saver.mat','ptime3', '-append');
+            save('Saver.mat','pdata4', '-append');
+            save('Saver.mat','ptime4', '-append');
+
+            save('Saver.mat','conductivitydata1', '-append');
+            save('Saver.mat','conductivitytime1', '-append');
+            save('Saver.mat','conductivitydata2', '-append');
+            save('Saver.mat','conductivitytime2', '-append');
+            save('Saver.mat','conductivitydata3', '-append');
+            save('Saver.mat','conductivitytime3', '-append');
+
+            save('Saver.mat','pumpdata1', '-append');
+            save('Saver.mat','pumptime1', '-append');
+            save('Saver.mat','pumpdata2', '-append');
+            save('Saver.mat','pumptime2', '-append');
+            save('Saver.mat','pumpdata3', '-append');
+            save('Saver.mat','pumptime3', '-append');
+            save('Saver.mat','pumpdata4', '-append');
+            save('Saver.mat','pumptime4', '-append');
+
+            save('Saver.mat','mfSetpump1', '-append');
+            save('Saver.mat','mfSetpump2', '-append');
+            save('Saver.mat','mfSetpump3', '-append');
+            save('Saver.mat','mfSetpump4', '-append');
+
+        end
+
         function O = Interface(arduinoObj, configuration, names, filename)
-            
+
             O.export.filename = filename;
-            
+
             O.names = names;
-            
+
             O.sensor.num = 0;
-            
+
             O.configuration = configuration;
-            
+
             O.arduinoObj = arduinoObj;
-            
+
             O.startState = 0;
-            
+
+            O.pddcProblem = 0;
+
+            O.pddcProblemstart = now;
+
             O.timerLog = timer('ExecutionMode', 'fixedSpacing','Period',1, 'BusyMode', 'drop');
 
             O.timerLog.StartFcn = @(~,~)disp('The measurements have started');
@@ -72,9 +172,9 @@ classdef Interface < handle %ED General Code
             O.timerLog.StopFcn = @(~,~)disp('The measurements have ended');
 
             O.timerLog.TimerFcn = @(~,~)plotValues(O);
-            
+
             %-----
-            
+
             O.normalSetup = timer('ExecutionMode', 'fixedSpacing', 'TasksToExecute', 1);
 
             O.normalSetup.StartFcn = @(~,~)disp('Normal Setup started');
@@ -82,7 +182,7 @@ classdef Interface < handle %ED General Code
             O.normalSetup.StopFcn = @(~,~)disp('Normal Setup is finished');
 
             O.normalSetup.TimerFcn = @(~,~)normalSetup(O);
-            
+
             %-----
             O.reversalSetup = timer('ExecutionMode', 'fixedSpacing', 'TasksToExecute', 1);
 
@@ -91,7 +191,7 @@ classdef Interface < handle %ED General Code
             O.reversalSetup.StopFcn = @(~,~)disp('Reversal Setup is finished');
 
             O.reversalSetup.TimerFcn = @(~,~)reversalSetup(O);
-            
+
             %------
             O.reversalTimer = timer('ExecutionMode', 'fixedSpacing', 'Period',1);
 
@@ -100,7 +200,7 @@ classdef Interface < handle %ED General Code
             O.reversalTimer.StopFcn = @(~,~)disp('Reversal Operation finished');
 
             O.reversalTimer.TimerFcn = @(~,~)reversalOperation(O);
-            
+
             %----
             O.pressureDifferenceDCTimer = timer('ExecutionMode', 'fixedSpacing','Period',5);
 
@@ -109,7 +209,7 @@ classdef Interface < handle %ED General Code
             O.pressureDifferenceDCTimer.StopFcn = @(~,~)disp('Pressure Difference DC tester is finished');
 
             O.pressureDifferenceDCTimer.TimerFcn = @(~,~)measurecriticalPDDC(O);
-            
+
             %----
             O.pressureDifferenceRDTimer = timer('ExecutionMode', 'fixedSpacing','Period',1);
 
@@ -118,9 +218,9 @@ classdef Interface < handle %ED General Code
             O.pressureDifferenceRDTimer.StopFcn = @(~,~)disp('Pressure Difference RD tester is finished');
 
             O.pressureDifferenceRDTimer.TimerFcn = @(~,~)measurecriticalPDRD(O);
-            
+
             %-----
-            
+
             O.concentrateTankControl = timer('ExecutionMode', 'fixedSpacing','Period',2);
 
             O.concentrateTankControl.StartFcn = @(~,~)disp('Concentrate Tank Controller started');
@@ -128,9 +228,9 @@ classdef Interface < handle %ED General Code
             O.concentrateTankControl.StopFcn = @(~,~)disp('Concentrate Tank Controller is finished');
 
             O.concentrateTankControl.TimerFcn = @(~,~)concTankController(O);
-            
+
             %----
-            
+
             O.controlSystem = timer('ExecutionMode', 'fixedSpacing','Period',1);
 
             O.controlSystem.StartFcn = @(~,~)disp('General Controller of ED started');
@@ -138,9 +238,9 @@ classdef Interface < handle %ED General Code
             O.controlSystem.StopFcn = @(~,~)disp('General Controller of ED is finished');
 
             O.controlSystem.TimerFcn = @(~,~)controlSystemED(O);
-            
+
             %----
-            
+
             O.startupTimer = timer('ExecutionMode', 'fixedSpacing','Period',1);
 
             O.startupTimer.StartFcn = @(~,~)disp('Startup of ED started');
@@ -148,72 +248,92 @@ classdef Interface < handle %ED General Code
             O.startupTimer.StopFcn = @(~,~)disp('Startup of ED is finished');
 
             O.startupTimer.TimerFcn = @(~,~)startupED(O);
-            
+
+            %----
+
+            O.saver = timer('ExecutionMode', 'fixedSpacing','Period',30);
+
+            O.saver.StartFcn = @(~,~)disp('Started saving data');
+
+            O.saver.StopFcn = @(~,~)disp('Saving data is finished');
+
+            O.saver.TimerFcn = @(~,~)saveData(O);
+
+            %----
+
+            O.checkTanks = timer('ExecutionMode', 'fixedSpacing','Period',1);
+
+            O.checkTanks.StartFcn = @(~,~)disp('Checking Tanks has started');
+
+            O.checkTanks.StopFcn = @(~,~)disp('Checking Tanks is finished');
+
+            O.checkTanks.TimerFcn = @(~,~)checkTanks(O);
+
             O.GUI.fig = uifigure();
             O.GUI.fig.Position = [100, 80, 1200, 900];
             O.GUI.fig.Scrollable = 'on';
-            
+
             % Callback functions
             O.GUI.fig.CloseRequestFcn = @(src,event)closeFig(O);
-            
+
             O.GUI.overallGrid = uigridlayout(O.GUI.fig);
-            
-            O.GUI.overallGrid.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit'};
-            O.GUI.overallGrid.ColumnWidth = {'fit', 'fit', 'fit', 'fit', 'fit', 'fit', 'fit'};
+
+            O.GUI.overallGrid.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit'};
+            O.GUI.overallGrid.ColumnWidth = {'fit', 'fit', 'fit', 'fit', 'fit'};
             O.GUI.overallGrid.Scrollable = 'on';
 
             % ---------- Setup of Pump Graphs
             O.GUI.pumpPanel = uipanel(O.GUI.overallGrid);
             O.GUI.pumpPanel.Layout.Row = [1 2];
             O.GUI.pumpPanel.Layout.Column = [1 2];
-            
+
             O.GUI.pumpGrid = uigridlayout(O.GUI.pumpPanel);
             O.GUI.pumpGrid.RowHeight = {'fit', 'fit'};
             O.GUI.pumpGrid.ColumnWidth = {'fit', 'fit'};
-            
+
             % ---------- Setup of Fields for the Massflow Setting for the Pump
-            
-            O.GUI.pumpSetPanel = uipanel(O.GUI.overallGrid);
-            O.GUI.pumpSetPanel.Layout.Row = 3;
-            O.GUI.pumpSetPanel.Layout.Column = 2;
-            
-            O.GUI.pumpSetGrid = uigridlayout(O.GUI.pumpSetPanel);
-            O.GUI.pumpSetGrid.RowHeight = {'fit'};
-            O.GUI.pumpSetGrid.ColumnWidth = {'fit'};
-            
+
+%             O.GUI.pumpSetPanel = uipanel(O.GUI.overallGrid);
+%             O.GUI.pumpSetPanel.Layout.Row = 1;
+%             O.GUI.pumpSetPanel.Layout.Column = 1;
+%
+%             O.GUI.pumpSetGrid = uigridlayout(O.GUI.pumpSetPanel);
+%             O.GUI.pumpSetGrid.RowHeight = {'fit'};
+%             O.GUI.pumpSetGrid.ColumnWidth = {'fit'};
+
             % ---------- Setup of Polarity
-            
+
             O.GUI.polarityPanel = uipanel(O.GUI.overallGrid);
-            O.GUI.polarityPanel.Layout.Row = 2;
-            O.GUI.polarityPanel.Layout.Column = 5;
-            
+            O.GUI.polarityPanel.Layout.Row = 4;
+            O.GUI.polarityPanel.Layout.Column = 3;
+
             O.GUI.polarityGrid = uigridlayout(O.GUI.polarityPanel);
             O.GUI.polarityGrid.RowHeight = {'fit'};
             O.GUI.polarityGrid.ColumnWidth = {'fit'};
-            
+
             % ---------- Setup of Button Panel
             O.GUI.buttonPanel = uipanel(O.GUI.overallGrid);
             O.GUI.buttonPanel.Layout.Row = 3;
             O.GUI.buttonPanel.Layout.Column = 1;
-            
+
             O.GUI.buttonGrid = uigridlayout(O.GUI.buttonPanel);
-            O.GUI.buttonGrid.RowHeight = {'fit', 'fit'};
-            O.GUI.buttonGrid.ColumnWidth = {'fit', 'fit'};
-            
+            O.GUI.buttonGrid.RowHeight = {'fit', 'fit', 'fit', 'fit', 'fit'};
+            O.GUI.buttonGrid.ColumnWidth = {'fit'};
+
             O.GUI.closeButton = uibutton(O.GUI.buttonGrid,'state');
             O.GUI.closeButton.Text = 'Stop System';
             O.GUI.closeButton.Layout.Row = 5;
             O.GUI.closeButton.Layout.Column = 1;
             O.GUI.closeButton.Value = false;
-            
+
             O.GUI.closeButton.ValueChangedFcn = @(src,event)stopSystem(O, event.Value);
-            
+
             O.GUI.startButton = uibutton(O.GUI.buttonGrid,'state');
             O.GUI.startButton.Text = 'Start Measurements';
             O.GUI.startButton.Layout.Row = 1;
             O.GUI.startButton.Layout.Column = 1;
             O.GUI.startButton.Value = false;
-            
+
             O.GUI.startButton.ValueChangedFcn = @(src,event)startMeasuring(O, event);
 
             O.GUI.startControlButton = uibutton(O.GUI.buttonGrid,'state');
@@ -221,86 +341,88 @@ classdef Interface < handle %ED General Code
             O.GUI.startControlButton.Layout.Row = 2;
             O.GUI.startControlButton.Layout.Column = 1;
             O.GUI.startControlButton.Value = false;
-            
+
             O.GUI.startControlButton.ValueChangedFcn = @(src,event)startNormalFeed(O, event);
-            
+
             O.GUI.startReversalButton = uibutton(O.GUI.buttonGrid,'state');
             O.GUI.startReversalButton.Text = 'ED Reversal Operation';
             O.GUI.startReversalButton.Layout.Row = 3;
             O.GUI.startReversalButton.Layout.Column = 1;
             O.GUI.startReversalButton.Value = false;
-            
+
             O.GUI.startReversalButton.ValueChangedFcn = @(src,event)startReversal(O, event);
-            
+
             O.GUI.startED = uibutton(O.GUI.buttonGrid,'state');
             O.GUI.startED.Text = 'ED System';
             O.GUI.startED.Layout.Row = 4;
             O.GUI.startED.Layout.Column = 1;
             O.GUI.startED.Value = false;
-            
+
             O.GUI.startED.ValueChangedFcn = @(src,event)startED(O, event);
-            
+
             % ---------- Setup of Fields for the Current of the ED
-            
-            O.GUI.EDCurrentPanel = uipanel(O.GUI.overallGrid);
-            O.GUI.EDCurrentPanel.Layout.Row = 1;
-            O.GUI.EDCurrentPanel.Layout.Column = 5;
-            
-            O.GUI.EDCurrentGrid = uigridlayout(O.GUI.EDCurrentPanel);
-            O.GUI.EDCurrentGrid.RowHeight = {'fit'};
-            O.GUI.EDCurrentGrid.ColumnWidth = {'fit'};
-            
+
+%             O.GUI.EDCurrentPanel = uipanel(O.GUI.overallGrid);
+%             O.GUI.EDCurrentPanel.Layout.Row = 0;
+%             O.GUI.EDCurrentPanel.Layout.Column = 0;
+%
+%             O.GUI.EDCurrentGrid = uigridlayout(O.GUI.EDCurrentPanel);
+%             O.GUI.EDCurrentGrid.RowHeight = {'fit'};
+%             O.GUI.EDCurrentGrid.ColumnWidth = {'fit'};
+
             % ---------- Setup of Flow Graphs
             O.GUI.flowPanel = uipanel(O.GUI.overallGrid);
             O.GUI.flowPanel.Layout.Row = [1 2];
             O.GUI.flowPanel.Layout.Column = [3 4];
-            
+
             O.GUI.flowGrid = uigridlayout(O.GUI.flowPanel);
             O.GUI.flowGrid.RowHeight = {'fit', 'fit'};
             O.GUI.flowGrid.ColumnWidth = {'fit', 'fit'};
-            
+
             % ---------- Setup of C-Valve Graphs
             O.GUI.cvPanel = uipanel(O.GUI.overallGrid);
-            O.GUI.cvPanel.Layout.Row = 6;
-            O.GUI.cvPanel.Layout.Column = [1 4];
-            
+            O.GUI.cvPanel.Layout.Row = 5;
+            O.GUI.cvPanel.Layout.Column = [1 5];
+
             O.GUI.cvGrid = uigridlayout(O.GUI.cvPanel);
-            O.GUI.cvGrid.RowHeight = {'fit', 'fit'};
-            O.GUI.cvGrid.ColumnWidth = {'fit', 'fit'};
-            
+            O.GUI.cvGrid.RowHeight = {'fit'};
+            O.GUI.cvGrid.ColumnWidth = {'fit', 'fit', 'fit', 'fit', 'fit'};
+
+            %--------- Setup of single C-Valve in the end
+
             % ---------- Setup of OC-Valve Graphs (normally open)
             O.GUI.ocvNOPanel = uipanel(O.GUI.overallGrid);
-            O.GUI.ocvNOPanel.Layout.Row = 7;
-            O.GUI.ocvNOPanel.Layout.Column = [1 3];
-            
+            O.GUI.ocvNOPanel.Layout.Row = 4;
+            O.GUI.ocvNOPanel.Layout.Column = 2;
+
             O.GUI.ocvNOGrid = uigridlayout(O.GUI.ocvNOPanel);
-            O.GUI.ocvNOGrid.RowHeight = {'fit', 'fit'};
-            O.GUI.ocvNOGrid.ColumnWidth = {'fit', 'fit'};
-            
+            O.GUI.ocvNOGrid.RowHeight = {'fit'};
+            O.GUI.ocvNOGrid.ColumnWidth = {'fit'};
+
             % ---------- Setup of Pressure Graphs
             O.GUI.pressurePanel = uipanel(O.GUI.overallGrid);
-            O.GUI.pressurePanel.Layout.Row = [4 5];
-            O.GUI.pressurePanel.Layout.Column = [1 3];
-            
+            O.GUI.pressurePanel.Layout.Row = [1 3];
+            O.GUI.pressurePanel.Layout.Column =  5;
+
             O.GUI.pressureGrid = uigridlayout(O.GUI.pressurePanel);
-            O.GUI.pressureGrid.RowHeight = {'fit', 'fit'};
-            O.GUI.pressureGrid.ColumnWidth = {'fit', 'fit'};
+            O.GUI.pressureGrid.RowHeight = {'fit', 'fit', 'fit'};
+            O.GUI.pressureGrid.ColumnWidth = {'fit'};
 
             % ---------- Setup of Conductivity Graphs
             O.GUI.conductivityPanel = uipanel(O.GUI.overallGrid);
             O.GUI.conductivityPanel.Layout.Row = 3;
-            O.GUI.conductivityPanel.Layout.Column = [3 5];
-            
+            O.GUI.conductivityPanel.Layout.Column = [2 4];
+
             O.GUI.conductivityGrid = uigridlayout(O.GUI.conductivityPanel);
-            O.GUI.conductivityGrid.RowHeight = {'fit', 'fit'};
-            O.GUI.conductivityGrid.ColumnWidth = {'fit', 'fit'};          
-                                    
+            O.GUI.conductivityGrid.RowHeight = {'fit'};
+            O.GUI.conductivityGrid.ColumnWidth = {'fit', 'fit', 'fit'};
+
             createGraphs(O);
-            
+
         end % constructor
-        
+
         %% Create graphs and sensor objects
-        
+
         function createGraphs(O)
 
             % Flow sensors
@@ -312,9 +434,9 @@ classdef Interface < handle %ED General Code
                     O.sensor.mf(identifier) = massFlowSensor(O.arduinoObj, O.configuration.mf(identifier, 2), identifier, O.names.mf(identifier));
                 end
             end
-            
-            EDCurrentSetup(O);
-        
+
+%             EDCurrentSetup(O);
+
             %Pressure Sensors
             for identifier = 1:6
                 if O.configuration.pressure(identifier,1)
@@ -324,7 +446,7 @@ classdef Interface < handle %ED General Code
                     O.sensor.pressure(identifier) = pressureSensor(O.arduinoObj, O.configuration.pressure(identifier, 2), identifier, O.names.pressure(identifier), O.configuration.pressure(identifier, 3), O.configuration.pressure(identifier, 4), O.GUI.closeButton, O);
                 end
             end
-            
+
             %Conductivity Sensors
             for identifier = 1:3
                 if O.configuration.conductivity(identifier,1)
@@ -343,7 +465,7 @@ classdef Interface < handle %ED General Code
                         O.sensor.pumpIdentifier = identifier;
                     end
                     pumpGraphSetup(O,identifier);
-                    pumpSetSetup(O,identifier);
+%                     pumpSetSetup(O,identifier);
                     count = 1;
                     O.sensor.pump(identifier) = Pump(O.arduinoObj, O.configuration.pump(identifier,2), identifier, O.names.pump(identifier), O.configuration.pump(identifier,3), O.configuration.pump(identifier,4), O.configuration.pump(identifier,5), O.sensor.mf(O.configuration.pump(identifier,6)), O.sensor.pressure, O);
                 else
@@ -485,8 +607,8 @@ classdef Interface < handle %ED General Code
 
         function pressureGraphSetup(O,identifier)
 
-            rowIdentifier = [2, 1, 1, 1, 2, 2];
-            columnIdentifier = [3, 1, 2, 3, 1, 2];
+            rowIdentifier = [3, 1, 2, 3, 2, 2];
+            columnIdentifier = [3, 1, 1, 1, 1, 2];
 
             O.GUI.pressure(identifier).ax = uiaxes(O.GUI.pressureGrid,...
                 'YLim',[0 6],...
@@ -515,8 +637,8 @@ classdef Interface < handle %ED General Code
             O.GUI.conductivity(identifier).ax.Layout.Row = rowIdentifier(identifier);
             O.GUI.conductivity(identifier).ax.Layout.Column = columnIdentifier(identifier);
             O.GUI.conductivity(identifier).ax.Title.String = O.names.conductivity(identifier,1);
-            O.GUI.conductivity(identifier).ax.XLabel.String = 'time [s]';
-            O.GUI.conductivity(identifier).ax.YLabel.String = 'conductivity [mS]';
+            O.GUI.conductivity(identifier).ax.XLabel.String = 'Time [s]';
+            O.GUI.conductivity(identifier).ax.YLabel.String = 'Conductivity [mS]';
             O.GUI.conductivity(identifier).ax.Box = 'on';
             O.GUI.conductivity(identifier).ax.XMinorGrid = 'on';
             O.GUI.conductivity(identifier).ax.YMinorGrid = 'on';
@@ -592,7 +714,7 @@ classdef Interface < handle %ED General Code
             O.GUI.polarity.ax.Layout.Column = 1;
             O.GUI.polarity.ax.Title.String = 'Polarity';
             O.GUI.polarity.ax.XLabel.String = 'time [s]';
-            O.GUI.polarity.ax.YLabel.String = 'Polarity Low (0) or High (1)';
+            O.GUI.polarity.ax.YLabel.String = 'Polarity off (0) or POS/NEG (1/-1)';
             O.GUI.polarity.ax.Box = 'on';
             O.GUI.polarity.ax.XMinorGrid = 'on';
             O.GUI.polarity.ax.YMinorGrid = 'on';
@@ -614,6 +736,7 @@ classdef Interface < handle %ED General Code
                     if O.sensor.num == 1
                         O.sensor.pressure(identifier).time(end+1) = now;
                         O.sensor.beginTimeIdentifier = identifier;
+                        start(O.saver);
 
                         for i = 1:4
                             O.sensor.pump(i).beginTimeIdentifier = identifier;
@@ -744,6 +867,8 @@ classdef Interface < handle %ED General Code
                 end
             end
 
+%             tStart = tic;
+
             %Plot cv
            for identifier = 1:length(O.configuration.cv)
                if O.configuration.cv(identifier,1)
@@ -760,7 +885,9 @@ classdef Interface < handle %ED General Code
                     plot(O.GUI.cv(identifier).ax, elapsedTime, O.sensor.cv(identifier).data);
                end
            end
+%            plot(O.GUI.cv(1).ax, elapsedTime, O.sensor.cv(1).data, O.GUI.cv(2).ax, elapsedTime, O.sensor.cv(2).data, O.GUI.cv(3).ax, elapsedTime, O.sensor.cv(3).data);
 
+%            tEndPlotting = toc(tStart)
 
            %Plot polarity
             O.sensor.polarity.time(end+1) = (now-O.sensor.pressure(O.sensor.beginTimeIdentifier).time(2))*3600*24;
@@ -808,10 +935,6 @@ classdef Interface < handle %ED General Code
                     end
                 end
             end
-
-            pause(0.5)
-
-            start(O.normalSetup)
 
             pause(0.5)
 
@@ -887,10 +1010,7 @@ function startED(O, event)
         start(O.startupTimer)
     else
         O.GUI.startED.Value = event.Value;
-        %stop polarity
-        %stop Pumps
-%         stop(O.controlSystem)
-%         stop(O.concentrateTankControl);
+        O.endSystem
     end
 
 end
@@ -1032,14 +1152,39 @@ function stopPump(O,identifier)
 
 end %end stopPump
 
-function reversalSetup(O)
+function reversalSetup1(O)
 
+    O.sensor.cv(1).open;
+    O.sensor.cv(2).open;
+
+end
+
+function reversalSetup2(O)
+
+    O.sensor.cv(3).close;
+    O.sensor.cv(4).close;
+
+end
+
+function reversalSetup(O)
 
     O.sensor.cv(1).open;
     O.sensor.cv(2).open;
     O.sensor.cv(3).close;
     O.sensor.cv(4).close;
 
+end
+
+function normalSetup1(O)
+
+    O.sensor.cv(1).close;
+    O.sensor.cv(2).close;
+end
+
+function normalSetup2(O)
+
+    O.sensor.cv(3).open;
+    O.sensor.cv(4).open;
 end
 
 function normalSetup(O)
@@ -1069,17 +1214,33 @@ function measurecriticalPDDC(O)
         disp('The pressure difference between Diluate and Concentrate is too big, the flow is being adjusted')
 
         if average > 0
-            % Diluate pressure is bigger than Concentrate pressure - lower the flow of the diluate
-            O.sensor.pump(4).setFlow.value(end+1) = O.sensor.pump(4).setFlow.value(end) - 1/60; %lower by 1l/h = 1/60 l/min
-            O.sensor.pump(4).setFlow.t(end+1) = (now - O.sensor.pressure(O.sensor.beginTimeIdentifier).time(2))*3600*24;
+            if O.sensor.pump(4).setFlow.value(end)*0.95 >= 0.25
+                % Diluate pressure is bigger than Concentrate pressure - lower the flow of the diluate
+                O.sensor.pump(4).adjustment = O.sensor.pump(4).adjustment*0.95;
+            end
         else
-            % Concentrate pressure is bigger than Diluate pressure - lower the flow of the concentrate
-            O.sensor.pump(3).setFlow.value(end+1) = O.sensor.pump(3).setFlow.value(end) - 1/60; %lower by 1l/h = 1/60 l/min
-            O.sensor.pump(3).setFlow.t(end+1) = (now - O.sensor.pressure(O.sensor.beginTimeIdentifier).time(2))*3600*24;
+            if O.sensor.pump(3).setFlow.value(end)*0.95 >= 0.25
+                % Concentrate pressure is bigger than Diluate pressure - lower the flow of the concentrate
+                O.sensor.pump(3).adjustment = O.sensor.pump(3).adjustment*0.95;
+            end
         end
+
+        if O.pddcProblem == 0
+            O.pddcProblem = 1;
+            O.pddcProblemstart = now;
+        else
+            if (now - O.pddcProblemstart)*24*3600 > 60
+                disp('the pressure difference between diluate and concentrate was too high too long - the system is shut down')
+                O.endSystem
+            end
+        end
+
+    else
+        O.pddcProblem = 0;
     end
 
-    if abs(O.sensor.pump(4).setFlow.value(end)) < 0.9*O.configuration.pump(4,3) || abs(O.sensor.pump(3).setFlow.value(end)) < 0.9*O.configuration.pump(3,3)
+    if abs(O.sensor.pump(4).setFlow.value(end) - O.sensor.pump(3).setFlow.value(end)) > 0.08 % 5 l/h
+        disp('-------')
         disp('The flow in the ED is too low because the pressure difference is too high - the system was therefore shut down')
         O.endSystem;
     end
@@ -1120,14 +1281,28 @@ function concTankController(O)
 
     if O.sensor.conductivity(2).data(end) > 56 && O.concState == 0
         O.sensor.ocvNC(1).open;
-        O.concState = 1;
+        O.concState = 1; %the tank is too concentrated
         O.startOpeningValve = now;
-    elseif (O.sensor.ls(1).data(end) == 0 && O.concState == 1) || (((now - O.startOpeningValve)*24*3600 > 30) && O.concState == 1) %need to check this time - Dana - 10.5.2022
+    elseif (O.sensor.ls(5).data(end) == 0 && O.concState == 1) || (((now - O.startOpeningValve)*24*3600 > 30) && O.concState == 1) %need to check this time - Dana - 10.5.2022
         O.sensor.ocvNC(1).close;
-        O.concState = 0;
+        O.concState = 0; %the tank is not concentrated anymore
     end
 
 end %end concTankController
+
+function checkTanks(O)
+
+    if O.sensor.ls(6).data(end) == 0
+        disp('The ED Rinse tank has a leakage and the water level in the tank is too low - please check')
+        O.endSystem
+    end
+
+    if O.sensor.ls(1).data(end) == 1
+        disp('The tank before the posttreatment is full, the system should stop except for the posttreatment pump')
+        %TODO and not just end System
+        O.endSystem
+    end
+end %check Tanks
 
 
 function startupED(O)
@@ -1135,27 +1310,24 @@ function startupED(O)
     UF = O.arduinoObj.sendCommand('[');
 
     %Check the level switches
-    if UF == 1 && O.sensor.ls(5).data(end) == 1 && O.startState == 0% all the tanks are full - can go directly to controlSystem
+    if UF == 1 && O.sensor.ls(3).data(end) == 1 % all the tanks are full - can go directly to controlSystem
         O.controlState = 0;
         start(O.controlSystem)
         start(O.concentrateTankControl)
         start(O.sensor.conductivity(1).concControl)
         stop(O.startupTimer)
 
-    elseif O.startState == 0 && UF ~= 1
-        O.sensor.ocvNC(1).open;
-        O.startState = 1;
-
-    elseif O.sensor.ls(2).data(end) == 1 && O.startState == 1
-        O.sensor.ocvNC(1).close;
-        O.startState = 2;
-
-    elseif (O.startState == 2 && UF == 1) || (O.startState == 0 && UF ==1)
+    elseif UF == 1 && O.sensor.ls(4).data(end) == 1
         O.controlState = -1; % ED pumps should run but NOT the posttreatment pump
+        O.sensor.ocvNC(1).close;
         start(O.controlSystem)
         start(O.concentrateTankControl)
         start(O.sensor.conductivity(1).concControl)
         stop(O.startupTimer)
+
+    elseif O.sensor.ls(4).data(end) == 0 && O.startState ~= 1 %filling the ED conc tank
+        O.sensor.ocvNC(1).open;
+        O.startState = 1;
 
     end
 
@@ -1177,7 +1349,8 @@ function controlSystemED(O)
 
     if O.controlState == 0 %initialize to start all pumps
 
-        start(O.normalSetup)
+        normalSetup1(O)
+        normalSetup2(O)
 
         for i = 2:4
             startPump(O,i)
@@ -1194,7 +1367,8 @@ function controlSystemED(O)
 
     elseif O.controlState == -1 %very beginning, the posttreatment pump is turned off
 
-        start(O.normalSetup)
+        normalSetup1(O)
+        normalSetup2(O)
 
         for i = 2:4
             startPump(O,i)
@@ -1206,48 +1380,58 @@ function controlSystemED(O)
 
         O.controlState = 2;
 
-    elseif O.sensor.ls(5).data(end) == 0 && O.controlState == 1
+    elseif O.sensor.ls(3).data(end) == 0 && O.controlState == 1
         stopPump(O,1)
         O.controlState = 2; %Posttreatment Pump is stopped
 
-    elseif O.controlState == 2 && O.sensor.ls(5).data(end) == 1
+    elseif O.controlState == 2 && O.sensor.ls(3).data(end) == 1
         startPump(O,1)
         O.controlState = 1; %all pumps are running in normal operation
 
     elseif (O.sensor.pump(3).controlTime(end)-O.sensor.pump(3).controlTime(O.sensor.pump(3).stopIdentifier)) > O.configuration.switchTime(1,1) %check how long the concentrate pump is running
-        
+
         O.sensor.pump(3).stopIdentifier = length(O.sensor.pump(3).controlTime);
-        
+
         %stop the diluate and concentrate pumps
         for i = 3:4
             stopPump(O,i)
         end
-        
-        %switch the 3 way valves
-        if O.sensor.polarity.value == 1
-            start(O.reversalSetup)
-        elseif O.sensor.polarity.value == -1
-            start(O.normalSetup)
-        else
-            disp('something is weird with the polarity switch when doing reversal - please check')
-        end
-        
-        %change polarity
-        if O.sensor.polarity.value == 1
+
+        %switch the 3 way valves and polarity
+        if O.sensor.polarity.value == 1 %now change to negative
+            reversalSetup1(O)
             O.sensor.polarity.value = -1;
             O.sensor.polarity.changeSetting;
-        elseif O.sensor.polarity.value == -1
+            for identifier = 3:4
+                O.sensor.pump(identifier).mfObj = O.sensor.mf(O.configuration.pump(identifier,7));
+            end
+        elseif O.sensor.polarity.value == -1 %now change to normal
+            normalSetup1(O)
             O.sensor.polarity.value = 1;
             O.sensor.polarity.changeSetting;
+            for identifier = 3:4
+                O.sensor.pump(identifier).mfObj = O.sensor.mf(O.configuration.pump(identifier,6));
+            end
         else
             disp('something is weird with the polarity switch when doing reversal - please check')
         end
+
         %so we see that the pumps went to zero!
         plotValues(O);
-        
+
         %start the pumps again
         for i = 3:4
             startPump(O,i)
+        end
+
+        pause(1.5)
+
+        if O.sensor.polarity.value == 1
+            normalSetup2(O)
+        elseif O.sensor.polarity.value == -1
+            reversalSetup2(O)
+        else
+            disp('something is weird with the polarity switch when doing reversal - please check')
         end
     end
 

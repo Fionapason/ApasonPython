@@ -171,6 +171,7 @@ class Sensor_Update_List:
                 new_massflow_sensor = Update_List_Massflow(sensor)
                 self.massflow.append(new_massflow_sensor)
 
+        index = 0
         for sensor in conf_1.sensor_configurations_1["conductivity"]:
             if sensor["in_use"]:
                 new_conductivity_sensor = Update_List_Conductivity(sensor)
@@ -201,6 +202,7 @@ class Sensor_Update_List:
             if sensor["in_use"]:
                 new_conductivity_sensor = Update_List_Conductivity(sensor)
                 self.conductivity.append(new_conductivity_sensor)
+                index += 1
 
         # for sensor in conf_2.sensor_configurations_2["temperature"]:
         #     if sensor["in_use"]:
@@ -211,6 +213,7 @@ class Sensor_Update_List:
             if sensor["in_use"]:
                 new_levelswitch_sensor = Update_List_LevelSwitch(sensor)
                 self.levelswitch.append(new_levelswitch_sensor)
+
 
 if __name__ == '__main__':
     pass

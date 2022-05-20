@@ -10,17 +10,17 @@ control_configurations = {
 
     "uf_feed_flow":     {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Permeate Flow", "control_instrument_name": "UF Feed Pump", "in_use": True,
-                         "desired_value": 1.0, "K_p": 5, "K_i": 0.01},
+                         "desired_value": 1.5, "K_p": 0.5, "K_i": 0},
 
     "uf_backwash_flow": {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Backwash Flow", "control_instrument_name": "UF Backwash Pump",
                          "in_use": True,
-                         "desired_value": 1.0, "K_p": 5, "K_i": 0},
+                         "desired_value": 1.0, "K_p": 0.5, "K_i": 0},
 
     "uf_tmp": {"control_value_sensor_type": "pressure", "control_value_sensor_unit": "bar",
                      "feed_pressure_sensor_name": "UF Feed Pressure", "permeate_pressure_sensor_name": "UF Permeate Pressure",
                      "in_use": True,
-                     "switch_value": 0.8}, # bar
+                     "switch_value": 1.0}, # bar
 
     "uf_general": {"uf_backwash_valve_name": "UF Backwash Valve", "uf_feed_valve_name": "UF Feed Valve",
                    "uf_switch_valve_name": "UF Switch",
@@ -70,6 +70,14 @@ control_configurations = {
                    "ed_rinse_tank_ls_name": "ED-Rinse Tank", "uf_tank_low_ls_name": "UF Tank Low",
 
                     "ed_concentrate_conductivity_name": "ED Concentrate Cond",
-                   "reversal_time": 20.0}
+                   "reversal_time": 20.0},
+
+    "overall_control": {"overall_feed_tank_high_ls_name": "Feed Tank High", "overall_feed_tank_middle_ls_name": "Feed Tank Middle",
+                        "overall_feed_tank_low_ls_name": "Feed Tank Low",
+
+                        "overall_purge_tank_middle_ls_name": "Purge Tank Middle", "overall_purge_tank_high_ls_name": "Purge Tank High",
+                        "overall_rinse_tank_ls_name": "ED-Rinse Tank"
+
+                       }
 
 }

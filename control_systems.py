@@ -3,7 +3,6 @@ import Sensor_Update_List as ul
 from threading import Thread, Timer
 import time
 
-# TODO problems
 
 """
 Here all control systems are initiated, and their control loops are defined. They take their specifications from the configurations_control file.
@@ -107,6 +106,7 @@ class UF_Massflow_PI:
             elapsed_time = self.time_current - self.time_last
 
         last_measurement = self.control_value_sensor.current_value
+        print("CURRENT UF PERMEATE FLOW: " + str(last_measurement))
         error = self.desired_value - last_measurement
 
         # Proportional Controller
@@ -136,8 +136,6 @@ class UF_Massflow_PI:
 
         self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
         self.time_last = self.time_current
-
-        time.sleep(2) # Waiting time
 
 class UF_TMP_Control:
 
@@ -241,6 +239,7 @@ class UF:
         self.currently_backwash = False
 
         self.critically_low_uf_tank_problem = False
+
 
     def set_process(self):
 
@@ -351,18 +350,33 @@ class UF:
             print("UF READY \n")
 
     def control_UF(self):
-            # check if we can start ED
-            self.set_ED()
+        if self.run_uf:
+                # check if we can start ED
+                self.set_ED()
 
-            # decide on current state
-            self.set_process()
+                # decide on current state
+                self.set_process()
 
-            if self.process == 'BACKWASH':
-                self.do_backwash()
-            elif self.process == 'FEED':
-                self.do_feed()
-            elif self.process == 'IDLE':
-                print("UF IS IDLING")
+                if self.process == 'BACKWASH':
+                    self.do_backwash()
+                elif self.process == 'FEED':
+                    self.do_feed()
+                elif self.process == 'IDLE':
+                    print("UF IS IDLING")
+        else:
+            self.turn_off_UF()
+            self.start_ED = False
+            self.is_ED_set = False
+
+# TODO TEST
+
+    def turn_off_UF(self):
+        print("-------------\nSHUTTING DOWN THE UF! \n")
+        self.massflow_backwash.stop_pump()
+        self.massflow_feed.stop_pump()
+        self.uf_feed_valve.set_new_state("LOW")
+        self.uf_backwash_valve.set_new_state("LOW")
+        self.uf_switch_valve.set_new_state("LOW")
 
 
 
@@ -674,7 +688,7 @@ class ED_Pressure_Control:
 
 class ED:
 
-    run_ed = False
+    run_ed = True
 
     def __init__(self, update_list, apason_system):
 
@@ -690,7 +704,7 @@ class ED:
         self.ed_split_tank_low_ls_name = conf.control_configurations["ed_general"]["ed_split_tank_low_ls_name"]
         self.ed_rinse_tank_ls_name = conf.control_configurations["ed_general"]["ed_rinse_tank_ls_name"]
         self.uf_tank_low_ls_name = conf.control_configurations["ed_general"]["uf_tank_low_ls_name"]
-
+        # TODO add PT levelswitch
         self.ed_concentrate_conductivity_name = conf.control_configurations["ed_general"]["ed_concentrate_conductivity_name"]
 
         for sensor in update_list.levelswitch:
@@ -764,27 +778,40 @@ class ED:
     def setup_reversal(self):
         self.ed_pre_diluate_valve.set_new_state("LOW")
         self.ed_pre_concentrate_valve.set_new_state("LOW")
-        self.ed_post_diluate_valve.set_new_state("HIGH")
-        self.ed_post_concentrate_valve.set_new_state("HIGH")
 
-        self.polarity.set_new_state("HIGH") # "HIGH" == "NEG"
+        self.polarity.set_new_state("HIGH")  # "HIGH" == "NEG"
         self.last_polarity_switch_time = time.time()
 
         self.massflow_diluate.set_reversal_control()
         self.massflow_concentrate.set_reversal_control()
 
+        self.massflow_diluate.massflow_pi()
+        self.massflow_concentrate.massflow_pi()
+
+        time.sleep(1)
+
+        self.ed_post_diluate_valve.set_new_state("HIGH")
+        self.ed_post_concentrate_valve.set_new_state("HIGH")
+
+
 
     def setup_normal(self):
         self.ed_pre_diluate_valve.set_new_state("HIGH")
         self.ed_pre_concentrate_valve.set_new_state("HIGH")
-        self.ed_post_diluate_valve.set_new_state("LOW")
-        self.ed_post_concentrate_valve.set_new_state("LOW")
 
         self.polarity.set_new_state("LOW") # "LOW" == "POS"
         self.last_polarity_switch_time = time.time()
 
         self.massflow_diluate.set_normal_control()
         self.massflow_concentrate.set_normal_control()
+
+        self.massflow_diluate.massflow_pi()
+        self.massflow_concentrate.massflow_pi()
+
+        time.sleep(1)
+
+        self.ed_post_diluate_valve.set_new_state("LOW")
+        self.ed_post_concentrate_valve.set_new_state("LOW")
 
 
     def startup_ED(self):
@@ -808,8 +835,6 @@ class ED:
 
         else:
             print("ED IN IDLE \n")
-
-        time.sleep(2)
 
     def initialize_ED(self):
         print("INITIALIZING ED…")
@@ -876,6 +901,9 @@ class ED:
         self.massflow_rinse.massflow_pi()
         self.massflow_concentrate.massflow_pi()
 
+    def do_pt_only(self):
+        self.massflow_posttreatment.massflow_pi()
+
 
     def run_ED(self):
 
@@ -915,6 +943,7 @@ class ED:
         self.conductivity_count += 1
 
     def do_massflow_control(self):
+        # TODO check pt tank! turn off all pumps plus polarity
         if self.ed_split_tank_middle_ls.current_value == "CLOSED":
             if self.post_treatment:
                 self.do_ed_with_pt()
@@ -930,20 +959,36 @@ class ED:
             else:
                 self.do_ed_no_pt()
 
-    # TODO
+    # TODO TEST
 
     def turn_off_ED(self):
-        pass
+        print("-------------\nSHUTTING DOWN THE ED! \n")
+        self.massflow_concentrate.stop_pump()
+        self.massflow_rinse.stop_pump()
+        self.massflow_diluate.stop_pump()
+        self.massflow_posttreatment.stop_pump()
+
+        self.ed_pre_diluate_valve.set_new_state("LOW")
+        self.ed_pre_concentrate_valve.set_new_state("LOW")
+        self.ed_post_diluate_valve.set_new_state("LOW")
+        self.ed_post_concentrate_valve.set_new_state("LOW")
+        self.ed_concentrate_dilute_valve.set_new_state("LOW")
+        self.ed_second_pre_diluate_valve.set_new_state("LOW")
+        self.polarity.set_new_state("OFF")
+
 
 
     def control_ED(self):
 
-        if self.starting_up:
-            self.startup_ED()
-        elif self.uninitialized:
-            self.initialize_ED()
+        if self.run_ed:
+            if self.starting_up:
+                self.startup_ED()
+            elif self.uninitialized:
+                self.initialize_ED()
+            else:
+                self.run_ED()
         else:
-            self.run_ED()
+            self.turn_off_ED()
 
 
 # Parameters: overall_control_thread, run_overall = True
@@ -958,53 +1003,112 @@ class Overall_Control:
 
 
     def __init__(self, update_list, apason_system):
+
         self.system = apason_system
         self.update_list = update_list
-        self.overall_control_thread = Timer(4.0, function=self.run_test)
+        self.overall_control_thread = Timer(4.0, function=self.run_control_systems)
         self.overall_control_thread.start()
+
+        self.overall_feed_tank_high_ls_name = conf.control_configurations["overall_control"]["overall_feed_tank_high_ls_name"]
+        self.overall_feed_tank_middle_ls_name = conf.control_configurations["overall_control"]["overall_feed_tank_middle_ls_name"]
+        self.overall_feed_tank_low_ls_name = conf.control_configurations["overall_control"]["overall_feed_tank_low_ls_name"]
+
+        self.overall_purge_tank_middle_ls_name = conf.control_configurations["overall_control"]["overall_purge_tank_middle_ls_name"]
+        self.overall_purge_tank_high_ls_name = conf.control_configurations["overall_control"]["overall_purge_tank_high_ls_name"]
+
+        self.overall_rinse_tank_ls_name = conf.control_configurations["overall_control"]["overall_rinse_tank_ls_name"]
+
+        for sensor in update_list.levelswitch:
+
+            if sensor.name == self.overall_feed_tank_high_ls_name:
+                self.overall_feed_tank_high_ls = sensor
+
+            elif sensor.name == self.overall_feed_tank_middle_ls_name:
+                self.overall_feed_tank_middle_ls = sensor
+
+            elif sensor.name == self.overall_feed_tank_low_ls_name:
+                self.overall_feed_tank_low_ls = sensor
+
+            elif sensor.name == self.overall_purge_tank_middle_ls_name:
+                self.overall_purge_tank_middle_ls = sensor
+            elif sensor.name == self.overall_purge_tank_high_ls_name:
+                self.overall_purge_tank_high_ls = sensor
+            elif sensor.name == self.overall_rinse_tank_ls_name:
+                self.overall_rinse_tank_ls = sensor
 
         self.uf = UF(self.update_list, self.system)
         self.ed = ED(self.update_list, self.system)
 
-    def run_test(self):
+        self.overall_state = "GOOD"
 
-        mf_pi_rinse = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
-                                     control_configuration="ed_rinse_flow")
-        mf_pi_pt = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
-                                  control_configuration="ed_pt_flow")
-        mf_pi_conc = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
-                                    control_configuration="ed_concentrate_flow")
-        mf_pi_dil = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
-                                   control_configuration="ed_diluate_flow")
+    def run_control_systems(self):
 
-        cond_pi = ED_Conductivity_PI(update_list=self.update_list,
-                                     apason_system=self.system,
-                                     ed_concentrate_flow_control=mf_pi_conc,
-                                     ed_pt_flow_control=mf_pi_pt,
-                                     ed_diluate_flow_control=mf_pi_dil, control_configuration= "ed_conductivity")
+        # mf_pi_rinse = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
+        #                              control_configuration="ed_rinse_flow")
+        # mf_pi_pt = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
+        #                           control_configuration="ed_pt_flow")
+        # mf_pi_conc = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
+        #                             control_configuration="ed_concentrate_flow")
+        # mf_pi_dil = ED_Massflow_PI(update_list=self.update_list, apason_system=self.system,
+        #                            control_configuration="ed_diluate_flow")
+        #
+        # cond_pi = ED_Conductivity_PI(update_list=self.update_list,
+        #                              apason_system=self.system,
+        #                              ed_concentrate_flow_control=mf_pi_conc,
+        #                              ed_pt_flow_control=mf_pi_pt,
+        #                              ed_diluate_flow_control=mf_pi_dil, control_configuration= "ed_conductivity")
 
         while (self.run_overall):
+
+            self.check_tanks()
 
             self.uf.control_UF()
             if self.uf.start_ED:
                 self.ed.UF_ready()
 
-            self.ed.control_ED()
+            # self.ed.control_ED()
 
-            time.sleep(5)
+            time.sleep(4)
+
+    # TODO pressure problems
+
+    def check_tanks(self):
+
+        if self.overall_feed_tank_low_ls.current_value == "OPEN":
+            print("THE FEED TANK IS EMPTY. SHUTTING DOWN SYSTEM.")
+            print("SHOWN ON LEVEL SWITCH " + self.overall_feed_tank_low_ls.name + " #" + str(self.overall_rinse_tank_ls.id))
+            self.ed.run_ed = False
+            self.uf.run_uf = False
+            # TODO DISPLAY IN GUI
+
+        elif self.overall_feed_tank_middle_ls.current_value == "OPEN":
+            print("THE FEED TANK IS LESS THAN HALF FULL")
+            # TODO DISPLAY IN GUI
+
+        elif self.overall_feed_tank_high_ls.current_value == "CLOSED":
+            print("THE FEED TANK IS ALMOST FULL. MAKE SURE YOU DON'T FILL IT TOO MUCH.")
+            # TODO DISPLAY IN GUI
+
+        if self.overall_purge_tank_high_ls.current_value == "CLOSED":
+            print("THE PURGE TANK IS FULL. PLEASE EMPTY IT. SHUTTING DOWN SYSTEM.")
+            # TODO DISPLAY IN GUI
+            self.ed.run_ed = False
+            self.uf.run_uf = False
+        elif self.overall_purge_tank_middle_ls.current_value == "CLOSED":
+            print("THE PURGE TANK IS ALMOST FULL – PREPARE TO EMPTY IT.")
+            # TODO DISPLAY IN GUI
+        # if self.overall_rinse_tank_ls.current_value == "OPEN":
+        #     print("LEAK IN THE RINSE TANK! PLEASE CHECK.")
+        #     print("SHOWN ON LEVEL SWITCH " + self.overall_rinse_tank_ls.name + " #" + str(self.overall_rinse_tank_ls.id))
+        #     self.ed.run_ed = False
+        #     self.uf.run_uf = False
+        #     # TODO DISPLAY IN GUI
 
 
-
-
-    # TODO
-    def check_if_UF(self):
-        pass
-
-    # TODO
-    def check_if_ED(self):
-        pass
 
     def stop(self):
+        self.ed.turn_off_ED()
+        self.uf.turn_off_UF()
         self.run_overall = False
         self.overall_control_thread.join()
 

@@ -110,7 +110,7 @@ class Command_Center:
 
         while(self.run_cc):
             self.send_commands()
-            time.sleep(1)
+            time.sleep(0.1)
 
     def stop_server(self):
         self.run_cc = False
@@ -120,13 +120,17 @@ class Command_Center:
 
     def set_zero(self):
         for pump in self.apason_system.system_pumps:
-            pump.set_new_state(new_state=0.0)
+            if pump.state != 0.0:
+                pump.set_new_state(new_state=0.0)
         for ocv_no in self.apason_system.system_ocvs_no:
-            ocv_no.set_new_state(new_state="LOW")
+            if ocv_no.state != "LOW":
+                ocv_no.set_new_state(new_state="LOW")
         for ocv_nc in self.apason_system.system_ocvs_nc:
-            ocv_nc.set_new_state(new_state="LOW")
+            if ocv_nc.state != "LOW":
+                ocv_nc.set_new_state(new_state="LOW")
         for cv3 in self.apason_system.system_cv3s:
-            cv3.set_new_state(new_state="LOW")
+            if cv3.state != "LOW":
+                cv3.set_new_state(new_state="LOW")
         self.apason_system.polarity.set_new_state(new_state="OFF")
 
 
@@ -163,11 +167,9 @@ class Update_List:
         # print("UF MIDDLE LEVEL SWITCH READING: " + self.list.levelswitch[1].current_value)
         # print("\n--------- CURRENT MASSFLOWS:")
 
-        # if time.time() - self.last_print > 20.0:
-        #     print("PT FLOW: " + str(self.list.massflow[2].current_value))
-        #     print("DILUATE FLOW: " + str(self.list.massflow[3].current_value))
-        #     print("RINSE FLOW: " + str(self.list.massflow[4].current_value))
-        #     print("CONCENTRATE FLOW: " + str(self.list.massflow[5].current_value))
+        if time.time() - self.last_print > 20.0:
+            print("UF FEED FLOW: " + str(self.list.massflow[1].current_value))
+
         #
         # if time.time() - self.last_print > 30.0:
         #     print("---------")
@@ -188,9 +190,11 @@ class Update_List:
 
             for sensor in self.list.levelswitch:
                 # print("Checking Level Switch: " + sensor.name)
-                digital = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
-                # print("Current Value: " + digital + "\n")
-                sensor.updateValue(digital)
+                digital_1 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                digital_2 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                digital_3 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                if (digital_1 == digital_2) & (digital_2 == digital_3):
+                    sensor.updateValue(digital_1)
                 index += 1
 
             index = 0
@@ -204,7 +208,7 @@ class Update_List:
                 sensor.updateValue(self.arduino.retrieveMeasurement(sensors.conductivity_sensors[index]))
                 index += 1
             self.set_from_list()
-            time.sleep(2)
+            time.sleep(0.5)
 
 
     def stop_server(self):
@@ -225,10 +229,10 @@ if __name__ == '__main__':
 
     update_list = ulist.Sensor_Update_List()
 
-    arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[4])
-    arduinos.sendVoltage(volt=900, control_instrument=control_instruments.pump_instruments[5])
-    arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[6])
-    arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[7])
+    # arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[4])
+    # arduinos.sendVoltage(volt=900, control_instrument=control_instruments.pump_instruments[5])
+    # arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[6])
+    # arduinos.sendVoltage(volt=0, control_instrument=control_instruments.pump_instruments[7])
 
     view: gui.apason_GUIApp = gui.apason_GUIApp()
 

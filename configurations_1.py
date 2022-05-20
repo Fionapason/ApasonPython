@@ -39,12 +39,12 @@ sensor_configurations_1 = {
                    ],
 
     "massflow": [{"id": 1, "arduino_id": 1,
-                   "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A5
-                   "max_flow": 5.0},
+                   "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A5
+                   "max_flow": 10.0},
 
                   {"id": 2, "arduino_id": 1,
-                   "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A6
-                   "max_flow": 10.0},
+                   "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A6
+                   "max_flow": 5.0},
 
                   {"id": 3, "arduino_id": 1,
                    "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A7
@@ -84,9 +84,9 @@ sensor_configurations_1 = {
                {"id": 5, "arduino_id": 1,
                 "name": "Purge Tank Middle", "in_use": True}, #D27
                {"id": 6, "arduino_id": 1,
-                "name": "idle", "in_use": False}, #D28
+                "name": "Purge Tank High", "in_use": True}, #D28
                {"id": 7, "arduino_id": 1,
-                "name": "Purge Tank High", "in_use": False}, #D29
+                "name": "idle", "in_use": False}, #D29
                {"id": 8, "arduino_id": 1,
                 "name": "idle", "in_use": False}, #D30
                {"id": 9, "arduino_id": 1,
@@ -118,26 +118,26 @@ control_instrument_configurations_1 = {
                          ],
 
     "ocv_normally_open": [{"id": 0, "arduino_id": 1,
-                            "name": "UF Feed Valve", "in_use": True, #D47
+                            "name": "UF Feed Valve", "in_use": True, #D45
                             "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 
     #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
 
     "pump": [ {"id": 0,  "DAC_output": 'A',"arduino_id": 1,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 1, "DAC_output": 'B', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 2, "DAC_output": 'C', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC C
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
                {"id": 3, "DAC_output": 'D', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC D
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
             ]

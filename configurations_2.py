@@ -136,7 +136,7 @@ control_instrument_configurations_2 = {
                          ],
 
     "ocv_normally_open": [{"id": 0, "arduino_id": 2,
-                            "name": "UF OCV", "in_use": False, #D47
+                            "name": "UF OCV", "in_use": False, #D45
                             "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 

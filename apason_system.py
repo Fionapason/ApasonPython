@@ -157,6 +157,12 @@ class Apason_System():
     system_ocvs_nc = []
     system_cv3s = []
 
+    system_problem = "NONE"
+
+    warning_feed_low = False
+    warning_feed_high = False
+    warning_purge_high = False
+
     def __init__(self):
         self.set_instruments()
 
@@ -239,6 +245,8 @@ class Apason_System():
             if polarity["in_use"]:
                 new_polarity = System_Polarity(state=polarity["start_state"])
                 self.polarity = new_polarity
+
+
 
 
 

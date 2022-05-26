@@ -1,4 +1,20 @@
 #:kivy 1.0.9
+#:import Factory kivy.factory.Factory
+
+<Popup_Window_Feed_High>:
+    Label:
+        text: str(root.high_feed_warning)
+        pos_hint: {"x":0, "top":1}
+
+<Popup_Window_Feed_Low>:
+    Label:
+        text: str(root.low_feed_warning)
+        pos_hint: {"x":0, "top":1}
+
+<Popup_Window_Purge_High>:
+    Label:
+        text: str(root.high_purge_warning)
+        pos_hint: {"x":0, "top":1}
 
 <GUI_GridLayout>:
 
@@ -40,6 +56,6 @@
 
     Switch:
         id: pt_pump
-        active: False
-        on_active: root.pt_switch_callback(self, self.active, pt_pump)
+        active: True
+        on_active: root.pt_switch_callback(self, self.active)
         disabled: True

@@ -14,6 +14,12 @@ class Command_Center:
     run_cc = True
     system_on = False
     system_turned_on = False
+    post_treatment_off = False
+    post_treatment_turned_off = False
+
+    warning_feed_high_timer_started = False
+    warning_purge_high_timer_started = False
+    warning_feed_low_timer_started = False
 
     def __init__(self, arduinos, ard_control, interface, update_list):
         self.ard_com : ard_com.ArduinoCommunication() = arduinos
@@ -70,6 +76,22 @@ class Command_Center:
 
     #TODO check GUI buttons for on/off
 
+    def post_treatment_pump(self):
+
+        if not self.post_treatment_turned_off:
+
+            if self.post_treatment_off:
+                print("COMMAND CENTER: POST TREATMENT TURNED OFF")
+                self.apason_system.overall_control.ed.post_treatment_switch_off = True
+                self.post_treatment_turned_off = True
+
+        else:
+
+            if not self.post_treatment_off:
+                print("COMMAND CENTER: POST TREATMENT TURNED ON")
+                self.apason_system.overall_control.ed.post_treatment_switch_off = False
+                self.post_treatment_turned_off = False
+
     def run(self):
 
         while (self.run_cc):
@@ -77,17 +99,74 @@ class Command_Center:
             print("SYSTEM TURNED ON: " + str(self.system_on))
 
             if not self.system_turned_on:
+                print("SYSTEM CURRENTLY OFF. CHECKING IF IT SHOULD BE TURNED ON.")
                 if self.system_on:
                     self.start_system()
                     self.system_turned_on = True
+            else:
+                print("SYSTEM CURRENTLY ON. CHECKING IF IT SHOULD BE TURNED OFF.")
+                if self.apason_system.overall_control.stop_control:
+                    self.apason_system.turn_off_system()
+                    self.system_turned_on = False
+                    self.system_on = False
+                if not self.system_on:
+                    self.apason_system.turn_off_system()
+                    self.system_turned_on = False
 
             while (self.system_on):
-                print("I'M IN THE COMMAND LOOP")
-                time.sleep(5)
+                self.post_treatment_pump()
+                self.check_warnings()
                 self.send_commands()
+                time.sleep(1)
 
-            self.system_turned_on = False
+            if self.apason_system.system_problem:
+                print(self.apason_system.system_problem)
 
+
+            time.sleep(3)
+
+    def check_warnings(self):
+
+        print("CHECKING WARNINGS...")
+
+        if self.apason_system.warning_feed_high:
+            if not self.warning_feed_high_timer_started:
+                self.warning_feed_high_timer = time.time()
+                self.warning_feed_high_timer_started = True
+                self.interface.popup_feed_high_now = True
+                print("FEED HIGH!")
+            else:
+                elapsed_time = time.time() - self.warning_feed_high_timer
+                print(elapsed_time)
+                if elapsed_time > 20.0:
+                    print("FEED HIGH WARNING: 20 SECONDS HAVE PASSED. ANOTHER WARNING.")
+                    self.warning_feed_high_timer_started = False
+        if self.apason_system.warning_feed_low:
+            if not self.warning_feed_low_timer_started:
+                self.warning_feed_low_timer = time.time()
+                self.warning_feed_low_timer_started = True
+                self.interface.popup_feed_low_now = True
+                print("FEED LOW!")
+            else:
+                elapsed_time = time.time() - self.warning_feed_low_timer
+                print(elapsed_time)
+                if elapsed_time > 20.0:
+                    print("FEED LOW WARNING: 20 SECONDS HAVE PASSED. ANOTHER WARNING.")
+                    self.warning_feed_low_timer_started = False
+
+        if self.apason_system.warning_purge_high:
+            if not self.warning_purge_high_timer_started:
+                self.warning_purge_high_timer = time.time()
+                self.warning_purge_high_timer_started = True
+                # TODO POPUP
+                self.interface.popup_purge_high_now = True
+                print("PURGE HIGH")
+            else:
+                print(elapsed_time)
+                elapsed_time = time.time() - self.warning_purge_high_timer
+                if elapsed_time > 20.0:
+                    print("PURGE WARNING: 20 SECONDS HAVE PASSED. ANOTHER WARNING.")
+                    self.warning_purge_high_timer_started = False
 
 
     def start_system(self):
@@ -97,12 +176,13 @@ class Command_Center:
         self.system_on = False
         self.apason_system.turn_off_system()
         self.set_zero()
+        self.send_commands()
 
     def stop_server(self):
         print("I'm Trying To Stop The Command Center Server")
+        self.apason_system.turn_off_system()
         self.system_on = False
         self.run_cc = False
-        self.apason_system.turn_off_system()
         self.set_zero()
         self.send_commands()
 

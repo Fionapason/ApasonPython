@@ -1,6 +1,7 @@
 import configurations_control as conf
 import Sensor_Update_List as ul
 from threading import Timer
+import apason_system as apason
 import time
 
 
@@ -633,7 +634,7 @@ class ED_Pressure_Control:
         self.ed_massflow_concentrate : ED_Massflow_PI = ed_massflow_concentrate
 
 
-        self.pdrd_problem = "NONE"
+        self.pdrd_problem = False
         self.pddc_problem = False
 
         self.pddc_potential_problem = False
@@ -697,14 +698,17 @@ class ED_Pressure_Control:
             print("THE PDDC HAS BEEN STABILIZED \n")
 
         if self.pdrd_exceeded():
+            self.pdrd_problem = True
             if self.pdrd_exceeded_positive_sign():
-                self.pdrd_problem = "TURN RIGHT"
+                self.pdrd_problem_description = "TURN RIGHT"
             else:
-                self.pdrd_problem = "TURN LEFT"
+                self.pdrd_problem_description = "TURN LEFT"
 
 class ED:
 
     run_ed = True
+
+    post_treatment_switch_off = False
 
     def __init__(self, update_list, apason_system):
 
@@ -916,11 +920,12 @@ class ED:
         self.massflow_rinse.massflow_pi()
 
     def do_ed_with_pt(self):
-        print("\n \n DO ED NO PT! \n \n")
-        self.massflow_concentrate.massflow_pi()
+        print("\n \n DO ED WITH PT! \n \n")
         self.massflow_diluate.massflow_pi()
         self.massflow_rinse.massflow_pi()
         self.massflow_concentrate.massflow_pi()
+        self.massflow_posttreatment.massflow_pi()
+
 
     def do_pt_only(self):
         print("\n \n DO PT ONLY! \n \n")
@@ -935,18 +940,17 @@ class ED:
 
         time.sleep(0.1)
 
-        if self.pressure_control.pdrd_problem != "NONE":
-            self.massflow_posttreatment.stop_pump()
-            time.sleep(0.1)
-            self.massflow_rinse.stop_pump()
-            time.sleep(0.1)
-            self.massflow_concentrate.stop_pump()
-            time.sleep(0.1)
-            self.massflow_diluate.stop_pump()
-            print("THE PRESSURE DIFFERENCE BETWEEN THE RINSE AND THE DILUATE IS TOO HIGH. ADJUST THE HAND-VALVE:")
-            print(self.pressure_control.pdrd_problem)
-            return
-            # TODO SEND ON MESSAGE TO GUI
+        # if self.pressure_control.pdrd_problem:
+        #     self.massflow_posttreatment.stop_pump()
+        #     time.sleep(0.1)
+        #     self.massflow_rinse.stop_pump()
+        #     time.sleep(0.1)
+        #     self.massflow_concentrate.stop_pump()
+        #     time.sleep(0.1)
+        #     self.massflow_diluate.stop_pump()
+        #     print("THE PRESSURE DIFFERENCE BETWEEN THE RINSE AND THE DILUATE IS TOO HIGH. ADJUST THE HAND-VALVE:")
+        #     print(self.pressure_control.pdrd_problem)
+        #     return
 
 
         now = time.time()
@@ -974,8 +978,20 @@ class ED:
         self.conductivity_count += 1
 
     def do_massflow_control(self):
-        # TODO check pt tank! turn off all pumps plus polarity
-        if self.ed_split_tank_middle_ls.current_value == "CLOSED":
+
+        if self.post_treatment_switch_off:
+            print("SWITCH ENGAGED, MUST STOP PT")
+            if self.post_treatment:
+                self.post_treatment = False
+                self.massflow_posttreatment.stop_pump()
+                self.do_ed_no_pt()
+                time.sleep(0.1)
+            else:
+                self.do_ed_no_pt()
+                time.sleep(0.1)
+
+        elif self.ed_split_tank_middle_ls.current_value == "CLOSED":
+            print("LEVELSWITCH CLOSED CAN DO PT")
             if self.post_treatment:
                 self.do_ed_with_pt()
                 time.sleep(0.1)
@@ -985,6 +1001,7 @@ class ED:
                 self.do_ed_with_pt()
                 time.sleep(0.1)
         else:
+            print("LEVELSWITCH OPEN CANT DO PT")
             if self.post_treatment:
                 self.massflow_posttreatment.stop_pump()
                 self.post_treatment = False
@@ -1042,7 +1059,7 @@ class Overall_Control:
 
         print("INITIALIZING CONTROL!")
 
-        self.system = apason_system
+        self.system : apason.Apason_System() = apason_system
         self.update_list = update_list
 
         self.overall_feed_tank_high_ls_name = conf.control_configurations["overall_control"][
@@ -1082,8 +1099,9 @@ class Overall_Control:
 
         self.overall_state = "GOOD"
 
-        self.overall_control_thread = Timer(10.0, function=self.run_control_systems)
+        self.overall_control_thread = Timer(5.0, function=self.run_control_systems)
         self.overall_control_thread.start()
+
 
     def run_control_systems(self):
 
@@ -1093,9 +1111,6 @@ class Overall_Control:
 
             if self.stop_control:
                 break
-
-            if self.run_overall:
-                self.check_tanks()
 
             while (self.run_overall):
 
@@ -1108,24 +1123,34 @@ class Overall_Control:
 
                 self.ed.control_ED()
 
+                self.check_tanks()
+                self.pressure_problems()
+
                 time.sleep(1)
 
     def pressure_problems(self):
-
+        if time.time() - self.system.time_start < 30.0:
+            return
         if self.ed.pressure_control.pddc_problem:
-            self.ed.turn_off_ED()
-            self.uf.turn_off_UF()
-            self.run_overall = False
+            print("SHUTTING DOWN. PDDC PROBLEM")
+            self.stop_server()
+            self.ed.pressure_control.pddc_problem = False
+            self.system.system_problem = "PDDC"
+            return
             #pass on to command center
         if self.ed.pressure_control.pdrd_problem:
-            self.ed.turn_off_ED()
-            self.uf.turn_off_UF()
-            self.run_overall = False
+            print("SHUTTING DOWN. PDRD PROBLEM")
+            self.stop_server()
+            self.ed.pressure_control.pddc_problem = False
+            self.system.system_problem = "PDRD"
+            return
 
         if self.uf.tmp_control.tmp_problem:
-            self.ed.turn_off_ED()
-            self.uf.turn_off_UF()
-            self.run_overall = False
+            print("SHUTTING DOWN. TMP PROBLEM")
+            self.stop_server()
+            self.ed.pressure_control.pddc_problem = False
+            self.system.system_problem = "TMP"
+            return
 
 
 
@@ -1134,44 +1159,53 @@ class Overall_Control:
         if self.overall_feed_tank_low_ls.current_value == "OPEN":
             print("THE FEED TANK IS EMPTY. SHUTTING DOWN SYSTEM.")
             print("SHOWN ON LEVEL SWITCH " + self.overall_feed_tank_low_ls.name + " #" + str(self.overall_rinse_tank_ls.id))
-            self.ed.turn_off_ED()
-            self.uf.turn_off_UF()
-            self.run_overall = False
-            # TODO DISPLAY IN GUI
-
-        elif self.overall_feed_tank_middle_ls.current_value == "OPEN":
-            print("THE FEED TANK IS LESS THAN HALF FULL")
-            # TODO DISPLAY IN GUI
-
-        elif self.overall_feed_tank_high_ls.current_value == "CLOSED":
-            print("THE FEED TANK IS ALMOST FULL. MAKE SURE YOU DON'T FILL IT TOO MUCH.")
-            # TODO DISPLAY IN GUI
+            self.system.system_problem = "FEED_EMPTY"
+            self.stop_server()
+            return
 
         if self.overall_purge_tank_high_ls.current_value == "CLOSED":
             print("THE PURGE TANK IS FULL. PLEASE EMPTY IT. SHUTTING DOWN SYSTEM.")
-            # TODO DISPLAY IN GUI
-            self.ed.turn_off_ED()
-            self.uf.turn_off_UF()
-            self.run_overall = False
+            self.system.system_problem = "PURGE_FULL"
+            self.stop_server()
+            return
 
-        elif self.overall_purge_tank_middle_ls.current_value == "CLOSED":
+        if self.overall_rinse_tank_ls.current_value == "OPEN":
+            print("LEAK IN THE RINSE TANK! PLEASE CHECK.")
+            print("SHOWN ON LEVEL SWITCH " + self.overall_rinse_tank_ls.name + " #" + str(self.overall_rinse_tank_ls.id))
+            self.stop_server()
+            self.system.system_problem = "LOW_RINSE"
+            return
+
+        if self.overall_feed_tank_middle_ls.current_value == "OPEN":
+            print("THE FEED TANK IS LESS THAN HALF FULL")
+            self.system.warning_feed_low = True
+
+        if self.overall_feed_tank_high_ls.current_value == "CLOSED":
+            print("THE FEED TANK IS ALMOST FULL. MAKE SURE YOU DON'T FILL IT TOO MUCH.")
+            self.system.warning_feed_high = True
+
+
+        if self.overall_purge_tank_middle_ls.current_value == "CLOSED":
             print("THE PURGE TANK IS ALMOST FULL – PREPARE TO EMPTY IT.")
-            # TODO DISPLAY IN GUI
-        # if self.overall_rinse_tank_ls.current_value == "OPEN":
-        #     print("LEAK IN THE RINSE TANK! PLEASE CHECK.")
-        #     print("SHOWN ON LEVEL SWITCH " + self.overall_rinse_tank_ls.name + " #" + str(self.overall_rinse_tank_ls.id))
-        #     self.ed.run_ed = False
-        #     self.uf.run_uf = False
-        #     # TODO DISPLAY IN GUI
+            self.system.warning_purge_high = True
+
+
 
     def stop_server(self):
         print("STOPPING CONTROL!")
+        self.stop_control = True
+
         self.run_overall = False
         self.ed.run_ed = False
         self.uf.run_uf = False
+
+        # Make sure we've left the loop.
+        time.sleep(5)
+
         self.ed.turn_off_ED()
         self.uf.turn_off_UF()
-        self.stop_control = True
+
+        print("TURNED EVERYTHING OFF")
 
     def stop(self):
         self.overall_control_thread.join()

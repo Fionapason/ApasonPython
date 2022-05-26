@@ -74,7 +74,6 @@ class Command_Center:
             self.apason_system.polarity.changed = False
             time.sleep(0.2)
 
-    #TODO check GUI buttons for on/off
 
     def post_treatment_pump(self):
 
@@ -116,11 +115,10 @@ class Command_Center:
             while (self.system_on):
                 self.post_treatment_pump()
                 self.check_warnings()
+                self.set_problem()
                 self.send_commands()
                 time.sleep(1)
 
-            if self.apason_system.system_problem:
-                print(self.apason_system.system_problem)
 
 
             time.sleep(3)
@@ -158,7 +156,6 @@ class Command_Center:
             if not self.warning_purge_high_timer_started:
                 self.warning_purge_high_timer = time.time()
                 self.warning_purge_high_timer_started = True
-                # TODO POPUP
                 self.interface.popup_purge_high_now = True
                 print("PURGE HIGH")
             else:
@@ -167,6 +164,9 @@ class Command_Center:
                 if elapsed_time > 20.0:
                     print("PURGE WARNING: 20 SECONDS HAVE PASSED. ANOTHER WARNING.")
                     self.warning_purge_high_timer_started = False
+
+    def set_problem(self):
+        self.interface.problem = self.apason_system.system_problem
 
 
     def start_system(self):
@@ -206,7 +206,6 @@ class Command_Center:
         self.apason_system.polarity.set_new_state(new_state="OFF")
 
 
-# TODO finish Update_List
 
 class Update_List:
 

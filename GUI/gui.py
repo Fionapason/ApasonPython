@@ -78,6 +78,58 @@ class GUI_GridLayout(GridLayout):
                                             size_hint=(0.5, 0.5))
         self.popup_feed_high_window.open()
 
+
+
+    def popup_high_pressure(self):
+        show = Popup_Window_High_Pressure()
+        self.popup_high_pressure_window = Popup(title="Fatal Problem: High Pressure",
+                                         content=show,
+                                         size_hint=(0.5, 0.5))
+        self.popup_high_pressure_window.open()
+
+    def popup_pddc(self):
+        show = Popup_Window_PDDC()
+        self.popup_pddc_window = Popup(title="Fatal Problem: Diluate-Concentrate Pressure Difference",
+                                                content=show,
+                                                size_hint=(0.5, 0.5))
+        self.popup_pddc_window.open()
+
+    def popup_pdrd(self):
+        show = Popup_Window_PDRD()
+        self.popup_pdrd_window = Popup(title="Fatal Problem: Diluate-Rinse Pressure Difference",
+                                                content=show,
+                                                size_hint=(0.5, 0.5))
+        self.popup_pdrd_window.open()
+
+    def popup_tmp(self):
+        show = Popup_Window_TMP()
+        self.popup_tmp_window = Popup(title="Fatal Problem: Trans-Membrane Pressure",
+                                                content=show,
+                                                size_hint=(0.5, 0.5))
+        self.popup_tmp_window.open()
+
+    def popup_feed_empty(self):
+        show = Popup_Window_Feed_Empty()
+        self.popup_feed_empty_window = Popup(title="Fatal Problem: Feed Tank Empty",
+                                                content=show,
+                                                size_hint=(0.5, 0.5))
+        self.popup_feed_empty_window.open()
+
+    def popup_purge_full(self):
+        show = Popup_Window_Purge_Full()
+        self.popup_purge_full_window = Popup(title="Fatal Problem: Purge Tank Full",
+                                             content=show,
+                                             size_hint=(0.5, 0.5))
+        self.popup_purge_full_window.open()
+
+
+    def popup_rinse_low(self):
+        show = Popup_Window_Rinse_Low()
+        self.popup_rinse_low_window = Popup(title="Fatal Problem: Rinse Tank Level Low",
+                                             content=show,
+                                             size_hint=(0.5, 0.5))
+        self.popup_rinse_low_window.open()
+
     def build(self):
 
         self.switch_system_on_off = Switch(active=False)
@@ -123,6 +175,59 @@ class Popup_Window_Purge_High(FloatLayout):
     def build(self):
         self.add_widget(Label(text=self.high_purge_warning))
 
+
+
+
+class Popup_Window_High_Pressure(FloatLayout):
+
+    high_pressure_problem = StringProperty("Somewhere in the system a critical pressure was reached. \n System was shut down.")
+
+    def build(self):
+        self.add_widget(Label(text=self.high_pressure_problem))
+
+
+class Popup_Window_PDDC(FloatLayout):
+    pddc_problem = StringProperty("The pressure difference between the diluate and the concentrate was too high. \n System was shut down.")
+
+    def build(self):
+        self.add_widget(Label(text=self.pddc_problem))
+
+
+class Popup_Window_PDRD(FloatLayout):
+    pdrd_problem = StringProperty("The pressure difference between the diluate and the rinse was too high. \n System was shut down. \n Check the console for further instructions.")
+
+    def build(self):
+        self.add_widget(Label(text=self.pdrd_problem))
+
+
+class Popup_Window_TMP(FloatLayout):
+    tmp_problem = StringProperty("The pressure difference across the UF membrane was too high. \n System was shut down.")
+
+    def build(self):
+        self.add_widget(Label(text=self.tmp_problem))
+
+
+class Popup_Window_Rinse_Low(FloatLayout):
+    rinse_low_problem = StringProperty("The water level in the rinse tank is too low. \n System was shut down. \n You must refill the rinse tank.")
+
+    def build(self):
+        self.add_widget(Label(text=self.rinse_low_problem))
+
+
+class Popup_Window_Feed_Empty(FloatLayout):
+    feed_empty_problem = StringProperty("The feed tank is empty! \n System was shut down. \n You must refill feed tank.")
+
+    def build(self):
+        self.add_widget(Label(text=self.feed_empty_problem))
+
+
+class Popup_Window_Purge_Full(FloatLayout):
+    purge_full_problem = StringProperty("The purge tank is full! \n System was shut down. \n You must empty the purge tank.")
+
+    def build(self):
+        self.add_widget(Label(text=self.purge_full_problem))
+
+
 class apason_GUIApp(App):
 
     system_on = False
@@ -139,6 +244,7 @@ class apason_GUIApp(App):
     popup_feed_low_now = False
     popup_purge_high_now = False
 
+    problem = "NONE"
 
     def update_switches(self, dt):
 
@@ -179,6 +285,41 @@ class apason_GUIApp(App):
             self.layout.popup_purge_high()
             self.popup_purge_high_now = False
 
+    def check_if_problem(self, dt):
+        if self.problem == "NONE":
+            pass
+
+        elif self.problem == "HIGH_PRESSURE":
+            self.layout.popup_high_pressure()
+            # self.disable_on_off()
+
+        elif self.problem == "PDDC":
+            self.layout.popup_pddc()
+            # self.disable_on_off()
+
+        elif self.problem == "PDRD":
+            self.layout.popup_pdrd()
+            # self.disable_on_off()
+
+        elif self.problem == "TMP":
+            self.layout.popup_tmp()
+            # self.disable_on_off()
+
+        elif self.problem == "FEED_EMPTY":
+            self.layout.popup_feed_empty()
+            # self.disable_on_off()
+
+        elif self.problem == "PURGE_FULL":
+            self.layout.popup_purge_full()
+            # self.disable_on_off()
+
+        elif self.problem == "LOW_RINSE":
+            self.layout.popup_rinse_low()
+            # self.disable_on_off()
+
+   # TODO
+   #  def disable_on_off(self):
+   #      self.layout.switch_system_on_off.disabled = True
 
     def setServer(self, command_center, update_list):
         self.command_center = command_center
@@ -189,6 +330,7 @@ class apason_GUIApp(App):
         Clock.schedule_interval(self.update_switches, 1.0)
         Clock.schedule_interval(self.update_inputs, 1.0)
         Clock.schedule_interval(self.check_warnings, 1.0)
+        Clock.schedule_interval(self.check_if_problem, 1.0)
         return self.layout
 
     def on_stop(self):

@@ -1129,8 +1129,19 @@ class Overall_Control:
                 time.sleep(1)
 
     def pressure_problems(self):
+
+        for sensor in self.update_list.pressure:
+            if sensor.current_value > sensor.critical_pressure:
+                print("HIGH PRESSURE!")
+                self.system.system_problem = "HIGH_PRESSURE"
+                self.stop_server()
+                return
+
+
         if time.time() - self.system.time_start < 30.0:
             return
+
+
         if self.ed.pressure_control.pddc_problem:
             print("SHUTTING DOWN. PDDC PROBLEM")
             self.stop_server()

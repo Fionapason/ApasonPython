@@ -16,11 +16,59 @@
         text: str(root.high_purge_warning)
         pos_hint: {"x":0, "top":1}
 
+
+
+<Popup_Window_High_Pressure>:
+    Label:
+        text: str(root.high_pressure_problem)
+        pos_hint: {"x":0, "top":1}
+
+<Popup_Window_PDDC>:
+    Label:
+        text: str(root.pddc_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+<Popup_Window_PDRD>:
+    Label:
+        text: str(root.pdrd_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+<Popup_Window_TMP>:
+    Label:
+        text: str(root.tmp_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+<Popup_Window_Rinse_Low>:
+    Label:
+        text: str(root.rinse_low_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+<Popup_Window_Feed_Empty>:
+    Label:
+        text: str(root.feed_empty_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+<Popup_Window_Purge_Full>:
+    Label:
+        text: str(root.purge_full_problem)
+        pos_hint: {"x":0, "top":1}
+
+
+
+
+
 <GUI_GridLayout>:
 
     cols: 5
 
     pt_pump: pt_pump
+    system_on: system_on
+
     Label:
         font_size: 25
         text: str(root.diluate_in_label)

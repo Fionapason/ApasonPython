@@ -2,41 +2,44 @@
 
 <GUI_GridLayout>:
 
-    cols: 3
+    cols: 5
 
+    pt_pump: pt_pump
     Label:
-        font_size: 30
+        font_size: 25
         text: str(root.diluate_in_label)
     Label:
-        font_size: 30
+        font_size: 25
         text: str(root.diluate_out_label)
     Label:
-        font_size: 30
+        font_size: 25
         text: str(root.output_flow_label)
     Label:
-        font_size: 30
+        font_size: 25
+        text: str(root.on_off_label)
+
+    Switch:
+        id: system_on
+        active: False
+        on_active: root.on_off_switch_callback(self, self.active, pt_pump)
+
+
+    Label:
+        font_size: 25
         text: str(root.diluate_in_display)
     Label:
-        font_size: 30
+        font_size: 25
         text: str(root.diluate_out_display)
     Label:
-        font_size: 30
+        font_size: 25
         text: str(root.output_flow_display)
 
+    Label:
+        font_size: 25
+        text: str(root.pt_label)
 
-    Button:
-        font_size: 30
-        text: str(root.system_on_button_label)
-        on_press: root.press_system_on()
-
-
-    Button:
-        font_size: 30
-        text: str(root.system_off_button_label)
-        on_press: root.press_system_off()
-
-    Button:
-        font_size: 30
-        text: str(root.post_treatment_off_button_label)
-        on_press: root.press_pt_off()
-
+    Switch:
+        id: pt_pump
+        active: False
+        on_active: root.pt_switch_callback(self, self.active, pt_pump)
+        disabled: True

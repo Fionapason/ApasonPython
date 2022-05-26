@@ -11,38 +11,24 @@ from kivy.clock import Clock
 #TODO make warning messages
 
 class GUI_GridLayout(GridLayout):
-    voltage_label_1 = StringProperty("Voltage 1?")
-    voltage_label_2 = StringProperty("Voltage 2?")
 
-    pressure_label_1 = StringProperty("Pressure 1:")
-    pressure_label_2 = StringProperty("Pressure 2:")
-    pressure_label_3 = StringProperty("Pressure 3:")
+    system_on = False
 
-    pressure_display_1 = StringProperty()
-    pressure_display_2 = StringProperty()
-    pressure_display_3 = StringProperty()
+    diluate_in_label = StringProperty("Diluate In Conductivity:")
+    diluate_out_label = StringProperty("Diluate Out Conductivity:")
+    output_flow_label = StringProperty("Current Output:")
 
-    massflow_label_1 = StringProperty('Massflow 1:')
-    massflow_label_2 = StringProperty('Massflow 2:')
-    massflow_label_3 = StringProperty('Massflow 3:')
+    diluate_in_display = StringProperty()
+    diluate_out_display = StringProperty()
+    output_flow_display = StringProperty()
 
-    massflow_display_1 = StringProperty()
-    massflow_display_2 = StringProperty()
-    massflow_display_3 = StringProperty()
-
-
-    voltage_input_1 = TextInput()
-    voltage_input_2 = TextInput()
-
-    submit_button_label_1 = StringProperty("Submit 1")
+    system_on_button_label = StringProperty("TURN ON")
     submit_button_label_2 = StringProperty("Submit 2")
 
-    voltage_output_1 = NumericProperty(0)
-    voltage_output_2 = NumericProperty(0)
-
-    def press_1(self):
-        voltage_1 = self.voltage_input_1.text
-        self.voltage_output_1 = float(voltage_1)
+    # TODO BUTTONS
+    def press_system_on(self):
+        print("SYSTEM BUTTON ENGAGED!")
+        self.system_on = True
 
     def press_2(self):
         voltage_2 = self.voltage_input_2.text
@@ -55,73 +41,64 @@ class GUI_GridLayout(GridLayout):
         # self.add_widget(Label(text=self.voltage_label_2))
         # self.add_widget(self.voltage_input_2)
 
-        # self.submit_button_1 = Button(text=self.submit_button_label_1)
-        # self.submit_button_1.bind(on_press=self.press_1)
-        # self.add_widget(self.submit_button_1)
+        self.submit_button_1 = Button(text=self.system_on_button_label)
+        self.submit_button_1.bind(on_press=self.press_system_on)
+        self.add_widget(self.submit_button_1)
 
-        # self.submit_button_2 = Button(text=self.submit_button_label_2)
-        # self.submit_button_2.bind(on_press=self.press_2)
-        # self.add_widget(self.submit_button_2)
+        self.submit_button_2 = Button(text=self.submit_button_label_2)
+        self.submit_button_2.bind(on_press=self.press_2)
+        self.add_widget(self.submit_button_2)
 
-        self.add_widget(Label(text=self.pressure_label_1))
-        self.add_widget(Label(text=self.pressure_display_1))
+        self.add_widget(Label(text=self.diluate_in_label))
+        self.add_widget(Label(text=self.diluate_in_display))
 
-        self.add_widget(Label(text=self.pressure_label_2))
-        self.add_widget(Label(text=self.pressure_display_2))
+        self.add_widget(Label(text=self.diluate_out_label))
+        self.add_widget(Label(text=self.diluate_out_display))
 
-        self.add_widget(Label(text=self.pressure_label_3))
-        self.add_widget(Label(text=self.pressure_display_3))
+        self.add_widget(Label(text=self.output_flow_label))
+        self.add_widget(Label(text=self.output_flow_display))
 
-        self.add_widget(Label(text=self.massflow_label_1))
-        self.add_widget(Label(text=self.massflow_display_1))
-
-        self.add_widget(Label(text=self.massflow_label_2))
-        self.add_widget(Label(text=self.massflow_display_2))
-
-        self.add_widget(Label(text=self.massflow_label_3))
-        self.add_widget(Label(text=self.massflow_display_3))
 
 
 class apason_GUIApp(App):
-    command_center = None
 
-    voltage_output_1 : float = 0
-    voltage_output_2 : float = 0
+    system_on = False
+    system_turned_on = False
 
-    pressure_display_1 = StringProperty()
-    pressure_display_2 = StringProperty()
-    pressure_display_3 = StringProperty()
+    diluate_in_display = StringProperty()
+    diluate_out_display = StringProperty()
+    output_flow_display = StringProperty()
 
-    massflow_display_1 = StringProperty()
-    massflow_display_2 = StringProperty()
-    massflow_display_3 = StringProperty()
+    def update_buttons(self, dt):
 
-    def update_outputs(self, dt):
-        self.voltage_output_1 = self.layout.voltage_output_1
-        self.voltage_output_2= self.layout.voltage_output_2
+        if not self.system_turned_on:
+
+            if self.layout.system_on:
+                print("SENDING BUTTON MESSAGE ON!")
+                self.command_center.system_on = True
+                self.system_turned_on = True
+
 
     def update_inputs(self, dt):
-        self.layout.pressure_display_1 = self.pressure_display_1
-        self.layout.pressure_display_2 = self.pressure_display_2
-        self.layout.pressure_display_3 = self.pressure_display_3
+        self.layout.diluate_in_display = self.diluate_in_display
+        self.layout.diluate_out_display = self.diluate_out_display
+        self.layout.output_flow_display = self.output_flow_display
 
-        self.layout.massflow_display_1 = self.massflow_display_1
-        self.layout.massflow_display_2 = self.massflow_display_2
-        self.layout.massflow_display_3 = self.massflow_display_3
 
-    def setServer(self, cc_server, sl_server):
-        self.command_center = cc_server
-        self.sensor_list = sl_server
+    def setServer(self, command_center, update_list):
+        self.command_center = command_center
+        self.update_list = update_list
 
     def build(self):
         self.layout = GUI_GridLayout()
-        Clock.schedule_interval(self.update_outputs, 1.0)
+        Clock.schedule_interval(self.update_buttons, 1.0)
         Clock.schedule_interval(self.update_inputs, 1.0)
         return self.layout
 
     def on_stop(self):
+        print("APP CLOSED. SHUTTING DOWN…")
         self.command_center.stop_server()
-        self.sensor_list.stop_server()
+        self.update_list.stop_server()
 
 
 if __name__ == '__main__':

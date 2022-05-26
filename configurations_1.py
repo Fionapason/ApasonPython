@@ -38,22 +38,13 @@ sensor_configurations_1 = {
 
                    ],
 
-    "massflow": [{"id": 1, "arduino_id": 1,
+    "massflow": [{"id": 0, "arduino_id": 1,
                    "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A5
                    "max_flow": 10.0},
 
-                  {"id": 2, "arduino_id": 1,
+                  {"id": 1, "arduino_id": 1,
                    "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A6
-                   "max_flow": 5.0},
-
-                  {"id": 3, "arduino_id": 1,
-                   "name": "UF Retentate Flow", "unit": "l/min", "in_use": False, #A7
-                   "max_flow": 5.0},
-
-                 {"id": 0, "arduino_id": 1,
-                  "name": "UF Feed Flow", "unit": "l/min", "in_use": False,  # A8
-                  "max_flow": 5.0}
-
+                   "max_flow": 5.0}
 
                   ],
 
@@ -130,15 +121,7 @@ control_instrument_configurations_1 = {
 
               {"id": 1, "DAC_output": 'B', "arduino_id": 1,
                "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
-               "max_RPM": 9000.0, "starting_RPM": 0.0},
-
-              {"id": 2, "DAC_output": 'C', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC C
-               "max_RPM": 9000.0, "starting_RPM": 0.0},
-
-               {"id": 3, "DAC_output": 'D', "arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": False,  #ON/OFF, DAC D
-               "max_RPM": 9000.0, "starting_RPM": 0.0},
+               "max_RPM": 9000.0, "starting_RPM": 0.0}
 
             ]
 

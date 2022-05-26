@@ -47,34 +47,10 @@ class Pump:
         self.DAC_output = DAC
         self.arduino_id = arduino_id
         self.id = id
-        # self.command_on = command_on
 
     #returns the int from 0-4095 which corresponds to the wanted rpm
     def find_Voltage(self, rpm):
         return int((rpm / self.max_RPM) * 4095)
-
-# # Parameters: DAC_output, arduino_id, id
-# # Function: find_Voltage(percent)
-#
-# class PCV:
-#
-#     '''**Parameters:** DAC_output, arduino_id, id \n
-#     **Function:** find_Voltage(percent)'''
-#
-#     DAC_output: str
-#
-#     arduino_id: int
-#
-#     id : int
-#
-#
-#     def __init__(self, DAC, arduino_id, id):
-#         self.DAC_output = DAC
-#         self.arduino_id = arduino_id
-#         self.id = id
-#
-#     def find_Voltage(self, percent):
-#         return int((percent / 100) * 4095)
 
 # Parameters: command_open, command_close, arduino_id, id
 

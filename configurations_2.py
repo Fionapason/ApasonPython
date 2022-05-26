@@ -16,7 +16,7 @@ The comment next to each sensor/instrument object is the equivalent arduino outp
 sensor_configurations_2 = {
 
     "pressure": [  {"id": 5, "arduino_id": 2,
-                    "name": "theoretical gems", "unit": "bar", "in_use": False,
+                    "name": "theoretical gems", "unit": "bar", "in_use": True,
                     "max_pressure": 5.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A0
 
                   {"id": 6, "arduino_id": 2,
@@ -37,34 +37,35 @@ sensor_configurations_2 = {
 
                    ],
 
-    "massflow": [ {"id": 4, "arduino_id": 2,
-                   "name": "Posttreatment Flow", "unit": "l/min", "in_use": True, #A5
+    "massflow": [ {"id": 2, "arduino_id": 2,
+                   "name": "Concentrate Flow", "unit": "l/min", "in_use": True, #A5
                    "max_flow": 5.0},
 
-                  {"id": 5, "arduino_id": 2,
+                  {"id": 3, "arduino_id": 2,
                    "name": "ED Diluate Flow", "unit": "l/min", "in_use": True, #A6
                    "max_flow": 5.0},
 
-                  {"id": 6, "arduino_id": 2,
+                  {"id": 4, "arduino_id": 2,
                    "name": "ED Rinse Flow", "unit": "l/min", "in_use": True, #A7
                    "max_flow": 5.0},
 
-                  {"id": 7, "arduino_id": 2,
-                   "name": "Concentrate Flow", "unit": "l/min", "in_use": True  , #A8
+                  {"id": 5, "arduino_id": 2,
+                   "name": "Posttreatment Flow", "unit": "l/min", "in_use": True  , #A8
                    "max_flow": 5.0}
                   ],
 
-    "conductivity": [ {"id": 3, "arduino_id": 2,
-                       "name": "ED Diluate In Cond", "unit": "mS/cm", "in_use": True, #A9
-                       "max_Cond": 10.0, "min_Cond": 0.1},
-
-                      {"id": 4, "arduino_id": 2,
-                       "name": "ED Diluate Out Cond", "unit": "mS/cm", "in_use": True, #A10
-                       "max_Cond": 10.0, "min_Cond": 0.1},
+    "conductivity": [ {"id": 4, "arduino_id": 2,
+                       "name": "ED Diluate Out Cond", "unit": "mS/cm", "in_use": True, #A9
+                       "max_Cond": 10.0, "min_Cond": 0.2},
 
                       {"id": 5, "arduino_id": 2,
-                       "name": "ED Concentrate Cond", "unit": "mS/cm", "in_use": True, #A11
-                       "max_Cond": 60.0, "min_Cond": 50.0}
+                       "name": "ED Concentrate Cond", "unit": "mS/cm", "in_use": True, #A10
+                       "max_Cond": 60.0, "min_Cond": 50.0},
+
+                      {"id": 3, "arduino_id": 2,
+                       "name": "ED Diluate In Cond", "unit": "mS/cm", "in_use": True, #A11
+                       "max_Cond": 12, "min_Cond": 1},
+
 
                       ],
 
@@ -78,11 +79,11 @@ sensor_configurations_2 = {
                {"id": 18, "arduino_id": 2,
                 "name": "ED-Con Tank Middle", "in_use": True}, #D25
                {"id": 19, "arduino_id": 2,
-                "name": "UF Tank Low", "in_use": True}, #D26
+                "name": "NO", "in_use": True}, #D26
                {"id": 20, "arduino_id": 2,
                 "name": "ED-Rinse Tank", "in_use": True}, #D27
                {"id": 21, "arduino_id": 2,
-                "name": "idle", "in_use": False}, #D28
+                "name": "UF Tank Low", "in_use": True}, #D28
                {"id": 22, "arduino_id": 2,
                 "name": "idle", "in_use": False}, #D29
                {"id": 23, "arduino_id": 2,
@@ -141,19 +142,19 @@ control_instrument_configurations_2 = {
                            ],
 
 
-    "pump": [ {"id": 4,  "DAC_output": 'A', "arduino_id": 2,
+    "pump": [ {"id": 2,  "DAC_output": 'A', "arduino_id": 2,
                "name": "Posttreatment Pump", "unit": "RPM", "in_use": True,  #D48 ON/OFF, DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
-              {"id": 5, "DAC_output": 'B', "arduino_id": 2,
+              {"id": 3, "DAC_output": 'B', "arduino_id": 2,
                "name": "Rinse Pump", "unit": "RPM", "in_use": True,  #D49 ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
-              {"id": 6, "DAC_output": 'C', "arduino_id": 2,
-               "name": "Concentrate Pump", "unit": "RPM", "in_use": True,  #D49 ON/OFF, DAC B
+              {"id": 4, "DAC_output": 'C', "arduino_id": 2,
+               "name": "Concentrate Pump", "unit": "RPM", "in_use": True,  #D49 ON/OFF, DAC C
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
-              {"id": 7, "DAC_output": 'D', "arduino_id": 2,
+              {"id": 5, "DAC_output": 'D', "arduino_id": 2,
                "name": "Diluate Pump", "unit": "RPM", "in_use": True,  #D49 ON/OFF, DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0}
             ],

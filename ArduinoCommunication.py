@@ -100,6 +100,7 @@ class ArduinoCommunication:
 
         voltage = bytes(str(volt), 'utf-8')
         lock.acquire()
+
         if (control_instrument.DAC_output == 'A'):
             port.write(b'!')
 
@@ -138,36 +139,6 @@ class ArduinoCommunication:
         lock.release()
         return sensor.currentValue(raw_measurement)
 
-
-    # def old_sendVoltage(self, id, volt, DAC_OUTPUT, lock):
-    #
-    #     lock.acquire()
-    #
-    #     if(DAC_OUTPUT == 'A'):
-    #         self.ports[id].write(b'!')
-    #
-    #     elif(DAC_OUTPUT == 'B'):
-    #         self.ports[id].write(b'@')
-    #
-    #     elif (DAC_OUTPUT == 'C'):
-    #         self.ports[id].write(b'#')
-    #
-    #     elif (DAC_OUTPUT == 'D'):
-    #         self.ports[id].write(b'$')
-    #
-    #     else:
-    #         print("ERROR! DAC OUTPUT ARGUMENT MUST BE 'A', 'B', 'C', OR 'D'!")
-    #         return
-    #
-    #     input_to_port = str(int( float(volt) / 5 * 4095))
-    #     time.sleep(0.05)
-    #     self.ports[id].write(bytes(input_to_port, 'utf-8'))
-    #
-    #     ser.findInSerial(self.ports[id], '+')
-    #
-    #     lock.release()
-    #
-    #     return
 
 
 if __name__ == '__main__':

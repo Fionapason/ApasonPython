@@ -39,7 +39,8 @@ class Update_List_Pressure:
         self.critical_pressure = sensor["critical_pressure"]
         self.warning_pressure = sensor["warning_pressure"]
         self.id = sensor["id"]
-        self.average = [1.0]
+        self.average = []
+        self.updateValue(1.0)
 
     def updateValue(self, newValue):
         if len(self.average) == self.average_count:
@@ -66,7 +67,8 @@ class Update_List_Massflow:
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
-        self.average = [0.0]
+        self.average = []
+        self.updateValue(0.0)
 
     def updateValue(self, newValue):
 
@@ -93,7 +95,8 @@ class Update_List_Conductivity:
         self.name = sensor["name"]
         self.unit = sensor["unit"]
         self.id = sensor["id"]
-        self.average = [0.0]
+        self.average = []
+        self.updateValue(0.0)
 
     def updateValue(self, newValue):
         if len(self.average) == self.average_count:

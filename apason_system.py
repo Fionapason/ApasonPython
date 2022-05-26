@@ -151,30 +151,27 @@ class Apason_System():
     lists for pumps, ocvs_no, ocvs_nc, cv3s \n
     **Functions:** turn_on_system(), turn_on_instruments(), turn_on_control(), set_instruments()
     """
-    system_on = True
 
     system_pumps = []
-    #system_pcvs = []
     system_ocvs_no = []
     system_ocvs_nc = []
     system_cv3s = []
 
-    def turn_on_system(self, list):
-        self.update_list = list
-        if self.system_on:
-            self.turn_on_instruments()
-            self.time_start = time.time()
-            self.turn_on_control()
-
-    def turn_on_instruments(self):
+    def __init__(self):
         self.set_instruments()
+
+    def turn_on_system(self, list):
+        print("TURN ON SYSTEM!")
+        self.update_list = list
+        self.time_start = time.time()
+        self.turn_on_control()
 
 
     def turn_on_control(self):
         self.overall_control = control.Overall_Control(update_list=self.update_list, apason_system=self)
 
     def turn_off_system(self):
-        self.overall_control.stop()
+        self.overall_control.stop_server()
 
     def set_instruments(self):
         # Iterate through every pump in the configurations for the first arduino,
@@ -187,12 +184,6 @@ class Apason_System():
                                        max_RPM=pump["max_RPM"],
                                        state=pump["starting_RPM"])
                 self.system_pumps.append(new_pump)
-        # for pcv in conf_1.control_instrument_configurations_1["pcv"]:
-        #     if pcv["in_use"]:
-        #         new_pcv = System_PCV(id=pcv["id"],
-        #                              name=pcv["name"],
-        #                              state=pcv["start_opening"])
-        #         self.system_pcvs.append(new_pcv)
 
         for cv3 in conf_1.control_instrument_configurations_1["cv3"]:
             if cv3["in_use"]:
@@ -222,12 +213,7 @@ class Apason_System():
                                        max_RPM=pump["max_RPM"],
                                        state=pump["starting_RPM"])
                 self.system_pumps.append(new_pump)
-        # for pcv in conf_2.control_instrument_configurations_2["pcv"]:
-        #     if pcv["in_use"]:
-        #         new_pcv = System_PCV(id=pcv["id"],
-        #                              name=pcv["name"],
-        #                              state=pcv["start_opening"])
-        #         self.system_pcvs.append(new_pcv)
+
         for cv3 in conf_2.control_instrument_configurations_2["cv3"]:
             if cv3["in_use"]:
                 new_cv3 = System_CV3(id=cv3["id"],

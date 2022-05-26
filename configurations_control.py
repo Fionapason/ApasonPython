@@ -10,7 +10,7 @@ control_configurations = {
 
     "uf_feed_flow":     {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Permeate Flow", "control_instrument_name": "UF Feed Pump", "in_use": True,
-                         "desired_value": 1.5, "K_p": 0.5, "K_i": 0},
+                         "desired_value": 1.5, "K_p": 0.5, "K_i": 0.01},
 
     "uf_backwash_flow": {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Backwash Flow", "control_instrument_name": "UF Backwash Pump",
@@ -32,12 +32,12 @@ control_configurations = {
     "ed_pt_flow":           {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "Posttreatment Flow", "control_value_sensor_reversal_name": "Posttreatment Flow",
                              "control_instrument_name": "Posttreatment Pump", "in_use": True,
-                            "desired_value": 0.25, "K_p": 1.0, "K_i": 0.01, "pressure_dependent": False},
+                            "desired_value": 0.25, "K_p": 0.7, "K_i": 0.01, "pressure_dependent": False},
 
     "ed_rinse_flow":        {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "ED Rinse Flow", "control_value_sensor_reversal_name": "ED Rinse Flow",
                              "control_instrument_name": "Rinse Pump", "in_use": True,
-                            "desired_value": 2.5, "K_p": 2.0, "K_i": 0.0, "pressure_dependent": False},
+                            "desired_value": 2.5, "K_p": 0.7, "K_i": 0.0, "pressure_dependent": False},
 
     "ed_concentrate_flow":  {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                             "control_value_sensor_normal_name": "Concentrate Flow", "control_value_sensor_reversal_name": "ED Diluate Flow",
@@ -69,7 +69,7 @@ control_configurations = {
                    "ed_split_tank_middle_ls_name": "ED-Split Tank Middle", "ed_split_tank_low_ls_name": "ED-Split Tank Low",
                    "ed_rinse_tank_ls_name": "ED-Rinse Tank", "uf_tank_low_ls_name": "UF Tank Low",
 
-                    "ed_concentrate_conductivity_name": "ED Concentrate Cond",
+                   "ed_concentrate_conductivity_name": "ED Concentrate Cond",
                    "reversal_time": 20.0},
 
     "overall_control": {"overall_feed_tank_high_ls_name": "Feed Tank High", "overall_feed_tank_middle_ls_name": "Feed Tank Middle",

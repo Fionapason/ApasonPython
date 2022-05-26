@@ -93,6 +93,10 @@ class Command_Center:
     def start_system(self):
         self.apason_system.turn_on_system(list=self.list)
 
+    def stop_system(self):
+        self.system_on = False
+        self.apason_system.turn_off_system()
+        self.set_zero()
 
     def stop_server(self):
         print("I'm Trying To Stop The Command Center Server")

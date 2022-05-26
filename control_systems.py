@@ -144,6 +144,8 @@ class UF_TMP_Control:
     feed_pressure_sensor_name : str
     permeate_pressure_sensor_name : str
 
+    tmp_problem = False
+
 
     def __init__(self, update_list):
 
@@ -169,10 +171,12 @@ class UF_TMP_Control:
         print("CURRENT TMP: " + str(current_tmp) + " BAR \n")
         if current_tmp >= self.switch_value:
             print("TMP EXCEEDED 0.8 BAR! \n")
+            self.tmp_problem = True
             return True
         else:
             if current_tmp >= max:
                 print("TMP EXCEEDED STEADY STATE TMP BY MORE THAN 0.2 BAR! \n")
+                self.tmp_problem = True
                 return True
             return False
 
@@ -944,8 +948,6 @@ class ED:
             return
             # TODO SEND ON MESSAGE TO GUI
 
-        if self.pressure_control.pddc_problem:
-            print("THE PRESSURE DIFFERENCE BETWEEN THE DILUATE AND THE CONCENTRATE COULD NOT BE ADJUSTED. \n STOP THE SYSTEM.")
 
         now = time.time()
 
@@ -1108,9 +1110,24 @@ class Overall_Control:
 
                 time.sleep(1)
 
+    def pressure_problems(self):
+
+        if self.ed.pressure_control.pddc_problem:
+            self.ed.turn_off_ED()
+            self.uf.turn_off_UF()
+            self.run_overall = False
+            #pass on to command center
+        if self.ed.pressure_control.pdrd_problem:
+            self.ed.turn_off_ED()
+            self.uf.turn_off_UF()
+            self.run_overall = False
+
+        if self.uf.tmp_control.tmp_problem:
+            self.ed.turn_off_ED()
+            self.uf.turn_off_UF()
+            self.run_overall = False
 
 
-    # TODO pressure problems
 
     def check_tanks(self):
 

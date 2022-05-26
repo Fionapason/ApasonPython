@@ -23,16 +23,16 @@ class GUI_GridLayout(GridLayout):
     output_flow_display = StringProperty()
 
     system_on_button_label = StringProperty("TURN ON")
-    submit_button_label_2 = StringProperty("Submit 2")
+    system_off_button_label = StringProperty("TURN OFF")
 
     # TODO BUTTONS
     def press_system_on(self):
-        print("SYSTEM BUTTON ENGAGED!")
+        print("SYSTEM ON BUTTON ENGAGED!")
         self.system_on = True
 
-    def press_2(self):
-        voltage_2 = self.voltage_input_2.text
-        self.voltage_output_2 = float(voltage_2)
+    def press_system_off(self):
+        print("SYSTEM OFF BUTTON ENGAGED!")
+        self.system_on = False
 
     def build(self):
         # self.add_widget(Label(text=self.voltage_label_1))
@@ -45,8 +45,8 @@ class GUI_GridLayout(GridLayout):
         self.submit_button_1.bind(on_press=self.press_system_on)
         self.add_widget(self.submit_button_1)
 
-        self.submit_button_2 = Button(text=self.submit_button_label_2)
-        self.submit_button_2.bind(on_press=self.press_2)
+        self.submit_button_2 = Button(text=self.system_off_button_label)
+        self.submit_button_2.bind(on_press=self.press_system_off)
         self.add_widget(self.submit_button_2)
 
         self.add_widget(Label(text=self.diluate_in_label))
@@ -64,6 +64,7 @@ class apason_GUIApp(App):
 
     system_on = False
     system_turned_on = False
+    system_turned_off = False
 
     diluate_in_display = StringProperty()
     diluate_out_display = StringProperty()
@@ -77,6 +78,10 @@ class apason_GUIApp(App):
                 print("SENDING BUTTON MESSAGE ON!")
                 self.command_center.system_on = True
                 self.system_turned_on = True
+        else:
+            if not self.layout.system_on:
+                self.command_center.system_on = False
+                self.system_turned_on = False
 
 
     def update_inputs(self, dt):

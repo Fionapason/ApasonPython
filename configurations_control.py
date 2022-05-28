@@ -58,7 +58,7 @@ control_configurations = {
 
     "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond", "control_cv3": "ED Second-Pre-Diluate",
                         "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67,
-                        "K_p": 1.0, "K_i": 0.0}, # TODO ADJUST
+                        "K_p": 0.8, "K_i": 0.0}, # TODO ADJUST
 
     "ed_general": {"ed_pre_diluate_valve_name": "ED Pre-Diluate", "ed_pre_concentrate_valve_name": "ED Pre-Concentrate",
                    "ed_post_diluate_valve_name": "ED Post-Diluate", "ed_post_concentrate_valve_name": "ED Post-Concentrate",

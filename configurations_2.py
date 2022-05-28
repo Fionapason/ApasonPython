@@ -21,15 +21,15 @@ sensor_configurations_2 = {
 
                   {"id": 6, "arduino_id": 2,
                     "name": "Diluate In Pressure", "unit": "bar", "in_use": True,
-                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A1
+                    "max_pressure": 6.0, "critical_pressure": 1.7, "warning_pressure": 1.5}, #A1
 
                   {"id": 7, "arduino_id": 2,
                    "name": "Concentrate In Pressure", "unit": "bar","in_use": True,
-                   "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A2
+                   "max_pressure": 6.0, "critical_pressure": 1.7, "warning_pressure": 1.5}, #A2
 
                   {"id": 8, "arduino_id": 2,
                    "name": "Rinse Pressure", "unit": "bar",  "in_use": True,
-                   "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A3
+                   "max_pressure": 6.0, "critical_pressure": 1.8, "warning_pressure": 1.6}, #A3
 
                   {"id": 9, "arduino_id": 2,
                    "name": "idle", "unit": "bar",  "in_use": False,

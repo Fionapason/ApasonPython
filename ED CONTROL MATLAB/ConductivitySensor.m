@@ -49,6 +49,8 @@ classdef ConductivitySensor < handle
 
         setFlow
 
+        graphConstant
+
     end
 
     properties (Dependent)
@@ -89,9 +91,10 @@ classdef ConductivitySensor < handle
             O.setFlow = O.minFlow;
             O.controlTime = 0;
             O.count = 0;
+            O.graphConstant = O.maxCond - ((O.maxCond - O.minCond) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
 
 
-            O.concControl = timer('ExecutionMode', 'fixedSpacing','Period', 5);
+            O.concControl = timer('ExecutionMode', 'fixedSpacing','Period', 10);
 
             O.concControl.StartFcn = @(~,~)disp('Concentration Controller started');
 
@@ -105,10 +108,8 @@ classdef ConductivitySensor < handle
             % get the value from the arduino
             raw_conductivity_measurement = O.arduinoObj.sendCommand(O.command);
 
-            graphConstant = O.maxCond - ((O.maxCond - O.minCond) / (O.maxVoltage - O.minVoltage))*O.maxVoltage;
-
             %calculate the data into l/min
-            f = raw_conductivity_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxCond - O.minCond) / (O.maxVoltage - O.minVoltage)) + graphConstant;
+            f = raw_conductivity_measurement * (O.arduinoObj.analogReference / 1023) * ((O.maxCond - O.minCond) / (O.maxVoltage - O.minVoltage)) + O.graphConstant;
 
         end %end get the value
 
@@ -153,13 +154,7 @@ classdef ConductivitySensor < handle
                 O.setFlow = O.minFlow;
             end
 
-            if actualValue > 1 && O.Interface.sensor.cv(5).value == 0
-                O.Interface.sensor.cv(5).open % value = 5 -- change sucht that it goes into the concentrate tank
-            elseif actualValue < 1 && O.Interface.sensor.cv(5).value == 5
-                O.Interface.sensor.cv(5).close % value = 0 -- normal
-            end
-
-            for identifier = [1 3 4] % all but the rinse
+            for identifier = [2 3 4] % all but the rinse
                 O.Interface.sensor.pump(identifier).setFlow.value(end) = O.setFlow*O.Interface.sensor.pump(identifier).adjustment;
                 if O.Interface.sensor.pump(identifier).setFlow.value(end) < 0.25
                     O.Interface.sensor.pump(identifier).setFlow.value(end) = 0.25;

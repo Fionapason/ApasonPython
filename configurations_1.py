@@ -22,11 +22,11 @@ sensor_configurations_1 = {
 
                    {"id": 1, "arduino_id": 1,
                     "name": "UF Feed Pressure", "unit": "bar", "in_use": True,
-                    "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A1
+                    "max_pressure": 6.0, "critical_pressure": 3.0, "warning_pressure": 2.5}, #A1
 
                   {"id": 2, "arduino_id": 1,
                    "name": "UF Retentate Pressure", "unit": "bar","in_use": True,
-                   "max_pressure": 6.0, "critical_pressure": 5.0, "warning_pressure": 4.7}, #A2
+                   "max_pressure": 6.0, "critical_pressure": 3.0, "warning_pressure": 2.5}, #A2
 
                   {"id": 3, "arduino_id": 1,
                    "name": "UF Permeate Pressure", "unit": "bar",  "in_use": True,

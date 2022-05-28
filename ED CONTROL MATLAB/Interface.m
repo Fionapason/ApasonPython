@@ -36,14 +36,14 @@ classdef Interface < handle %ED General Code
         
         controlSystem;
         
-        controlState = 0;
-        
+        controlState
+
         startOpeningValve = 0;
-        
+
         startupTimer;
-        
+
         startState;
-        
+
         pddcProblem
 
         pddcProblemstart
@@ -51,6 +51,12 @@ classdef Interface < handle %ED General Code
         saver
 
         checkTanks
+
+        tankState
+
+        wait
+
+        startPause
     end
 
     methods
@@ -161,9 +167,17 @@ classdef Interface < handle %ED General Code
 
             O.startState = 0;
 
+            O.controlState = 2; %DO THIS NICER IN THE BEGINNING
+
+            O.tankState = 0;
+
             O.pddcProblem = 0;
 
             O.pddcProblemstart = now;
+
+            O.wait = 0;
+
+            O.startPause = 0;
 
             O.timerLog = timer('ExecutionMode', 'fixedSpacing','Period',1, 'BusyMode', 'drop');
 
@@ -202,7 +216,7 @@ classdef Interface < handle %ED General Code
             O.reversalTimer.TimerFcn = @(~,~)reversalOperation(O);
 
             %----
-            O.pressureDifferenceDCTimer = timer('ExecutionMode', 'fixedSpacing','Period',5);
+            O.pressureDifferenceDCTimer = timer('ExecutionMode', 'fixedSpacing','Period',10);
 
             O.pressureDifferenceDCTimer.StartFcn = @(~,~)disp('Pressure Difference DC tester started');
 
@@ -697,7 +711,7 @@ classdef Interface < handle %ED General Code
             O.GUI.cv(identifier).ax.Layout.Column = columnIdentifier(identifier);
             O.GUI.cv(identifier).ax.Title.String = O.names.cv(identifier,1);
             O.GUI.cv(identifier).ax.XLabel.String = 'time [s]';
-            O.GUI.cv(identifier).ax.YLabel.String = 'Voltage input [V]';
+            O.GUI.cv(identifier).ax.YLabel.String = 'Voltage input [V], 5 -> open, 0 -> closed';
             O.GUI.cv(identifier).ax.Box = 'on';
             O.GUI.cv(identifier).ax.XMinorGrid = 'on';
             O.GUI.cv(identifier).ax.YMinorGrid = 'on';
@@ -817,8 +831,18 @@ classdef Interface < handle %ED General Code
             %Plot conductivity sensors
             for identifier = 1:3
                 if O.configuration.conductivity(identifier,1)
+                    % exclude NaN
+                    condValue = O.sensor.conductivity(identifier).value;
+                    count = 0;
+                    while isnan(condValue)
+                        condValue = O.sensor.conductivity(identifier).value;
+                        count = count + 1;
+                        if count == 10
+                            warning('Something is wrong with the Arduino - it always gives NaN - check the system');
+                        end
+                    end
                     O.sensor.conductivity(identifier).time(end+1) = (now-O.sensor.pressure(O.sensor.beginTimeIdentifier).time(2))*3600*24;
-                    O.sensor.conductivity(identifier).data(end+1) = O.sensor.conductivity(identifier).value;
+                    O.sensor.conductivity(identifier).data(end+1) = condValue;
                     elapsedTime = linspace(0, O.sensor.conductivity(identifier).time(end), length(O.sensor.conductivity(identifier).data));
 
                     if length(O.sensor.conductivity(identifier).time) > 15
@@ -899,7 +923,7 @@ classdef Interface < handle %ED General Code
             else
                 O.GUI.polarity.ax.YLim = [min(O.sensor.polarity.data)-0.3 max(O.sensor.polarity.data)+0.3];
             end
-            O.GUI.polarity.ax.Title.String = [O.names.cv(identifier,1); 'current value: ', num2str(O.sensor.polarity.data(end)), ' Volt'];
+            O.GUI.polarity.ax.Title.String = ['Polarity current value: ', num2str(O.sensor.polarity.data(end)), ' Volt'];
             plot(O.GUI.polarity.ax, elapsedTime, O.sensor.polarity.data);
 
             %Level switches
@@ -921,9 +945,6 @@ classdef Interface < handle %ED General Code
             if O.GUI.startReversalButton.Value == true
                 stop(O.reversalTimer)
                 delete(O.reversalTimer)
-                %SWITCH POLARITY TO NORMAL
-                O.sensor.polarity.value = 1;
-                O.sensor.polarity.changeSetting;
             end
 
             %stop normal Operation
@@ -936,16 +957,20 @@ classdef Interface < handle %ED General Code
                 end
             end
 
-            pause(0.5)
+            pause(1)
 
             % SET THE PUMPS TO 0 and display this!
             for identifier = 1:4
                 if O.configuration.pump(identifier,1) == 1
                    O.sensor.pump(identifier).value = 0;
                    O.sensor.pump(identifier).changeSetting;
-                   pause(0.5)
+                   pause(1.5)
                 end
             end
+
+            %TURN POLARITY OFF
+            O.sensor.polarity.value = 0;
+            O.sensor.polarity.changeSetting;
 
             disp('The Pumps are set to 0 rpm');
 
@@ -966,6 +991,9 @@ classdef Interface < handle %ED General Code
                 stop(O.controlSystem)
                 stop(O.concentrateTankControl)
             end
+
+            stop(O.checkTanks)
+            delete(O.checkTanks)
 
             delete(O.controlSystem)
             delete(O.concentrateTankControl)
@@ -1008,6 +1036,7 @@ function startED(O, event)
     if event.Value
         O.GUI.startED.Value = event.Value;
         start(O.startupTimer)
+        start(O.checkTanks)
     else
         O.GUI.startED.Value = event.Value;
         O.endSystem
@@ -1121,7 +1150,7 @@ function stopPumps(O)
                 O.sensor.pump(identifier).nonSatV = 0;
                 O.sensor.pump(identifier).changeSetting;
                 O.sensor.pump(identifier).count = 0;
-                pause(1)
+                pause(1.5)
             end
     end
 end %stop all pumps
@@ -1130,6 +1159,7 @@ function startPump(O,identifier)
 
     if O.configuration.pump(identifier,1)
         start(O.sensor.pump(identifier).pumpTimer);
+        pause(0.5)
     else
         disp('No pump is connected');
     end
@@ -1140,14 +1170,14 @@ function stopPump(O,identifier)
 
     if O.configuration.pump(identifier,1)
        stop(O.sensor.pump(identifier).pumpTimer);
-       pause(0.5)
+       pause(1)
        O.sensor.pump(identifier).value = 0;
        O.sensor.pump(identifier).integral = 0;
        O.sensor.pump(identifier).nonSatV = 0;
        O.sensor.pump(identifier).setValue(end) = 0;
        O.sensor.pump(identifier).changeSetting;
        O.sensor.pump(identifier).count = 0;
-       pause(0.3)
+       pause(1)
     end
 
 end %end stopPump
@@ -1283,7 +1313,7 @@ function concTankController(O)
         O.sensor.ocvNC(1).open;
         O.concState = 1; %the tank is too concentrated
         O.startOpeningValve = now;
-    elseif (O.sensor.ls(5).data(end) == 0 && O.concState == 1) || (((now - O.startOpeningValve)*24*3600 > 30) && O.concState == 1) %need to check this time - Dana - 10.5.2022
+    elseif (sum(O.sensor.ls(7).data(end-2:end))/3 == 0 && O.concState == 1) || (((now - O.startOpeningValve)*24*3600 > 30) && O.concState == 1) %need to check this time - Dana - 10.5.2022
         O.sensor.ocvNC(1).close;
         O.concState = 0; %the tank is not concentrated anymore
     end
@@ -1292,16 +1322,16 @@ end %end concTankController
 
 function checkTanks(O)
 
-    if O.sensor.ls(6).data(end) == 0
+    if sum(O.sensor.ls(6).data(end-2:end))/3 == 0
         disp('The ED Rinse tank has a leakage and the water level in the tank is too low - please check')
         O.endSystem
     end
 
-    if O.sensor.ls(1).data(end) == 1
-        disp('The tank before the posttreatment is full, the system should stop except for the posttreatment pump')
-        %TODO and not just end System
+    if sum(O.sensor.ls(1).data(end-2:end))/3 == 1
+        disp('The tank before the posttreatment is full, please empty')
         O.endSystem
     end
+
 end %check Tanks
 
 
@@ -1310,22 +1340,24 @@ function startupED(O)
     UF = O.arduinoObj.sendCommand('[');
 
     %Check the level switches
-    if UF == 1 && O.sensor.ls(3).data(end) == 1 % all the tanks are full - can go directly to controlSystem
+    if UF == 1 && sum(O.sensor.ls(3).data(end-2:end))/3 == 1 % all the tanks are full - can go directly to controlSystem
         O.controlState = 0;
+        O.sensor.cv(5).close; %TODO NICER
         start(O.controlSystem)
         start(O.concentrateTankControl)
         start(O.sensor.conductivity(1).concControl)
         stop(O.startupTimer)
 
-    elseif UF == 1 && O.sensor.ls(4).data(end) == 1
+    elseif UF == 1 && sum(O.sensor.ls(4).data(end-2:end))/3 == 1
         O.controlState = -1; % ED pumps should run but NOT the posttreatment pump
         O.sensor.ocvNC(1).close;
+        O.sensor.cv(5).close; %TODO NICER
         start(O.controlSystem)
         start(O.concentrateTankControl)
         start(O.sensor.conductivity(1).concControl)
         stop(O.startupTimer)
 
-    elseif O.sensor.ls(4).data(end) == 0 && O.startState ~= 1 %filling the ED conc tank
+    elseif sum(O.sensor.ls(4).data(end-2:end))/3 == 0 && O.startState ~= 1 %filling the ED conc tank
         O.sensor.ocvNC(1).open;
         O.startState = 1;
 
@@ -1347,21 +1379,33 @@ function controlSystemED(O)
         O.endSystem;
     end
 
+    actualValue = O.sensor.conductivity(1).value;
+
+    while isnan(actualValue)
+        actualValue = O.sensor.conductivity(1).value;
+    end
+
+    if actualValue > 1 && O.sensor.cv(5).value == 0
+        O.sensor.cv(5).open % value = 5 -- change sucht that it goes into the concentrate tank
+    elseif actualValue < 1 && O.sensor.cv(5).value == 5
+        O.sensor.cv(5).close % value = 0 -- normal
+    end
+
     if O.controlState == 0 %initialize to start all pumps
 
         normalSetup1(O)
         normalSetup2(O)
 
-        for i = 2:4
+        for i = [1 3 4]
             startPump(O,i)
         end
 
         %start the polarity
         O.sensor.polarity.value = 1;
         O.sensor.polarity.changeSetting;
-
+        disp('did polarity in the beginning !!!!!!!!')
         pause(1)
-        startPump(O,1)
+%         startPump(O,1)
 
         O.controlState = 1; %all pumps are running in normal operation
 
@@ -1370,25 +1414,26 @@ function controlSystemED(O)
         normalSetup1(O)
         normalSetup2(O)
 
-        for i = 2:4
+        for i = [1 3 4]
             startPump(O,i)
         end
 
         %start the polarity
         O.sensor.polarity.value = 1;
         O.sensor.polarity.changeSetting;
+        disp('did polarity in the beginning !!!!!!!!2')
 
         O.controlState = 2;
 
-    elseif O.sensor.ls(3).data(end) == 0 && O.controlState == 1
-        stopPump(O,1)
+    elseif sum(O.sensor.ls(3).data(end-2:end))/3 == 0 && O.controlState == 1
+%         stopPump(O,1)
         O.controlState = 2; %Posttreatment Pump is stopped
 
-    elseif O.controlState == 2 && O.sensor.ls(3).data(end) == 1
-        startPump(O,1)
+    elseif O.controlState == 2 && sum(O.sensor.ls(3).data(end-2:end))/3 == 1
+%         startPump(O,1)
         O.controlState = 1; %all pumps are running in normal operation
 
-    elseif (O.sensor.pump(3).controlTime(end)-O.sensor.pump(3).controlTime(O.sensor.pump(3).stopIdentifier)) > O.configuration.switchTime(1,1) %check how long the concentrate pump is running
+    elseif (O.sensor.pump(3).controlTime(end)-O.sensor.pump(3).controlTime(O.sensor.pump(3).stopIdentifier)) > O.configuration.switchTime(1,1) && O.wait ~= 1 %check how long the concentrate pump is running
 
         O.sensor.pump(3).stopIdentifier = length(O.sensor.pump(3).controlTime);
 
@@ -1424,8 +1469,11 @@ function controlSystemED(O)
             startPump(O,i)
         end
 
-        pause(1.5)
+        O.wait = 1;
+        O.startPause = now;
 
+    elseif (now - O.startPause)*24*3600 > 20 && O.wait == 1
+        disp('doing second step of valves')
         if O.sensor.polarity.value == 1
             normalSetup2(O)
         elseif O.sensor.polarity.value == -1
@@ -1433,6 +1481,8 @@ function controlSystemED(O)
         else
             disp('something is weird with the polarity switch when doing reversal - please check')
         end
+
+        O.wait = 0;
     end
 
 end %controlSystemED

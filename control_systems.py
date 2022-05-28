@@ -554,6 +554,8 @@ class ED_Conductivity_PI:
 
     def conductivity_pi(self):
 
+
+
         if self.first_loop:
             self.time_start = time.time()  # current time in seconds
             self.time_current = self.time_start
@@ -567,42 +569,43 @@ class ED_Conductivity_PI:
         last_measurement = sensor.current_value
         error = self.desired_value - last_measurement
 
-        # Proportional Controller
-        P_out = self.K_p * error
-
-        # Integrative Controller
-        if self.non_saturated_output is not self.massflow_set_value_output:
-            I_out = 0.0
-        else:
-            self.integral = self.integral + elapsed_time * error
-            I_out = self.K_i * self.integral
-        out = P_out + I_out
-
-        # control adder
-        self.massflow_set_value_output = self.massflow_set_value_output + out
-
-        # Do this before possible saturation
-        self.non_saturated_output = self.massflow_set_value_output
-
-        # make sure we aren't already at the maximum or below 0: saturation check
-        if self.massflow_set_value_output > self.maximum_flow:
-            self.massflow_set_value_output = self.maximum_flow
-        elif self.massflow_set_value_output < self.minimum_flow:
-            self.massflow_set_value_output = self.minimum_flow
-
-        # TODO TEST
         if (last_measurement > 1) & (self.control_cv3.state == "LOW"):
             self.control_cv3.set_new_state("HIGH")
         elif (last_measurement < 1) & (self.control_cv3.state == "HIGH"):
             self.control_cv3.set_new_state("LOW")
 
-        print("------------- \n Setting desired massflow to: " + str(self.massflow_set_value_output) + "\n ------------")
+        # Conductivity control should be slower than massflow control, so we only do it every 10 seconds
+        if elapsed_time > 10.0:
+            # Proportional Controller
+            P_out = self.K_p * error
 
-        self.desired_flow = self.massflow_set_value_output
+            # Integrative Controller
+            if self.non_saturated_output is not self.massflow_set_value_output:
+                I_out = 0.0
+            else:
+                self.integral = self.integral + elapsed_time * error
+                I_out = self.K_i * self.integral
+            out = P_out + I_out
 
-        self.new_desired_flows(self.massflow_set_value_output)
+            # control adder
+            self.massflow_set_value_output = self.massflow_set_value_output + out
 
-        self.time_last = self.time_current
+            # Do this before possible saturation
+            self.non_saturated_output = self.massflow_set_value_output
+
+            # make sure we aren't already at the maximum or below 0: saturation check
+            if self.massflow_set_value_output > self.maximum_flow:
+                self.massflow_set_value_output = self.maximum_flow
+            elif self.massflow_set_value_output < self.minimum_flow:
+                self.massflow_set_value_output = self.minimum_flow
+
+            print("------------- \n Setting desired massflow to: " + str(self.massflow_set_value_output) + "\n ------------")
+
+            self.desired_flow = self.massflow_set_value_output
+
+            self.new_desired_flows(self.massflow_set_value_output)
+
+            self.time_last = self.time_current
 
 
 
@@ -973,9 +976,8 @@ class ED:
         self.do_massflow_control()
 
     def do_conductivity_control(self):
-        if self.conductivity_count % 5 == 0:
-            self.conductivity_control.conductivity_pi()
-        self.conductivity_count += 1
+        self.conductivity_control.conductivity_pi()
+
 
     def do_massflow_control(self):
 

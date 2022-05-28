@@ -6,7 +6,7 @@ clc;
 
 
 %Look in your arduino IDE which port you are connected to
-arduinoObj = talkToArduino('COM8');
+arduinoObj = talkToArduino('COM4');
 
 %CONFIGURATION PUMP
 %first column with 1 or 0 if it is used for a pump or not
@@ -14,21 +14,22 @@ arduinoObj = talkToArduino('COM8');
 %third column for desired permeate massflow in l/min !!!!
 %fourth column for the Kp constant
 %fifth column for the Ki constant
-%sixth column to say which massflow sensor to control in the normal operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8   
+%sixth column to say which massflow sensor to control in the normal operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8
 %seventh column to say which massflow sensor to control in the backflush operation, 1 for A5, 2 for A6, 3 for A7, 4 for A8
-configuration.pump = [1 5 0.25  1 0.1   4 4; %A -- Posttreatment Pump
-                      1 5 2.5   2 0     3 3; %B --Rinse Pump always at 150 l/h
-                      1 5 0.25  1 0     1 2; %C -- Concentrate
-                      1 5 0.25  1 0     2 1]; %D -- Diluate
+configuration.pump = [1 5 2.5   0.5 0   3 3; %A --Rinse Pump always at 150 l/h !
+                      0 5 2.5   0.7 0   3 3; %B
+                      1 5 0.25  0.7 0   1 2; %C -- Concentrate #
+                      1 5 0.25  0.7 0   2 1]; %D -- Diluate $
 
-names.pump = ["Posttreatment Pump";
-              "Rinse Pump";
+
+names.pump = ["Rinse Pump";
+              "NO Pump";
               "Concentrate Pump";
               "Diluate Pump"];
 
 %First input after how many seconds the polarity should be reversed
 %Second input how long the "flush" should last
-configuration.switchTime = [60;
+configuration.switchTime = [210;
                             20];
 
 %CONFIGURATION MASSFLOW
@@ -51,9 +52,9 @@ names.mf = ["Concentrate Flow";
 %fourth column is the pressure that is near to the critical value where you want to
 %be notified by a warning
 configuration.pressure = [0 10 5 4.7; %A0 --> Gems
-                          1 6 6 6; %A1
-                          1 6 6 6; %A2
-                          1 6 6 6; %A3
+                          1 6 1.7 1.5; %A1
+                          1 6 1.7 1.5; %A2
+                          1 6 1.8 1.6; %A3
                           0 6 5 4.7; %A4
                           0 6 5 4.7]; %A15!!
 
@@ -72,13 +73,13 @@ names.pressure = ["Gems pressure sensor A0"; %1
 configuration.pressuredifferenceDC = [1; %is it used or not
                                       2; % Diluate pressure Sensor
                                       3; %Concentrate pressure sensor
-                                      0.2]; %maximum pressure difference
+                                      0.3]; %maximum pressure difference
 
 %Pressure Difference between Rinse and Diluate
 configuration.pressuredifferenceRD = [1; %is it used or not
                                       2; % Diluate pressure Sensor
                                       4; % Rinse pressure sensor
-                                      10]; %maximum pressure difference
+                                      0.5]; %maximum pressure difference
 
 
 %CONFIGURATION CONDUCTIVITY SENSORS
@@ -87,9 +88,9 @@ configuration.pressuredifferenceRD = [1; %is it used or not
 %third column for minimum conductivity in mS/cm
 %fourth column for Kp
 %fifth column for Ki
-configuration.conductivity = [1 10 0.1 1 0; %Channel 1 -- Diluate out
-                              1 60 50 0 0; %Channel 2 -- Concentrate
-                              1 10 0.1 0 0]; %Channel 3 -- Diluate in
+configuration.conductivity = [1 10 0.2   0.8 0; %Channel 1 -- Diluate out
+                              1 60  50   0   0; %Channel 2 -- Concentrate
+                              1 12   1   0   0]; %Channel 3 -- Diluate in
 
 
 configuration.maxConductivity = 56; %mS/cm
@@ -129,29 +130,20 @@ configuration.ls = [1; %Highest of the ED Split Tank-1
                     1; %Lowest of the ED Split Tank-2
                     1; %Middle of the ED Split Tank-3
                     1; %ED Concentrate-4
-                    1; %lowest of UF Tank-5
+                    1; %
                     1; %ED Rinse-6
-                    1];%
+                    1];%lowest of UF Tank-5
 
-%OLD
-configuration.ls = [1; %lowest of the UF Tank - 1
-                    1; %highest of the ED Conc Tank - 2
-                    1; % -3
-                    1; %middle of the ED Split Tank -4
-                    1; %Lowest of the ED Split Tank -5
-                    1; %ED Rinse -6
-                    1];%Highest of the ED Split Tank - 7
-
-names.ls = ["ls22";
-            "ls23";
-            "ls24";
-            "ls25";
-            "ls26";
-            "ls27";
-            "ls28"];
+names.ls = ["ls Highest of the ED Split Tank";
+            "ls Lowest of the ED Split Tank";
+            "ls Middle of the ED Split Tank";
+            "ls ED Concentrate";
+            "ls NOTHING";
+            "ls ED Rinse";
+            "ls lowest of UF Tank"];
 
 %What you want your file to be named for the measurements
-filename = 'TestDana.mat';
+filename = 'Test.mat';
 
 O = Interface(arduinoObj, configuration, names, filename);
 

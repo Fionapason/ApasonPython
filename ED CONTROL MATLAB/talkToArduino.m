@@ -66,7 +66,16 @@ classdef talkToArduino
         
         function valveSendCommand(O,command)
             
+            count = 1;
             write(O.arduinoObj, command , "char");
+
+            while ~isequal(read(O.arduinoObj, 1, "char"), '+')
+                flush(O.arduinoObj)
+                write(O.arduinoObj, command , "char");
+                if count > 4
+                    disp('STOP THE SYSTEM - THE VALVE IS WEIRD')
+                end
+            end
             
             flush(O.arduinoObj);
 

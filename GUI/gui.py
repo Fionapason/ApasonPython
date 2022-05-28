@@ -13,12 +13,12 @@ from kivy.uix.floatlayout import FloatLayout
 
 class GUI_GridLayout(GridLayout):
 
-    system_on = False
+    system_on_bool = False
     post_treatment_off = False
 
     diluate_in_label = StringProperty("Pre-ED Conductivity:")
     diluate_out_label = StringProperty("Post-ED Conductivity:")
-    output_flow_label = StringProperty("Current Output Volume:")
+    output_flow_label = StringProperty("Current Output Water FLow:")
 
     on_off_label = StringProperty("SYSTEM")
     pt_label = StringProperty("OUTPUT PUMP")
@@ -49,12 +49,12 @@ class GUI_GridLayout(GridLayout):
 
     def switch_system_on(self, pt_switch):
         print("SYSTEM ON SWITCH ENGAGED!")
-        self.system_on = True
+        self.system_on_bool = True
         self.enable_pt(pt_switch)
 
     def switch_system_off(self, pt_switch):
         print("SYSTEM OFF SWITCH ENGAGED!")
-        self.system_on = False
+        self.system_on_bool = False
         self.disable_pt(pt_switch)
 
     def popup_feed_low(self):
@@ -250,12 +250,12 @@ class apason_GUIApp(App):
 
         if not self.system_turned_on:
 
-            if self.layout.system_on:
+            if self.layout.system_on_bool:
                 print("SENDING BUTTON MESSAGE ON!")
                 self.command_center.system_on = True
                 self.system_turned_on = True
         else:
-            if not self.layout.system_on:
+            if not self.layout.system_on_bool:
                 self.command_center.system_on = False
                 self.system_turned_on = False
 
@@ -317,9 +317,6 @@ class apason_GUIApp(App):
             self.layout.popup_rinse_low()
             # self.disable_on_off()
 
-   # TODO
-   #  def disable_on_off(self):
-   #      self.layout.switch_system_on_off.disabled = True
 
     def setServer(self, command_center, update_list):
         self.command_center = command_center
@@ -331,6 +328,7 @@ class apason_GUIApp(App):
         Clock.schedule_interval(self.update_inputs, 1.0)
         Clock.schedule_interval(self.check_warnings, 1.0)
         Clock.schedule_interval(self.check_if_problem, 1.0)
+        print(self.layout.system_on_bool)
         return self.layout
 
     def on_stop(self):

@@ -9,7 +9,6 @@ from kivy.clock import Clock
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
 
-#TODO make warning messages
 
 class GUI_GridLayout(GridLayout):
 

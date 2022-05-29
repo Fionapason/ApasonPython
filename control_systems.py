@@ -105,38 +105,38 @@ class UF_Massflow_PI:
         else:
             self.time_current = time.time()
             elapsed_time = self.time_current - self.time_last
+        if elapsed_time > 1.0:
+            last_measurement = self.control_value_sensor.current_value
+            print("CURRENT UF PERMEATE FLOW: " + str(last_measurement))
+            error = self.desired_value - last_measurement
 
-        last_measurement = self.control_value_sensor.current_value
-        print("CURRENT UF PERMEATE FLOW: " + str(last_measurement))
-        error = self.desired_value - last_measurement
+            # Proportional Controller
+            P_out = self.K_p * error
 
-        # Proportional Controller
-        P_out = self.K_p * error
+            # Integrative Controller
+            if self.non_saturated_output is not self.pump_output:
+                I_out = 0.0
+            else:
+                self.integral = self.integral + elapsed_time * error
+                I_out = self.K_i * self.integral
+            out = P_out + I_out
 
-        # Integrative Controller
-        if self.non_saturated_output is not self.pump_output:
-            I_out = 0.0
-        else:
-            self.integral = self.integral + elapsed_time * error
-            I_out = self.K_i * self.integral
-        out = P_out + I_out
+            # control adder
+            self.pump_output = self.pump_output + out
 
-        # control adder
-        self.pump_output = self.pump_output + out
+            # Do this before possible saturation
+            self.non_saturated_output = self.pump_output
 
-        # Do this before possible saturation
-        self.non_saturated_output = self.pump_output
+            # make sure we aren't already at the maximum or below 0: saturation check
+            if self.pump_output > 5.0:
+                self.pump_output = 5.0
+            elif self.pump_output < 0.0:
+                self.pump_output = 0.0
 
-        # make sure we aren't already at the maximum or below 0: saturation check
-        if self.pump_output > 5.0:
-            self.pump_output = 5.0
-        elif self.pump_output < 0.0:
-            self.pump_output = 0.0
+            print("Setting " + self.control_instrument_name + " to Voltage: " + str(self.pump_output))
 
-        print("Setting " + self.control_instrument_name + " to Voltage: " + str(self.pump_output))
-
-        self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
-        self.time_last = self.time_current
+            self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
+            self.time_last = self.time_current
 
 class UF_TMP_Control:
 
@@ -365,19 +365,13 @@ class UF:
                 # check if we can start ED
                 self.set_ED()
 
-                time.sleep(0.25)
-
                 # decide on current state
                 self.set_process()
 
-                time.sleep(0.25)
-
                 if self.process == 'BACKWASH':
                     self.do_backwash()
-                    time.sleep(0.25)
                 elif self.process == 'FEED':
                     self.do_feed()
-                    time.sleep(0.25)
                 elif self.process == 'IDLE':
                     print("UF IS IDLING")
         else:
@@ -480,40 +474,41 @@ class ED_Massflow_PI:
         last_measurement = sensor.current_value
         error = self.desired_value - last_measurement
 
-        # Proportional Controller
-        P_out = self.K_p * error
+        if elapsed_time > 1.0:
+            # Proportional Controller
+            P_out = self.K_p * error
 
-        # Integrative Controller
-        if self.non_saturated_output is not self.pump_output:
-            I_out = 0.0
-        else:
-            self.integral = self.integral + elapsed_time * error
-            I_out = self.K_i * self.integral
+            # Integrative Controller
+            if self.non_saturated_output is not self.pump_output:
+                I_out = 0.0
+            else:
+                self.integral = self.integral + elapsed_time * error
+                I_out = self.K_i * self.integral
 
-        out = P_out + I_out
+            out = P_out + I_out
 
-        # control adder
-        self.pump_output = self.pump_output + out
+            # control adder
+            self.pump_output = self.pump_output + out
 
-        # Do this before possible saturation
-        self.non_saturated_output = self.pump_output
+            # Do this before possible saturation
+            self.non_saturated_output = self.pump_output
 
-        # make sure we aren't already at the maximum or below 0: saturation check
-        if self.pump_output > 5.0:
-            self.pump_output = 5.0
-        elif self.pump_output < 0.0:
-            self.pump_output = 0.0
+            # make sure we aren't already at the maximum or below 0: saturation check
+            if self.pump_output > 5.0:
+                self.pump_output = 5.0
+            elif self.pump_output < 0.0:
+                self.pump_output = 0.0
 
-        self.pump_output = self.pump_output
+            self.pump_output = self.pump_output
 
-        print("Setting " + self.control_instrument_name + " to Voltage: " + str(self.pump_output) + "\n----------")
+            print("Setting " + self.control_instrument_name + " to Voltage: " + str(self.pump_output) + "\n----------")
 
-        if self.pressure_dependent:
-            self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output * self.adjustment))
-        else:
-            self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
+            if self.pressure_dependent:
+                self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output * self.adjustment))
+            else:
+                self.control_instrument.set_new_state(self.control_instrument.voltage_to_rpm(self.pump_output))
 
-        self.time_last = self.time_current
+            self.time_last = self.time_current
 
 class ED_Conductivity_PI:
 
@@ -811,7 +806,7 @@ class ED:
         self.massflow_diluate.massflow_pi()
         self.massflow_concentrate.massflow_pi()
 
-        time.sleep(2)
+        time.sleep(1)
 
         self.ed_post_diluate_valve.set_new_state("HIGH")
         self.ed_post_concentrate_valve.set_new_state("HIGH")
@@ -941,8 +936,6 @@ class ED:
 
         self.pressure_control.manage_pressures()
 
-        time.sleep(0.1)
-
         now = time.time()
 
         time_difference = (now - self.last_polarity_switch_time)
@@ -950,15 +943,9 @@ class ED:
         if time_difference > self.reversal_time:
             self.change_polarity()
 
-        time.sleep(0.1)
-
         self.concentration_tank()
 
-        time.sleep(0.1)
-
         self.do_conductivity_control()
-
-        time.sleep(0.1)
 
         self.do_massflow_control()
 
@@ -974,31 +961,25 @@ class ED:
                 self.post_treatment = False
                 self.massflow_posttreatment.stop_pump()
                 self.do_ed_no_pt()
-                time.sleep(0.1)
             else:
                 self.do_ed_no_pt()
-                time.sleep(0.1)
 
         elif self.ed_split_tank_middle_ls.current_value == "CLOSED":
             print("LEVELSWITCH CLOSED CAN DO PT")
             if self.post_treatment:
                 self.do_ed_with_pt()
-                time.sleep(0.1)
             else:
                 self.massflow_posttreatment.reset_pump_control()
                 self.post_treatment = True
                 self.do_ed_with_pt()
-                time.sleep(0.1)
         else:
             print("LEVELSWITCH OPEN CANT DO PT")
             if self.post_treatment:
                 self.massflow_posttreatment.stop_pump()
                 self.post_treatment = False
                 self.do_ed_no_pt()
-                time.sleep(0.1)
             else:
                 self.do_ed_no_pt()
-                time.sleep(0.1)
 
     # TODO TEST
 
@@ -1105,8 +1086,6 @@ class Overall_Control:
 
                 self.uf.control_UF()
 
-                time.sleep(1)
-
                 if self.uf.start_ED:
                     self.ed.UF_ready()
 
@@ -1114,8 +1093,6 @@ class Overall_Control:
 
                 self.check_tanks()
                 self.pressure_problems()
-
-                time.sleep(1)
 
     def pressure_problems(self):
 

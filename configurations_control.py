@@ -20,7 +20,7 @@ control_configurations = {
     "uf_tmp": {"control_value_sensor_type": "pressure", "control_value_sensor_unit": "bar",
                      "feed_pressure_sensor_name": "UF Feed Pressure", "permeate_pressure_sensor_name": "UF Permeate Pressure",
                      "in_use": True,
-                     "switch_value": 1.0}, # bar
+                     "switch_value": 0.8}, # bar
 
     "uf_general": {"uf_backwash_valve_name": "UF Backwash Valve", "uf_feed_valve_name": "UF Feed Valve",
                    "uf_switch_valve_name": "UF Switch",

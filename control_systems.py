@@ -365,19 +365,19 @@ class UF:
                 # check if we can start ED
                 self.set_ED()
 
-                time.sleep(0.1)
+                time.sleep(0.25)
 
                 # decide on current state
                 self.set_process()
 
-                time.sleep(0.1)
+                time.sleep(0.25)
 
                 if self.process == 'BACKWASH':
                     self.do_backwash()
-                    time.sleep(0.1)
+                    time.sleep(0.25)
                 elif self.process == 'FEED':
                     self.do_feed()
-                    time.sleep(0.1)
+                    time.sleep(0.25)
                 elif self.process == 'IDLE':
                     print("UF IS IDLING")
         else:
@@ -942,19 +942,6 @@ class ED:
         self.pressure_control.manage_pressures()
 
         time.sleep(0.1)
-
-        # if self.pressure_control.pdrd_problem:
-        #     self.massflow_posttreatment.stop_pump()
-        #     time.sleep(0.1)
-        #     self.massflow_rinse.stop_pump()
-        #     time.sleep(0.1)
-        #     self.massflow_concentrate.stop_pump()
-        #     time.sleep(0.1)
-        #     self.massflow_diluate.stop_pump()
-        #     print("THE PRESSURE DIFFERENCE BETWEEN THE RINSE AND THE DILUATE IS TOO HIGH. ADJUST THE HAND-VALVE:")
-        #     print(self.pressure_control.pdrd_problem)
-        #     return
-
 
         now = time.time()
 

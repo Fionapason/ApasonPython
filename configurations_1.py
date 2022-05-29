@@ -40,7 +40,7 @@ sensor_configurations_1 = {
 
     "massflow": [{"id": 0, "arduino_id": 1,
                    "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A5
-                   "max_flow": 10.0},
+                   "max_flow": 10.0}, # TODO IS THIS CORRECT??
 
                   {"id": 1, "arduino_id": 1,
                    "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A6

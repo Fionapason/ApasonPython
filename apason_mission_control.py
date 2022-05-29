@@ -229,12 +229,18 @@ class Update_List:
         # self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
 
         output_flow_number = round(self.list.massflow[5].current_value, 2)  # TODO double check correct flow
+        diluate_in_number = round(self.list.conductivity[2].current_value, 2)
+        diluate_out_number = round(self.list.conductivity[0].current_value, 2)
 
         if output_flow_number < 0.0:
-            output_flow_number = 0
+            output_flow_number = 0.0
+        if diluate_in_number < 0.0:
+            diluate_in_number = 0.0
+        if diluate_out_number < 0.0:
+            diluate_out_number = 0.0
 
-        diluate_in = str(round(self.list.conductivity[2].current_value,2)) + " " + self.list.conductivity[2].unit
-        diluate_out = str(round(self.list.conductivity[0].current_value,2)) + " " + self.list.conductivity[0].unit
+        diluate_in = str(diluate_in_number) + " " + self.list.conductivity[2].unit
+        diluate_out = str(diluate_out_number) + " " + self.list.conductivity[0].unit
         output_flow = str(output_flow_number) + " " + self.list.massflow[5].unit
 
         self.interface.diluate_in_display = diluate_in

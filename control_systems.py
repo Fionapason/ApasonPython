@@ -100,6 +100,7 @@ class UF_Massflow_PI:
         if self.first_loop:
             self.time_start = time.time()  # current time in seconds
             self.time_current = self.time_start
+            self.time_last = self.time_current
             elapsed_time = self.time_start - self.system_time_start
             self.first_loop = False
         else:
@@ -464,6 +465,7 @@ class ED_Massflow_PI:
         if self.first_loop:
             self.time_start = time.time()  # current time in seconds
             self.time_current = self.time_start
+            self.time_last = self.time_current
             elapsed_time = self.time_start - self.system_time_start
             self.first_loop = False
         else:
@@ -554,6 +556,7 @@ class ED_Conductivity_PI:
         if self.first_loop:
             self.time_start = time.time()  # current time in seconds
             self.time_current = self.time_start
+            self.time_last = self.time_current
             elapsed_time = self.time_start - self.system_time_start
             self.first_loop = False
         else:
@@ -945,9 +948,9 @@ class ED:
 
         self.concentration_tank()
 
-        self.do_conductivity_control()
-
         self.do_massflow_control()
+
+        self.do_conductivity_control()
 
     def do_conductivity_control(self):
         self.conductivity_control.conductivity_pi()

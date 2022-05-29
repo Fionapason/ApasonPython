@@ -1133,15 +1133,15 @@ class Overall_Control:
 
     def check_tanks(self):
 
-        if self.overall_feed_tank_low_ls.current_value == "OPEN":
-            print("THE FEED TANK IS EMPTY. SHUTTING DOWN SYSTEM.")
-
-            print("SHOWN ON LEVEL SWITCH " + self.overall_feed_tank_low_ls.name + " #" + str(self.overall_rinse_tank_ls.id) + "!!")
-            print("OTHER LEVEL SWITCHES: \n" + self.overall_feed_tank_high_ls.name + ": " + str(self.overall_feed_tank_high_ls.current_value) + "\n" + self.overall_feed_tank_middle_ls.name + ": " + str(self.overall_feed_tank_middle_ls.current_value) + "\n")
-
-            self.system.system_problem = "FEED_EMPTY"
-            self.stop_server()
-            return
+        # if self.overall_feed_tank_low_ls.current_value == "OPEN":
+        #     print("THE FEED TANK IS EMPTY. SHUTTING DOWN SYSTEM.")
+        #
+        #     print("SHOWN ON LEVEL SWITCH " + self.overall_feed_tank_low_ls.name + " #" + str(self.overall_rinse_tank_ls.id) + "!!")
+        #     print("OTHER LEVEL SWITCHES: \n" + self.overall_feed_tank_high_ls.name + ": " + str(self.overall_feed_tank_high_ls.current_value) + "\n" + self.overall_feed_tank_middle_ls.name + ": " + str(self.overall_feed_tank_middle_ls.current_value) + "\n")
+        #
+        #     self.system.system_problem = "FEED_EMPTY"
+        #     self.stop_server()
+        #     return
 
         if self.overall_purge_tank_high_ls.current_value == "CLOSED":
             print("THE PURGE TANK IS FULL. PLEASE EMPTY IT. SHUTTING DOWN SYSTEM.")

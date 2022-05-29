@@ -323,10 +323,10 @@ class apason_GUIApp(App):
 
     def build(self):
         self.layout = GUI_GridLayout()
-        Clock.schedule_interval(self.update_switches, 1.0)
-        Clock.schedule_interval(self.update_inputs, 1.0)
-        Clock.schedule_interval(self.check_warnings, 1.0)
-        Clock.schedule_interval(self.check_if_problem, 1.0)
+        Clock.schedule_interval(self.update_switches, 1.5)
+        Clock.schedule_interval(self.update_inputs, 1.5)
+        Clock.schedule_interval(self.check_warnings, 1.5)
+        Clock.schedule_interval(self.check_if_problem, 1.5)
         print(self.layout.system_on_bool)
         return self.layout
 

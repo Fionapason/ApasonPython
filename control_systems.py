@@ -1134,7 +1134,7 @@ class Overall_Control:
 
         for sensor in self.update_list.pressure:
             if sensor.current_value > sensor.critical_pressure:
-                print("HIGH PRESSURE!")
+                print("HIGH PRESSURE IN PRESSURE SENSOR " + sensor.name + ": " + str(sensor.current_value))
                 self.system.system_problem = "HIGH_PRESSURE"
                 self.stop_server()
                 return

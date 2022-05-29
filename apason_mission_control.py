@@ -38,7 +38,6 @@ class Command_Center:
             if pump.changed:
                 self.ard_com.sendVoltage(volt=self.ard_control.pump_instruments[index].find_Voltage(pump.state), control_instrument=self.ard_control.pump_instruments[index])
                 pump.changed = False
-                time.sleep(0.2)
             index += 1
 
 
@@ -47,7 +46,6 @@ class Command_Center:
             if ocv_no.changed:
                 self.ard_com.setDigital(state=ocv_no.state, control_instrument=self.ard_control.ocv_normally_open_instruments[index])
                 ocv_no.changed = False
-                time.sleep(0.2)
             index += 1
 
 
@@ -56,7 +54,6 @@ class Command_Center:
             if ocv_nc.changed:
                 self.ard_com.setDigital(state=ocv_nc.state, control_instrument=self.ard_control.ocv_normally_closed_instruments[index])
                 ocv_nc.changed = False
-                time.sleep(0.2)
             index += 1
 
 
@@ -65,14 +62,12 @@ class Command_Center:
             if cv3.changed:
                 self.ard_com.setDigital(state=cv3.state, control_instrument=self.ard_control.cv3_instruments[index])
                 cv3.changed = False
-                time.sleep(0.2)
             index += 1
 
 
         if self.apason_system.polarity.changed:
             self.ard_com.setDigital(state=self.apason_system.polarity.state, control_instrument=self.ard_control.polarity)
             self.apason_system.polarity.changed = False
-            time.sleep(0.2)
 
 
     def post_treatment_pump(self):
@@ -117,7 +112,7 @@ class Command_Center:
                 self.check_warnings()
                 self.set_problem()
                 self.send_commands()
-                time.sleep(1)
+                time.sleep(1.5)
 
 
 

@@ -17,7 +17,7 @@ class GUI_GridLayout(GridLayout):
 
     diluate_in_label = StringProperty("Input Conduct.")
     diluate_out_label = StringProperty("Output Conduct.")
-    output_flow_label = StringProperty("Output Water FLow:")
+    output_flow_label = StringProperty("Output Flow")
 
     on_off_label = StringProperty("SYSTEM")
     pt_label = StringProperty("OUTPUT PUMP")

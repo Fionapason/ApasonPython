@@ -10,12 +10,12 @@ control_configurations = {
 
     "uf_feed_flow":     {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Permeate Flow", "control_instrument_name": "UF Feed Pump", "in_use": True,
-                         "desired_value": 1.5, "K_p": 1.0, "K_i": 0.0},
+                         "desired_value": 1.5, "K_p": 0.5, "K_i": 0.0},
 
     "uf_backwash_flow": {"control_value_sensor_type": "massflow", "control_value_sensor_unit": "l/min",
                          "control_value_sensor_name": "UF Backwash Flow", "control_instrument_name": "UF Backwash Pump",
                          "in_use": True,
-                         "desired_value": 1.0, "K_p": 1.0, "K_i": 0},
+                         "desired_value": 1.0, "K_p": 0.5, "K_i": 0},
 
     "uf_tmp": {"control_value_sensor_type": "pressure", "control_value_sensor_unit": "bar",
                      "feed_pressure_sensor_name": "UF Feed Pressure", "permeate_pressure_sensor_name": "UF Permeate Pressure",

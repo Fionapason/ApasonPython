@@ -1087,7 +1087,7 @@ class Overall_Control:
                 self.uf.control_UF()
 
                 if self.uf.start_ED:
-                self.ed.UF_ready()
+                    self.ed.UF_ready()
 
                 self.ed.control_ED()
 

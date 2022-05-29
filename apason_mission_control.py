@@ -252,6 +252,12 @@ class Update_List:
                 sensor.updateValue(self.arduino.retrieveMeasurement(sensors.pressure_sensors[index]))
                 index += 1
 
+            index = 0
+
+            for sensor in self.list.massflow:
+                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index]))
+                index += 1
+
 
             index = 0
 
@@ -279,6 +285,11 @@ class Update_List:
 
             # for flow in self.list.massflow:
                 # print(flow.name + " CURRENT FLOW: " + str(flow.current_value))
+            index = 0
+
+            for sensor in self.list.massflow:
+                sensor.updateValue(self.arduino.retrieveMeasurement(sensors.massflow_sensors[index]))
+                index += 1
 
             self.set_from_list()
 

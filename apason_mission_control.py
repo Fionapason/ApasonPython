@@ -263,10 +263,10 @@ class Update_List:
             for sensor in self.list.levelswitch:
                 # print("Checking Level Switch: " + sensor.name)
                 digital_1 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
-                digital_2 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
-                digital_3 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
-                if (digital_1 == digital_2) & (digital_2 == digital_3):
-                    sensor.updateValue(digital_1)
+                # digital_2 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                # digital_3 = self.arduino.checkDigital(sensors.levelswitch_sensors[index])
+                # if (digital_1 == digital_2) & (digital_2 == digital_3):
+                sensor.updateValue(digital_1)
                 index += 1
 
 

@@ -54,7 +54,7 @@ control_configurations = {
                      "concentrate_pressure_sensor_name": "Concentrate In Pressure",
                      "rinse_pressure_sensor_name" :"Rinse Pressure",
                      "in_use": True,
-                     "critical_value_DC": 0.1, "critical_value_RD": 0.2},
+                     "critical_value_DC": 0.1, "critical_value_RD": 0.4},
 
     "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond", "control_cv3": "ED Second-Pre-Diluate",
                         "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67,

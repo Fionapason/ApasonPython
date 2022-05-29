@@ -1122,6 +1122,7 @@ class Overall_Control:
             #pass on to command center
         if self.ed.pressure_control.pdrd_problem:
             print("SHUTTING DOWN. PDRD PROBLEM")
+            print(self.ed.pressure_control.pdrd_problem_description)
             self.stop_server()
             self.ed.pressure_control.pddc_problem = False
             self.system.system_problem = "PDRD"

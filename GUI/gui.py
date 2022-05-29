@@ -15,9 +15,9 @@ class GUI_GridLayout(GridLayout):
     system_on_bool = False
     post_treatment_off = False
 
-    diluate_in_label = StringProperty("Pre-ED Conductivity:")
-    diluate_out_label = StringProperty("Post-ED Conductivity:")
-    output_flow_label = StringProperty("Current Output Water FLow:")
+    diluate_in_label = StringProperty("Input Conduct.")
+    diluate_out_label = StringProperty("Output Conduct.")
+    output_flow_label = StringProperty("Output Water FLow:")
 
     on_off_label = StringProperty("SYSTEM")
     pt_label = StringProperty("OUTPUT PUMP")

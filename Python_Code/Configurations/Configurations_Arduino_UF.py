@@ -1,20 +1,26 @@
 """
-This file is used to configure the sensors and control instruments on the FIRST arduino (ID = 1)
+This file is used to configure the sensors and control instruments on the UF Arduino (ID = 1)
 
-Each sensor/instrument belongs to a type (i.e. "pressure", "pump", "pcv") and contains a for that type unique ID,
-which will be used to easily find the corresponding sensor between the arduino class and the update list/command center class.
-The ID must be UNIQUE across all configuration files.
+First, the name of the serial port, to which the Arduino is connected is given.
 
-Also given is which the arduino ID of the corresponding sensor, a name, and the bool "in_use",
+Each sensor/instrument belongs to a type (i.e. "pressure", "pump", "pcv") and contains a for that type unique ID.
+The ID must be UNIQUE across ALL configuration files.
+
+Also given is the arduino ID of the corresponding sensor/instrument, a name, and the bool "in_use",
 which represent whether the sensor/instrument is plugged into the arduino
 
 Various other sensor/instrument-type dependent parameters are given
 
-The comment next to each sensor/instrument object is the equivalent arduino output
+The comment next to each sensor/instrument object is the equivalent Arduino output
+
+ALWAYS FILL YOUR ARDUINO PINS OF ONE TYPE OF SENSOR FROM THE LOWEST PIN NUMBER UP!
+IF YOU DON'T DO THIS, THE COMMAND ASSIGNMENT WILL FAIL!
+ALSO ALWAYS FILL UP THESE LISTS WITH THE "in_use": True SENSORS AT THE TOP!
 """
 
+port_name_arduino_uf = '/dev/cu.usbmodem1401'
 
-sensor_configurations_1 = {
+sensor_configurations_uf = {
 
     "pressure": [  {"id": 0, "arduino_id": 1,
                     "name": "GEMS", "unit": "bar", "in_use": True,
@@ -40,7 +46,7 @@ sensor_configurations_1 = {
 
     "massflow": [{"id": 0, "arduino_id": 1,
                    "name": "UF Backwash Flow", "unit": "l/min", "in_use": True, #A5
-                   "max_flow": 10.0}, # TODO IS THIS CORRECT??
+                   "max_flow": 5.0},
 
                   {"id": 1, "arduino_id": 1,
                    "name": "UF Permeate Flow", "unit": "l/min", "in_use": True, #A6
@@ -95,7 +101,7 @@ sensor_configurations_1 = {
               ]
 }
 
-control_instrument_configurations_1 = {
+control_instrument_configurations_uf = {
 
     "cv3": [ {"id": 0, "arduino_id": 1,
               "name": "UF Switch", "in_use": True, #D38
@@ -113,21 +119,14 @@ control_instrument_configurations_1 = {
                             "start_state": "LOW"}  # 'HIGH' == open, 'LOW' == closed
                            ],
 
-    #PUMP AND PCV SHARE THEIR IDS BECAUSE OF THE DAC
-
     "pump": [ {"id": 0,  "DAC_output": 'A',"arduino_id": 1,
-               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC A
+               "name": "UF Backwash Pump", "unit": "RPM", "in_use": True,  # DAC A
                "max_RPM": 9000.0, "starting_RPM": 0.0},
 
               {"id": 1, "DAC_output": 'B', "arduino_id": 1,
-               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  #ON/OFF, DAC B
+               "name": "UF Feed Pump", "unit": "RPM", "in_use": True,  # DAC B
                "max_RPM": 9000.0, "starting_RPM": 0.0}
 
             ]
 
 }
-
-if __name__ == '__main__':
-
-    for sensor in sensor_configurations_1["pressure"]:
-        print(sensor["name"])

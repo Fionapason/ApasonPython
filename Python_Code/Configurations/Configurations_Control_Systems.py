@@ -1,10 +1,14 @@
 """
-This file is used to configure the control systems of Apāson
+This file is used to configure the control systems of Apasōn.
 
-All starting states of control instruments will be set here
+All used instruments and sensors for any given control system will be referenced here, to allow for easy and unambiguous
+initialization of the control systems. It is therefore PERTINENT that the sensor and instrument names correspond EXACTLY
+to those in the other two configuration files.
+
+Additionally, each control system requires other parameters, such as times, pressures and control terms, which might be
+adapted according to circumstances during operation. They can be easily changed here, without interfering much in the code.
 """
 
-# MAKE SURE THE SENSORS AND PUMP NAMES ARE CONGRUOUS WITH THE NAMES IN CONF 1 + 2!!!!
 
 control_configurations = {
 
@@ -54,7 +58,7 @@ control_configurations = {
                      "concentrate_pressure_sensor_name": "Concentrate In Pressure",
                      "rinse_pressure_sensor_name" :"Rinse Pressure",
                      "in_use": True,
-                     "critical_value_DC": 0.1, "critical_value_RD": 0.4},
+                     "critical_value_DC": 0.1, "critical_value_RD": 0.2},
 
     "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond", "control_cv3": "ED Second-Pre-Diluate",
                         "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67,

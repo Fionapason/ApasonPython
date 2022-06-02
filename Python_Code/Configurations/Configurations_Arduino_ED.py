@@ -1,19 +1,26 @@
 """
-This file is used to configure the sensors and control instruments on the FIRST arduino (ID = 2)
+This file is used to configure the sensors and control instruments on the ED Arduino (ID = 2)
 
-Each sensor/instrument belongs to a type (i.e. "pressure", "pump", "pcv") and contains a for that type unique ID,
-which will be used to easily find the corresponding sensor between the arduino class and the update list/command center class.
-The ID must be UNIQUE across all configuration files.
+First, the name of the serial port, to which the Arduino is connected is given.
 
-Also given is which the arduino ID of the corresponding sensor, a name, and the bool "in_use",
+Each sensor/instrument belongs to a type (i.e. "pressure", "pump", "pcv") and contains a for that type unique ID.
+The ID must be UNIQUE across ALL configuration files.
+
+Also given is the arduino ID of the corresponding sensor/instrument, a name, and the bool "in_use",
 which represent whether the sensor/instrument is plugged into the arduino
 
 Various other sensor/instrument-type dependent parameters are given
 
-The comment next to each sensor/instrument object is the equivalent arduino output
+The comment next to each sensor/instrument object is the equivalent Arduino output
+
+ALWAYS FILL YOUR ARDUINO PINS OF ONE TYPE OF SENSOR FROM THE LOWEST PIN NUMBER UP!
+IF YOU DON'T DO THIS, THE COMMAND ASSIGNMENT WILL FAIL!
+ALSO ALWAYS FILL UP THESE LISTS WITH THE "in_use": True SENSORS AT THE TOP!
 """
 
-sensor_configurations_2 = {
+port_name_arduino_ed = '/dev/cu.usbmodem1201'
+
+sensor_configurations_ed = {
 
     "pressure": [  {"id": 5, "arduino_id": 2,
                     "name": "theoretical gems", "unit": "bar", "in_use": True,
@@ -103,7 +110,7 @@ sensor_configurations_2 = {
               ]
 }
 
-control_instrument_configurations_2 = {
+control_instrument_configurations_ed = {
 
     "cv3": [ {"id": 6, "arduino_id": 2,
               "name": "ED Pre-Diluate", "in_use": True, #D38

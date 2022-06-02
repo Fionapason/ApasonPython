@@ -2,8 +2,12 @@ import time
 
 timeout_time = 5
 
-def readSerial(ser):
+"""
+This file contains a few functions created to simplify serial communication.
+"""
 
+def read_serial(ser):
+    '''Reads strings of any length and stops when unwanted characters are reached'''
     maxLoops = timeout_time*1000
     buffer = ''
     count = 0
@@ -20,15 +24,15 @@ def readSerial(ser):
 
     return buffer
 
-def findInSerial(ser, find):
-
+def find_in_serial(ser, find):
+    '''Checks if a specific string has been sent through the serial port, even if other characters are in it as well.'''
     count = 0
     maxLoops = timeout_time * 100
-    read = readSerial(ser)
+    read = read_serial(ser)
 
     while (find not in read) & (count < maxLoops):
         count += 1
-        read = readSerial(ser)
+        read = read_serial(ser)
 
     if count == maxLoops:
         return False
@@ -36,24 +40,3 @@ def findInSerial(ser, find):
         return True
 
 
-def handshake(ser):
-
-    ser.flush()
-
-    timeout_counter = 0
-
-    while (not findInSerial(ser, 'a') ) & (timeout_counter < 100):
-        ser.write(b'a')
-        timeout_counter += 1
-
-    if timeout_counter >= 100:
-        return False
-
-    ser.write(b'a')
-
-    if findInSerial(ser, "I AM DONE!"):
-        print("PORT " + ser.port + " CONNECTED! \n")
-        return True
-    else:
-        print("COULDN'T FIND ARDUINO AT PORT: " + ser.port + "\n")
-    return

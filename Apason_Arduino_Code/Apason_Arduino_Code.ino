@@ -73,9 +73,9 @@ Adafruit_MCP4728 mcp;
 // OPEN CLOSE VALVES
 
 #define OCV_NC_1 44 // normally closed
-#define OCV_NC_2 45
-#define OCV_NC_3 46
-#define OCV_NO_4 47 // normally open
+#define OCV_NO_4 45 // normally open
+#define OCV_NC_2 47 // normally closed unused
+#define OCV_NC_3 46 // normally closed unused
 
 // PUMP ON/OFF
 
@@ -176,16 +176,23 @@ void setup() {
 
   Serial.begin(115200);
 
-  //initialize DAC
+  // initialize DAC
   mcp.begin();
+  // set all DAC outputs to 0 V, to be safe
+  mcp.setChannelValue(MCP4728_CHANNEL_A, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_B, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_C, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_D, 0);
 
-  //secure serial connection
+
+  // secure serial connection
   handshake();
 
-  //set analog Reference voltage
+
+  // set analog Reference voltage
   analogReference(DEFAULT);
 
-   //initialize digital output pins
+  // initialize digital output pins
   pinMode(TWV_1, OUTPUT);
   pinMode(TWV_2, OUTPUT);
   pinMode(TWV_3, OUTPUT);
@@ -237,8 +244,6 @@ void loop() {
 
  nextBytes = Serial.available();
  serialFlush(nextBytes);
-
- // Serial.write('\n');
 
 }
 
@@ -614,7 +619,7 @@ void handshake() {
 
 }
 
-//FLUSH LEFT OVER BYTES
+// FLUSH LEFT OVER BYTES
 
 void serialFlush(int bytesToFlush){
   while(bytesToFlush-- > 0) {
@@ -622,6 +627,8 @@ void serialFlush(int bytesToFlush){
     delay(1);
   }
 }
+
+// CHECK WHICH COMMAND WAS SENT VIA SERIAL CONNECTION
 
 void inputSwitch(char input){
   switch(input) {

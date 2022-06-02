@@ -1,14 +1,17 @@
 from kivy.app import App
 from kivy.uix.label import Label
 from kivy.uix.gridlayout import GridLayout
-# from kivy.uix.textinput import TextInput
-from kivy.properties import StringProperty #, NumericProperty
-from kivy.uix.button import Button
+from kivy.properties import StringProperty
 from kivy.uix.switch import Switch
 from kivy.clock import Clock
 from kivy.uix.popup import Popup
 from kivy.uix.floatlayout import FloatLayout
 
+"""
+Here the GUI application is implemented. Using classes which inherit from classes in the Kivy library, we make sure
+our sensor values stay up to date, manages the SYSTEM and OUTPUT PUMP on/off switch and initiate popup windows, when
+these are necessary. The aesthetic makeup of the application is handled by the .kv file.
+"""
 
 class GUI_GridLayout(GridLayout):
 
@@ -27,18 +30,21 @@ class GUI_GridLayout(GridLayout):
     output_flow_display = StringProperty()
 
     def on_off_switch_callback(self, switchObject, switchValue, pt_switch):
-        if switchValue:
+        # When the system switch has been engaged
+        if switchValue: # Switch: On
             self.switch_system_on(pt_switch)
-        else:
+        else: # Switch: Off
             self.switch_system_off(pt_switch)
 
     def pt_switch_callback(self, switchObject, switchValue):
-        if switchValue:
+        # When the output pump switch has been engaged
+        if switchValue: # Switch: On
             self.post_treatment_off = False
             print("POST TREATMENT ON!")
-        else:
+        else: # Switch: Off
             self.post_treatment_off = True
             print("POST TREATMENT OFF!")
+
 
     def enable_pt(self, pt_switch):
         pt_switch.disabled = False
@@ -48,13 +54,20 @@ class GUI_GridLayout(GridLayout):
 
     def switch_system_on(self, pt_switch):
         print("SYSTEM ON SWITCH ENGAGED!")
+        # We are now communicating to the Command Center thread that the system should be turned on
         self.system_on_bool = True
+        # The output pump switch can now be turned off, as the user desires
         self.enable_pt(pt_switch)
 
     def switch_system_off(self, pt_switch):
         print("SYSTEM OFF SWITCH ENGAGED!")
+        # We are now communicating to the Command Center thread that the system should be turned off
         self.system_on_bool = False
+        # We want the output pump switch to be locked when the system is shut down.
         self.disable_pt(pt_switch)
+
+
+    # Functions that initiate the popup windows for warnings and problems
 
     def popup_feed_low(self):
         show = Popup_Window_Feed_Low()
@@ -153,6 +166,8 @@ class GUI_GridLayout(GridLayout):
         self.add_widget(Label(text=self.pt_label))
         self.add_widget(Label(text=self.on_off_label))
 
+# Each type of pop up window gets a class
+
 class Popup_Window_Feed_High(FloatLayout):
 
     high_feed_warning = StringProperty("The water level in the feed tank is very high. \n Make sure you don't overflow!")
@@ -247,6 +262,8 @@ class apason_GUIApp(App):
 
     def update_switches(self, dt):
 
+        # Checking if the switches have changed
+
         if not self.system_turned_on:
 
             if self.layout.system_on_bool:
@@ -269,11 +286,16 @@ class apason_GUIApp(App):
 
 
     def update_inputs(self, dt):
+
+        # Updating displayed values with the values set from the Update List
+
         self.layout.diluate_in_display = self.diluate_in_display
         self.layout.diluate_out_display = self.diluate_out_display
         self.layout.output_flow_display = self.output_flow_display
 
     def check_warnings(self, dt):
+        # Checking if we need to display a warning popup window
+
         if self.popup_feed_high_now:
             self.layout.popup_feed_high()
             self.popup_feed_high_now = False
@@ -285,6 +307,9 @@ class apason_GUIApp(App):
             self.popup_purge_high_now = False
 
     def check_if_problem(self, dt):
+
+        # Checking if we need to display a problem popup window
+
         if self.problem == "NONE":
             pass
 
@@ -317,12 +342,15 @@ class apason_GUIApp(App):
             # self.disable_on_off()
 
 
-    def setServer(self, command_center, update_list):
+    def set_server(self, command_center, update_list):
         self.command_center = command_center
         self.update_list = update_list
 
     def build(self):
         self.layout = GUI_GridLayout()
+
+        # Scheduling all the functions that need to be repeated periodically
+
         Clock.schedule_interval(self.update_switches, 1.5)
         Clock.schedule_interval(self.update_inputs, 1.5)
         Clock.schedule_interval(self.check_warnings, 1.5)
@@ -336,5 +364,3 @@ class apason_GUIApp(App):
         self.update_list.stop_server()
 
 
-if __name__ == '__main__':
-    apason_GUIApp().run()

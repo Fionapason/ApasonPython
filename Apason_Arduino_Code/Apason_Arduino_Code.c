@@ -36,12 +36,12 @@ Adafruit_MCP4728 mcp;
 #define C_MT_2 A10
 #define C_MT_3 A11
 
-// TEMPERATURE SENSORS
-
-#define T_MT_1 A12
-#define T_MT_2 A13
-#define T_MT_3 A14
-#define T_Mouser A15
+//// TEMPERATURE SENSORS
+//
+//#define T_MT_1 A12
+//#define T_MT_2 A13
+//#define T_MT_3 A14
+//#define T_Mouser A15
 
 // LEVEL SWITCHES (INPUT PINS)
 
@@ -73,14 +73,14 @@ Adafruit_MCP4728 mcp;
 // OPEN CLOSE VALVES
 
 #define OCV_NC_1 44 // normally closed
-#define OCV_NC_2 45
-#define OCV_NC_3 46
-#define OCV_NO_4 47 // normally open
+#define OCV_NO_4 45 // normally open
+#define OCV_NC_2 47 // normally closed unused
+#define OCV_NC_3 46 // normally closed unused
 
-// PUMP ON/OFF
-
-#define PUMP_1 48
-#define PUMP_2 49
+//// PUMP ON/OFF
+//
+//#define PUMP_1 48
+//#define PUMP_2 49
 
 
 // ED POLARITY
@@ -179,8 +179,16 @@ void setup() {
   //initialize DAC
   mcp.begin();
 
+  mcp.setChannelValue(MCP4728_CHANNEL_A, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_B, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_C, 0);
+  mcp.setChannelValue(MCP4728_CHANNEL_D, 0);
+
+
+
   //secure serial connection
   handshake();
+
 
   //set analog Reference voltage
   analogReference(DEFAULT);

@@ -32,7 +32,7 @@ class Update_List:
 
         # self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
 
-        output_flow_number = round(self.list.massflow[5].current_value, 2)  # TODO double check correct flow
+        output_flow_number = round(self.list.massflow[5].current_value, 2)
         diluate_in_number = round(self.list.conductivity[2].current_value, 2)
         diluate_out_number = round(self.list.conductivity[0].current_value, 2)
 

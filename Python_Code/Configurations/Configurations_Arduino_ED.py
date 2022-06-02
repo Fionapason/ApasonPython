@@ -18,7 +18,7 @@ IF YOU DON'T DO THIS, THE COMMAND ASSIGNMENT WILL FAIL!
 ALSO ALWAYS FILL UP THESE LISTS WITH THE "in_use": True SENSORS AT THE TOP!
 """
 
-port_name_arduino_ed = '/dev/cu.usbmodem1201'
+port_name_arduino_ed = '/dev/ttyACM1' #'/dev/cu.usbmodem1201'
 
 sensor_configurations_ed = {
 

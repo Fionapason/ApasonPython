@@ -558,7 +558,7 @@ class ED:
 
     def concentration_tank(self):
         if (self.ed_concentrate_conductivity.current_value > 56) & (not self.too_concentrated):
-            print("THE CONCENTRATION TANK IS TOO CONCENTRATED. WE'RE ADDING WATER IN FROM THE FEED TANK. \n" )
+            print("THE CONCENTRATE TANK IS TOO CONCENTRATED. WE'RE ADDING WATER IN FROM THE FEED TANK. \n" )
             # open dilute valve
             self.ed_concentrate_dilute_valve.set_new_state("HIGH")
             self.valve_opening_time = time.time()

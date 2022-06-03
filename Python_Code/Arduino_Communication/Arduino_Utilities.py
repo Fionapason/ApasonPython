@@ -79,7 +79,17 @@ class Arduino_Utilities:
         serial.write(b'a')
 
         if find_in_serial(serial, "I AM DONE!"):
+
             print("PORT " + serial.port + " CONNECTED! \n")
+
+            # Checking if this is the UF Arduino and we need to send a signal to the UV lamp
+            if serial.port == self.port_names[1]:
+
+                # Turning on the UV lamp on the UF Arduino
+                serial.write(b'(')
+                find_in_serial(serial, '+')
+
+
             return True
         else:
             print("COULDN'T FIND ARDUINO AT PORT: " + serial.port + "\n")

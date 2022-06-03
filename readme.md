@@ -39,7 +39,7 @@ found in the `requirements.txt` file need to be installed.
 Additionally, the Arduino Code needs to be loaded onto the two [Arduino Mega 2560 Rev3 models][arduino_link]. It is identical for both of them. Both Arduinos must be plugged in,
 
 **THE UF ARDUINO _MUST_ BE PLUGGED IN _BEFORE_ THE ED ARDUINO** _because RPis dynamically assign serial portnames._
-Additionally, the monitor will not turn on, if the Arduinos are plugged in when the system starts up, because they will be "stealing" the power from the monitor.adafruit
+Additionally, the monitor will not turn on, if the Arduinos are plugged in when the system starts up, because they will be "stealing" the power from the monitor.
 
 Lastly, before running the system, the **Kivy virtual environment needs to be activated.**
 For this, one must change into the `kivy_venv` directory and, from the terminal, carry out the command:
@@ -120,7 +120,7 @@ Additionally, in order to make the Digital-Analog-Converters (model: [Adafruit M
 [bus_lib]: https://github.com/adafruit/Adafruit_BusIO
 
 These libraries can be included **within** the Arduino IDE, which also compiles and uploads the codes onto the Arduinos.
-[The IDE is open source and can be downloaded here.] [ide]
+[The IDE is open source and can be downloaded here.][ide]
 
 [ide]: https://www.arduino.cc/en/software
 

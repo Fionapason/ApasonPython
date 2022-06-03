@@ -62,7 +62,7 @@ control_configurations = {
 
     "ed_conductivity": {"conductivity_sensor_name": "ED Diluate Out Cond", "control_cv3": "ED Second-Pre-Diluate",
                         "desired_value": 0.9, "minimum_flow": 0.25, "maximum_flow": 1.67,
-                        "K_p": 0.8, "K_i": 0.0}, # TODO ADJUST
+                        "K_p": 0.8, "K_i": 0.0},
 
     "ed_general": {"ed_pre_diluate_valve_name": "ED Pre-Diluate", "ed_pre_concentrate_valve_name": "ED Pre-Concentrate",
                    "ed_post_diluate_valve_name": "ED Post-Diluate", "ed_post_concentrate_valve_name": "ED Post-Concentrate",
@@ -74,7 +74,7 @@ control_configurations = {
                    "ed_rinse_tank_ls_name": "ED-Rinse Tank", "uf_tank_low_ls_name": "UF Tank Low",
 
                    "ed_concentrate_conductivity_name": "ED Concentrate Cond",
-                   "reversal_time": 20.0},
+                   "reversal_time": 3600.0},
 
     "overall_control": {"overall_feed_tank_high_ls_name": "Feed Tank High", "overall_feed_tank_middle_ls_name": "Feed Tank Middle",
                         "overall_feed_tank_low_ls_name": "Feed Tank Low",

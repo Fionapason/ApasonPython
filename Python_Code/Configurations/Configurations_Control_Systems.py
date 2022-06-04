@@ -74,7 +74,7 @@ control_configurations = {
                    "ed_rinse_tank_ls_name": "ED-Rinse Tank", "uf_tank_low_ls_name": "UF Tank Low",
 
                    "ed_concentrate_conductivity_name": "ED Concentrate Cond",
-                   "reversal_time": 3600.0},
+                   "reversal_time": 1800.0},
 
     "overall_control": {"overall_feed_tank_high_ls_name": "Feed Tank High", "overall_feed_tank_middle_ls_name": "Feed Tank Middle",
                         "overall_feed_tank_low_ls_name": "Feed Tank Low",

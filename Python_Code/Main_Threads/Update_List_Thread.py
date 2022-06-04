@@ -30,11 +30,13 @@ class Update_List:
 
     def set_from_list(self):
 
-        # self.interface.pressure_display_1 = str(self.list.pressure[0].current_value)
+        # Round to two decimals
 
         output_flow_number = round(self.list.massflow[5].current_value, 2)
         diluate_in_number = round(self.list.conductivity[2].current_value, 2)
         diluate_out_number = round(self.list.conductivity[0].current_value, 2)
+
+        # Don't display negative values (these  can happen due to the graph constant)
 
         if output_flow_number < 0.0:
             output_flow_number = 0.0
@@ -43,9 +45,13 @@ class Update_List:
         if diluate_out_number < 0.0:
             diluate_out_number = 0.0
 
+        # Add the unit to the value
+
         diluate_in = str(diluate_in_number) + " " + self.list.conductivity[2].unit
         diluate_out = str(diluate_out_number) + " " + self.list.conductivity[0].unit
         output_flow = str(output_flow_number) + " " + self.list.massflow[5].unit
+
+        # Set it to the interface
 
         self.interface.diluate_in_display = diluate_in
         self.interface.diluate_out_display = diluate_out
@@ -54,6 +60,9 @@ class Update_List:
 
     def run_update_list(self):
         while (self.run_ul):
+
+            # Iterate through all sensors and update their values with the Arduino's newest measurement
+            # We check the massflow sensors more often because the pump control was reacting too slowly
 
             index = 0
 

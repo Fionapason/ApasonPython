@@ -28,7 +28,7 @@ This GIT contains the Python and Arduino Code, on which Apasōn runs.
 In order for Apasōn to run correctly, **it is pertinent that the code is configured congruently with the way the hardware is set up**.
 As all instruments are connected to Arduinos, and not directly to the Raspberry Pi, on which the Python code runs,
 every sensor or instrument is called up via a **unique character command**. (Unique _to the Arduino_; both Arduinos are in fact running on the same code)
-For this reason, sensors and instrument **need** to be plugged into the corresponding Arduino pin, or the Python **as well as** the Arduino Code will need to be adapted significantly.
+For this reason, sensors and instruments **need** to be plugged into the corresponding Arduino pin, or **both the Python and the Arduino Code** will need to be adapted significantly.
 
 Using **names** for the sensors, and in general making changes **within the configuration file only**, allows for an easy adaptation of the control system, without changing the more primitive serial communication between RPi and Arduino.
 
@@ -36,7 +36,7 @@ Using **names** for the sensors, and in general making changes **within the conf
 
 In order to start up Apasōn (assuming this repository has been copied onto the [Raspberry Pi Model 4][rpi_link] that the system runs on), all library and package requirements
 found in the `requirements.txt` file need to be installed.
-Additionally, the Arduino Code needs to be loaded onto the two [Arduino Mega 2560 Rev3 models][arduino_link]. It is identical for both of them. Both Arduinos must be plugged in,
+Additionally, the Arduino Code needs to be loaded onto the two [Arduino Mega 2560 Rev3 models][arduino_link]. It is identical for both of them. Both Arduinos must be plugged in.
 
 **THE UF ARDUINO _MUST_ BE PLUGGED IN _BEFORE_ THE ED ARDUINO** _because RPis dynamically assign serial portnames._
 Additionally, the monitor will not turn on, if the Arduinos are plugged in when the system starts up, because they will be "stealing" the power from the monitor.
@@ -60,7 +60,7 @@ Should the RPi be none-responsive, forcing you to quit the programme using `Ctrl
 
 ### User Experience
 
-The GUI (**G**eneral **U**ser **I**nterface) is very simple, showing only three measurements: the current output flow rate, so the user may know how much clean water they are currently getting,
+The GUI (**G**raphical **U**ser **I**nterface) is very simple, showing only three measurements: the current output flow rate, so the user may know how much clean water they are currently getting,
 and the conductivities at the inlet and outlet of the electro-dialysis module, as these may be of interest.
 To turn the system on, the user flicks the 'SYSTEM' switch from 'OFF' to 'ON'.
 

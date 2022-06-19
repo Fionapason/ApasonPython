@@ -28,7 +28,7 @@ This [GIT][git] contains the Python and Arduino Code, on which Apasōn runs.
 
 In order for Apasōn to run correctly, **it is pertinent that the code is configured congruently with the way the hardware is set up**.
 As all instruments are connected to Arduinos, and not directly to the Raspberry Pi, on which the Python code runs,
-every sensor or instrument is called up via a **unique character command**. (Unique _to the Arduino_; both Arduinos are in fact running on the same code)
+every sensor or instrument is called up via a **unique character command**. (Unique _to the Arduino_; both Arduinos are in fact running on the same code. The Excel table `Apason_Python_Arduino_Sensor_Command_Overview.xlsx` provides an overview of the commands.)
 For this reason, sensors and instruments **need** to be plugged into the corresponding Arduino pin, or **both the Python and the Arduino Code** will need to be adapted significantly.
 
 Using **names** for the sensors, and in general making changes **within the configuration file only**, allows for an easy adaptation of the control system, without changing the more primitive serial communication between RPi and Arduino.
@@ -132,6 +132,7 @@ Further libraries necessary for the running of the code can be seen in the `Requ
 
 ***
 
+`Apason_Python_Arduino_Sensor_Command_Overview.xlsx` : An Excel table used to keep an overview of the single character commands and corresponding sensors and Arduino pins within the System. 
 
 `Requirements.txt` : A file containing all required libraries and versions. Use the command `pip install -r requirements.txt` to install all.
 

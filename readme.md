@@ -134,7 +134,7 @@ Further libraries necessary for the running of the code can be seen in the `Requ
 
 `Apason_Python_Arduino_Sensor_Command_Overview.xlsx` : An Excel table used to keep an overview of the single character commands and corresponding sensors and Arduino pins within the System. 
 
-`Requirements.txt` : A file containing all required libraries and versions. Use the command `pip install -r requirements.txt` to install all.
+`Requirements.txt` : A file containing all required libraries and versions. Use the command `pip install -r Requirements.txt` to install all.
 
 `.gitignore` : Specifies intentionally untracked files, mainly the virtual environment.
 
